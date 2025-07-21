@@ -1,0 +1,149 @@
+import 'conversation_model.dart'; // 导入 UserStatus 枚举
+
+/// 解析用户状态
+UserStatus _parseStatus(String? status) {
+  if (status == null) return UserStatus.offline;
+  
+  switch (status) {
+    case 'online':
+      return UserStatus.online;
+    case 'offline':
+      return UserStatus.offline;
+    case 'away':
+      return UserStatus.away;
+    case 'busy':
+      return UserStatus.busy;
+    default:
+      return UserStatus.offline;
+  }
+}
+
+
+/// 用户模型类
+/// 
+/// 用于表示用户的数据结构，包括基本信息和状态
+class UserModel {
+  final String id;
+  final String name;
+  final String? email;
+  final String? phone;
+  final String? avatarUrl;
+  final String? bio;
+  final UserStatus? status;
+  final DateTime? lastSeen;
+  final bool isFavorite;
+  final bool isBlocked;
+  final Map<String, dynamic>? metadata;
+  
+  UserModel({
+    required this.id,
+    required this.name,
+    this.email,
+    this.phone,
+    this.avatarUrl,
+    this.bio,
+    this.status,
+    this.lastSeen,
+    this.isFavorite = false,
+    this.isBlocked = false,
+    this.metadata,
+  });
+  
+  /// 从JSON创建用户模型
+  factory UserModel.fromJson(Map<String, dynamic> json) {
+    return UserModel(
+      id: json['id'],
+      name: json['name'],
+      email: json['email'],
+      phone: json['phone'],
+      avatarUrl: json['avatarUrl'],
+      bio: json['bio'],
+      status: json['status'] != null
+          ? _parseStatus(json['status'])
+          : null,
+      lastSeen: json['lastSeen'] != null
+          ? DateTime.parse(json['lastSeen'])
+          : null,
+      isFavorite: json['isFavorite'] ?? false,
+      isBlocked: json['isBlocked'] ?? false,
+      metadata: json['metadata'],
+    );
+  }
+  
+  /// 转换为JSON
+  Map<String, dynamic> toJson() {
+    return {
+      'id': id,
+      'name': name,
+      'email': email,
+      'phone': phone,
+      'avatarUrl': avatarUrl,
+      'bio': bio,
+      'status': status?.toString().split('.').last,
+      'lastSeen': lastSeen?.toIso8601String(),
+      'isFavorite': isFavorite,
+      'isBlocked': isBlocked,
+      'metadata': metadata,
+    };
+  }
+  
+  /// 创建用户的副本并更新属性
+  UserModel copyWith({
+    String? id,
+    String? name,
+    String? email,
+    String? phone,
+    String? avatarUrl,
+    String? bio,
+    UserStatus? status,
+    DateTime? lastSeen,
+    bool? isFavorite,
+    bool? isBlocked,
+    Map<String, dynamic>? metadata,
+  }) {
+    return UserModel(
+      id: id ?? this.id,
+      name: name ?? this.name,
+      email: email ?? this.email,
+      phone: phone ?? this.phone,
+      avatarUrl: avatarUrl ?? this.avatarUrl,
+      bio: bio ?? this.bio,
+      status: status ?? this.status,
+      lastSeen: lastSeen ?? this.lastSeen,
+      isFavorite: isFavorite ?? this.isFavorite,
+      isBlocked: isBlocked ?? this.isBlocked,
+      metadata: metadata ?? this.metadata,
+    );
+  }
+  
+  @override
+  bool operator ==(Object other) {
+    if (identical(this, other)) return true;
+    
+    return other is UserModel &&
+        other.id == id &&
+        other.name == name &&
+        other.email == email &&
+        other.phone == phone &&
+        other.avatarUrl == avatarUrl &&
+        other.bio == bio &&
+        other.status == status &&
+        other.lastSeen == lastSeen &&
+        other.isFavorite == isFavorite &&
+        other.isBlocked == isBlocked;
+  }
+  
+  @override
+  int get hashCode {
+    return id.hashCode ^
+        name.hashCode ^
+        email.hashCode ^
+        phone.hashCode ^
+        avatarUrl.hashCode ^
+        bio.hashCode ^
+        status.hashCode ^
+        lastSeen.hashCode ^
+        isFavorite.hashCode ^
+        isBlocked.hashCode;
+  }
+}

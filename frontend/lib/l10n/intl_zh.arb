@@ -1,0 +1,51 @@
+{
+  "@@locale": "zh",
+  "appTitle": "聊天应用",
+  "@appTitle": {
+    "description": "应用程序标题"
+  },
+  "login": "登录",
+  "@login": {
+    "description": "登录按钮文本"
+  },
+  "logout": "退出登录",
+  "@logout": {
+    "description": "退出登录按钮文本"
+  },
+  "username": "用户名",
+  "@username": {
+    "description": "用户名标签"
+  },
+  "password": "密码",
+  "@password": {
+    "description": "密码标签"
+  },
+  "send": "发送",
+  "@send": {
+    "description": "发送按钮文本"
+  },
+  "typeMessage": "输入消息...",
+  "@typeMessage": {
+    "description": "消息输入框占位符"
+  },
+  "contacts": "联系人",
+  "@contacts": {
+    "description": "联系人标签"
+  },
+  "chats": "聊天",
+  "@chats": {
+    "description": "聊天标签"
+  },
+  "profile": "个人资料",
+  "@profile": {
+    "description": "个人资料标签"
+  },
+  "settings": "设置",
+  "@settings": {
+    "description": "设置标签"
+  },
+  "error": "发生了一个错误",
+  "@error": {
+    "description": "通用错误消息"
+  }
+}

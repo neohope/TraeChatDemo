@@ -1,0 +1,51 @@
+{
+  "@@locale": "en",
+  "appTitle": "Chat App",
+  "@appTitle": {
+    "description": "Application title"
+  },
+  "login": "Login",
+  "@login": {
+    "description": "Login button text"
+  },
+  "logout": "Logout",
+  "@logout": {
+    "description": "Logout button text"
+  },
+  "username": "Username",
+  "@username": {
+    "description": "Username label"
+  },
+  "password": "Password",
+  "@password": {
+    "description": "Password label"
+  },
+  "send": "Send",
+  "@send": {
+    "description": "Send button text"
+  },
+  "typeMessage": "Type a message...",
+  "@typeMessage": {
+    "description": "Message input placeholder"
+  },
+  "contacts": "Contacts",
+  "@contacts": {
+    "description": "Contacts label"
+  },
+  "chats": "Chats",
+  "@chats": {
+    "description": "Chats label"
+  },
+  "profile": "Profile",
+  "@profile": {
+    "description": "Profile label"
+  },
+  "settings": "Settings",
+  "@settings": {
+    "description": "Settings label"
+  },
+  "error": "An error occurred",
+  "@error": {
+    "description": "Generic error message"
+  }
+}

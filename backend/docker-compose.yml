@@ -1,0 +1,167 @@
+version: '3.8'
+
+services:
+  # 数据库服务
+  postgres:
+    image: postgres:14-alpine
+    container_name: chatapp-postgres
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgres
+      POSTGRES_DB: chatapp
+    ports:
+      - "5432:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    networks:
+      - chatapp-network
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U postgres"]
+      interval: 5s
+      timeout: 5s
+      retries: 5
+
+  # Redis服务
+  redis:
+    image: redis:alpine
+    container_name: chatapp-redis
+    ports:
+      - "6379:6379"
+    volumes:
+      - redis_data:/data
+    networks:
+      - chatapp-network
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 5s
+      timeout: 5s
+      retries: 5
+
+  # 用户服务
+  user-service:
+    build:
+      context: ./user-service
+      dockerfile: Dockerfile
+    container_name: chatapp-user-service
+    depends_on:
+      postgres:
+        condition: service_healthy
+    environment:
+      DB_HOST: postgres
+      REDIS_ADDR: redis:6379
+    ports:
+      - "8081:8081"
+    networks:
+      - chatapp-network
+
+  # 消息服务
+  message-service:
+    build:
+      context: ./message-service
+      dockerfile: Dockerfile
+    container_name: chatapp-message-service
+    depends_on:
+      postgres:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+      user-service:
+        condition: service_started
+    environment:
+      DB_HOST: postgres
+      REDIS_ADDR: redis:6379
+      USER_SVC_HOST: user-service
+    ports:
+      - "8082:8082"
+    networks:
+      - chatapp-network
+
+  # 群组服务
+  group-service:
+    build:
+      context: ./group-service
+      dockerfile: Dockerfile
+    container_name: chatapp-group-service
+    depends_on:
+      postgres:
+        condition: service_healthy
+      user-service:
+        condition: service_started
+    environment:
+      DB_HOST: postgres
+      USER_SVC_HOST: user-service
+    ports:
+      - "8083:8083"
+    networks:
+      - chatapp-network
+
+  # 媒体服务
+  media-service:
+    build:
+      context: ./media-service
+      dockerfile: Dockerfile
+    container_name: chatapp-media-service
+    depends_on:
+      postgres:
+        condition: service_healthy
+    environment:
+      DB_HOST: postgres
+    ports:
+      - "8084:8084"
+    networks:
+      - chatapp-network
+    volumes:
+      - media_data:/app/uploads
+
+  # 通知服务
+  notification-service:
+    build:
+      context: ./notification-service
+      dockerfile: Dockerfile
+    container_name: chatapp-notification-service
+    depends_on:
+      redis:
+        condition: service_healthy
+    environment:
+      REDIS_ADDR: redis:6379
+    ports:
+      - "8085:8085"
+    networks:
+      - chatapp-network
+
+  # API网关
+  api-gateway:
+    build:
+      context: ./api-gateway
+      dockerfile: Dockerfile
+    container_name: chatapp-api-gateway
+    depends_on:
+      - user-service
+      - message-service
+      - group-service
+      - media-service
+      - notification-service
+    environment:
+      USER_SVC_HOST: user-service
+      USER_SVC_PORT: 8081
+      MESSAGE_SVC_HOST: message-service
+      MESSAGE_SVC_PORT: 8082
+      GROUP_SVC_HOST: group-service
+      GROUP_SVC_PORT: 8083
+      MEDIA_SVC_HOST: media-service
+      MEDIA_SVC_PORT: 8084
+      NOTIFY_SVC_HOST: notification-service
+      NOTIFY_SVC_PORT: 8085
+    ports:
+      - "8080:8080"
+    networks:
+      - chatapp-network
+
+networks:
+  chatapp-network:
+    driver: bridge
+
+volumes:
+  postgres_data:
+  redis_data:
+  media_data:
