@@ -5,7 +5,7 @@ import 'package:uuid/uuid.dart';
 import '../../core/network/websocket_client.dart';
 import '../../core/storage/local_storage.dart';
 import '../../core/utils/app_logger.dart';
-import '../../domain/models/conversation_model.dart'; // 导入 MessageType 枚举
+import '../../domain/models/conversation_model.dart' show MessageStatus, MessageType;
 import '../models/api_response.dart';
 import '../models/message.dart';
 import '../services/api_service.dart';

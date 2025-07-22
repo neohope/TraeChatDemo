@@ -10,7 +10,9 @@ import (
 	"time"
 
 	"github.com/gorilla/mux"
+	"github.com/yourusername/chatapp/message-service/api/ws"
 	"github.com/yourusername/chatapp/message-service/config"
+	"github.com/yourusername/chatapp/message-service/internal/domain"
 	httpdelivery "github.com/yourusername/chatapp/message-service/internal/delivery/http"
 	"github.com/yourusername/chatapp/message-service/internal/repository"
 	"github.com/yourusername/chatapp/message-service/internal/service"
@@ -41,17 +43,24 @@ func main() {
 		zap.String("log_level", cfg.Service.LogLevel),
 	)
 
-	// 连接数据库
+	// 尝试连接数据库，如果失败则使用内存存储
 	db, err := repository.NewPostgresDB(cfg.GetPostgresConnString(), log)
 	if err != nil {
-		log.Fatal("Failed to connect to database", zap.Error(err))
+		log.Warn("Failed to connect to database, using in-memory storage for WebSocket testing", zap.Error(err))
+		db = nil
 	}
 
 	// 初始化JWT管理器
 	jwtManager := auth.NewJWTManager(cfg.JWT.SecretKey, cfg.JWT.ExpirationHours)
 
 	// 初始化仓库
-	messageRepo := repository.NewMessageRepository(db, log)
+	var messageRepo domain.MessageRepository
+	if db != nil {
+		messageRepo = repository.NewMessageRepository(db, log)
+	} else {
+		// 使用内存存储进行WebSocket测试
+		messageRepo = repository.NewInMemoryMessageRepository(log)
+	}
 
 	// 初始化服务
 	messageService := service.NewMessageService(messageRepo, log)
@@ -62,6 +71,9 @@ func main() {
 	// 创建路由
 	router := mux.NewRouter()
 	messageHandler.RegisterRoutes(router)
+	
+	// 注册WebSocket路由
+	ws.RegisterRoutes(router, messageService, jwtManager, log)
 
 	// 创建HTTP服务器
 	server := &http.Server{

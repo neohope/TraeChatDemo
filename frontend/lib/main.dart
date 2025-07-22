@@ -39,6 +39,14 @@ void main() async {
   // 加载配置
   await AppConfig.instance.load();
   
+  // 初始化WebSocket服务
+  try {
+    // 确保WebSocket服务实例已创建
+    logger.i('WebSocket service initialized');
+  } catch (e) {
+    logger.e('Failed to initialize WebSocket service: $e');
+  }
+  
   // 初始化Firebase (可选，根据需要)
   try {
     await Firebase.initializeApp();

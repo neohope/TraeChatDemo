@@ -34,6 +34,10 @@ class WebSocketClient {
   WebSocketStatus _status = WebSocketStatus.disconnected;
   WebSocketStatus get status => _status;
   
+  // 用户ID
+  String? _userId;
+  String? get userId => _userId;
+  
   // 重连计时器
   Timer? _reconnectTimer;
   // 心跳计时器
@@ -67,8 +71,9 @@ class WebSocketClient {
     _updateStatus(WebSocketStatus.connecting);
     
     try {
-      // 获取认证令牌
+      // 获取认证令牌和用户ID
       final token = await LocalStorage.getAuthToken();
+      _userId = await LocalStorage.getUserId();
       final wsUrl = '${AppConfig.instance.wsBaseUrl}?token=$token';
       
       _logger.i('正在连接WebSocket: $wsUrl');
@@ -91,7 +96,7 @@ class WebSocketClient {
       _reconnectAttempts = 0;
       _startHeartbeat();
       
-      _logger.i('WebSocket连接成功');
+      _logger.i('WebSocket连接成功，用户ID: $_userId');
       return true;
     } catch (e) {
       _logger.e('WebSocket连接失败: $e');
@@ -116,18 +121,20 @@ class WebSocketClient {
   }
   
   // 发送消息
-  void send(dynamic message) {
+  Future<bool> send(dynamic message) async {
     if (_status != WebSocketStatus.connected) {
       _logger.w('WebSocket未连接，无法发送消息');
-      return;
+      return false;
     }
     
     try {
       final String jsonMessage = message is String ? message : jsonEncode(message);
       _channel!.sink.add(jsonMessage);
       _logger.d('WebSocket发送消息: $jsonMessage');
+      return true;
     } catch (e) {
       _logger.e('WebSocket发送消息失败: $e');
+      return false;
     }
   }
   

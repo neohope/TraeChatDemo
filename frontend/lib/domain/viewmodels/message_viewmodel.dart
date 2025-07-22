@@ -2,18 +2,19 @@ import 'dart:io';
 
 import 'package:flutter/foundation.dart';
 
-import '../../core/network/websocket_client.dart' show WebSocketClient, WebSocketStatus;
+import '../../core/network/websocket_client.dart' show WebSocketStatus;
 import '../../data/models/api_response.dart';
 import '../../data/models/message.dart';
 import '../../data/repositories/message_repository.dart';
+import '../../data/services/websocket_service.dart';
 import '../../domain/models/conversation_model.dart' show MessageStatus, MessageType;
 
 /// 消息视图模型，用于管理消息相关的UI状态和业务逻辑
 class MessageViewModel extends ChangeNotifier {
   // 消息仓库实例
   final _messageRepository = MessageRepository.instance;
-  // WebSocket客户端实例
-  final _webSocketClient = WebSocketClient.instance;
+  // WebSocket服务实例
+  final _webSocketService = WebSocketService.instance;
   
   // 单聊消息映射表，键为用户ID，值为消息列表
   final Map<String, List<Message>> _userMessages = {};
@@ -71,19 +72,26 @@ class MessageViewModel extends ChangeNotifier {
   /// 初始化WebSocket连接
   void _initWebSocket() {
     // 监听消息事件
-    _webSocketClient.messageStream.listen(_handleWebSocketMessage);
+    _webSocketService.messageStream.listen(_handleWebSocketMessage);
+    
+    // 监听连接状态
+    _webSocketService.connectionStatusStream.listen((status) {
+      // 可以在这里处理连接状态变化
+      if (status == WebSocketStatus.disconnected) {
+        // 尝试重新连接
+        _webSocketService.resetConnection();
+      }
+    });
     
     // 连接WebSocket
-    if (_webSocketClient.status != WebSocketStatus.connected) {
-      _webSocketClient.connect();
+    if (_webSocketService.connectionStatus != WebSocketStatus.connected) {
+      _webSocketService.connect();
     }
   }
   
   /// 处理WebSocket消息
-  void _handleWebSocketMessage(dynamic data) {
+  void _handleWebSocketMessage(Message message) {
     try {
-      final message = Message.fromJson(data);
-      
       // 根据消息类型添加到对应的消息列表
       if (message.isGroupMessage && message.groupId != null) {
         final String groupId = message.groupId!;
@@ -298,8 +306,8 @@ class MessageViewModel extends ChangeNotifier {
     
     try {
       final response = _isGroupChat
-          ? await _messageRepository.sendGroupTextMessage(_selectedChatId!, content)
-          : await _messageRepository.sendDirectTextMessage(_selectedChatId!, content);
+          ? await _webSocketService.sendGroupTextMessage(_selectedChatId!, content)
+          : await _webSocketService.sendDirectTextMessage(_selectedChatId!, content);
       
       if (response.success && response.data != null) {
         // 将新消息添加到列表
@@ -342,12 +350,12 @@ class MessageViewModel extends ChangeNotifier {
     
     try {
       final response = _isGroupChat
-          ? await _messageRepository.sendGroupMediaMessage(
+          ? await _webSocketService.sendGroupMediaMessage(
               groupId: _selectedChatId!,
               file: imageFile,
               type: MessageType.image,
             )
-          : await _messageRepository.sendDirectMediaMessage(
+          : await _webSocketService.sendDirectMediaMessage(
               receiverId: _selectedChatId!,
               file: imageFile,
               type: MessageType.image,
@@ -394,12 +402,12 @@ class MessageViewModel extends ChangeNotifier {
     
     try {
       final response = _isGroupChat
-          ? await _messageRepository.sendGroupMediaMessage(
+          ? await _webSocketService.sendGroupMediaMessage(
               groupId: _selectedChatId!,
               file: voiceFile,
               type: MessageType.voice,
             )
-          : await _messageRepository.sendDirectMediaMessage(
+          : await _webSocketService.sendDirectMediaMessage(
               receiverId: _selectedChatId!,
               file: voiceFile,
               type: MessageType.voice,
@@ -446,12 +454,12 @@ class MessageViewModel extends ChangeNotifier {
     
     try {
       final response = _isGroupChat
-          ? await _messageRepository.sendGroupMediaMessage(
+          ? await _webSocketService.sendGroupMediaMessage(
               groupId: _selectedChatId!,
               file: videoFile,
               type: MessageType.video,
             )
-          : await _messageRepository.sendDirectMediaMessage(
+          : await _webSocketService.sendDirectMediaMessage(
               receiverId: _selectedChatId!,
               file: videoFile,
               type: MessageType.video,
@@ -498,12 +506,12 @@ class MessageViewModel extends ChangeNotifier {
     
     try {
       final response = _isGroupChat
-          ? await _messageRepository.sendGroupMediaMessage(
+          ? await _webSocketService.sendGroupMediaMessage(
               groupId: _selectedChatId!,
               file: file,
               type: MessageType.file,
             )
-          : await _messageRepository.sendDirectMediaMessage(
+          : await _webSocketService.sendDirectMediaMessage(
               receiverId: _selectedChatId!,
               file: file,
               type: MessageType.file,
@@ -752,7 +760,7 @@ class MessageViewModel extends ChangeNotifier {
   @override
   void dispose() {
     // 断开WebSocket连接
-    _webSocketClient.disconnect();
+    _webSocketService.disconnect();
     super.dispose();
   }
 }

@@ -263,6 +263,20 @@ class LocalStorage {
     }
   }
   
+  // 获取用户ID
+  static Future<String?> getUserId() async {
+    try {
+      final user = getUserData('current_user');
+      if (user != null && user['id'] != null) {
+        return user['id'].toString();
+      }
+      return null;
+    } catch (e) {
+      _logger.e('获取用户ID失败: $e');
+      return null;
+    }
+  }
+  
   // 清除认证数据
   static Future<void> clearAuthData() async {
     try {
