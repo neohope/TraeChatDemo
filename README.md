@@ -42,12 +42,32 @@ TraeChatDemo 是一个现代化的聊天应用，采用微服务架构设计，�
 - 推送通知
 - 跨平台支持
 
+## 最新更新
+
+### 2024年最新修复和改进
+
+- **代码质量优化**: 修复了 Go 语言中的变量重复声明问题
+  - 修复 `group-service/internal/handler/group_handler.go` 中多个函数的 `err` 变量重复声明
+  - 修复 `media-service/internal/service/media_service.go` 中 `UploadFile` 函数的 `err` 变量重复声明
+- **WebSocket 功能完善**: 增强了实时消息传递能力
+  - 完善 `message-service` 的 WebSocket 连接管理
+  - 添加客户端管理器和消息路由功能
+  - 实现内存存储作为数据库备选方案
+- **前端功能增强**: 优化用户体验
+  - 改进 WebSocket 连接和消息处理逻辑
+  - 添加本地存储功能
+  - 完善消息视图模型和状态管理
+- **项目结构优化**: 完善微服务架构
+  - 更新依赖管理和配置文件
+  - 统一代码风格和错误处理
+
 ## 技术栈
 
 ### 前端
 - Flutter/Dart
 - Provider/Bloc (状态管理)
 - Dio (网络请求)
+- WebSocket (实时通信)
 - Hive/SharedPreferences (本地存储)
 
 ### 后端
