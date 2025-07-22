@@ -44,7 +44,7 @@ TraeChatDemo 是一个现代化的聊天应用，采用微服务架构设计，�
 
 ## 最新更新
 
-### 2024年最新修复和改进
+### 2025年最新修复和改进
 
 - **代码质量优化**: 修复了 Go 语言中的变量重复声明问题
   - 修复 `group-service/internal/handler/group_handler.go` 中多个函数的 `err` 变量重复声明
