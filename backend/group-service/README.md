@@ -178,8 +178,8 @@ GET /api/v1/health
   "owner_id": "550e8400-e29b-41d4-a716-446655440000",
   "max_members": 100,
   "is_private": false,
-  "created_at": "2024-01-01T00:00:00Z",
-  "updated_at": "2024-01-01T00:00:00Z"
+  "created_at": "2025-07-01T00:00:00Z",
+   "updated_at": "2025-07-01T00:00:00Z"
 }
 ```
 
@@ -191,7 +191,7 @@ GET /api/v1/health
   "user_id": "550e8400-e29b-41d4-a716-446655440000",
   "role": "owner",
   "status": "active",
-  "joined_at": "2024-01-01T00:00:00Z",
+  "joined_at": "2025-07-01T00:00:00Z",
   "nickname": "群主",
   "username": "admin",
   "user_avatar_url": "https://example.com/user-avatar.jpg"
@@ -207,8 +207,8 @@ GET /api/v1/health
   "invitee_id": "550e8400-e29b-41d4-a716-446655440004",
   "status": "pending",
   "message": "欢迎加入我们的群组！",
-  "created_at": "2024-01-01T00:00:00Z",
-  "expires_at": "2024-01-08T00:00:00Z"
+  "created_at": "2025-07-01T00:00:00Z",
+  "expires_at": "2025-07-08T00:00:00Z"
 }
 ```
 
