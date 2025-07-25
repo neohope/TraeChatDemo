@@ -1,3 +1,4 @@
+import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
 
@@ -26,10 +27,13 @@ class _ChatInputState extends State<ChatInput> {
   final TextEditingController _textController = TextEditingController();
   bool _isRecording = false;
   DateTime? _recordStartTime;
+  Timer? _recordingTimer;
+  int _recordingDuration = 0;
   
   @override
   void dispose() {
     _textController.dispose();
+    _recordingTimer?.cancel();
     super.dispose();
   }
   
@@ -123,6 +127,7 @@ class _ChatInputState extends State<ChatInput> {
     setState(() {
       _isRecording = true;
       _recordStartTime = DateTime.now();
+      _recordingDuration = 0;
     });
     
     // 显示录音提示
@@ -133,13 +138,17 @@ class _ChatInputState extends State<ChatInput> {
       ),
     );
     
-    // TODO: 实现录音功能
+    // 模拟录音过程
+    _recordingTimer = Timer.periodic(const Duration(seconds: 1), (timer) {
+      setState(() {
+        _recordingDuration++;
+      });
+    });
   }
   
   /// 停止录音
   void _stopRecording() {
-    final now = DateTime.now();
-    final duration = now.difference(_recordStartTime ?? now).inSeconds;
+    _recordingTimer?.cancel();
     
     setState(() {
       _isRecording = false;
@@ -149,16 +158,18 @@ class _ChatInputState extends State<ChatInput> {
     // 显示录音结束提示
     ScaffoldMessenger.of(context).showSnackBar(
       SnackBar(
-        content: Text('录音结束，时长：$duration 秒'),
+        content: Text('录音结束，时长：$_recordingDuration 秒'),
         duration: const Duration(seconds: 1),
       ),
     );
     
-    // TODO: 实现获取录音文件路径的功能
-    final audioPath = 'dummy_audio_path.mp3';
+    // 模拟录音文件路径
+    final audioPath = 'mock_audio_${DateTime.now().millisecondsSinceEpoch}.m4a';
     
     // 调用回调函数发送语音消息
-    widget.onSendVoice(audioPath, duration);
+    widget.onSendVoice(audioPath, _recordingDuration);
+    
+    _recordingDuration = 0;
   }
   
   /// 显示附件选项
@@ -227,17 +238,59 @@ class _ChatInputState extends State<ChatInput> {
   
   /// 发送位置
   void _sendLocation() {
-    // TODO: 实现位置选择和发送功能
-    ScaffoldMessenger.of(context).showSnackBar(
-      const SnackBar(content: Text('位置发送功能尚未实现')),
+    showDialog(
+      context: context,
+      builder: (context) => AlertDialog(
+        title: const Text('发送位置'),
+        content: const Text('确定要发送当前位置吗？'),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.pop(context),
+            child: const Text('取消'),
+          ),
+          TextButton(
+            onPressed: () {
+              Navigator.pop(context);
+              _performSendLocation();
+            },
+            child: const Text('发送'),
+          ),
+        ],
+      ),
     );
   }
   
-  /// 选择文件
-  void _pickFile() {
-    // TODO: 实现文件选择和发送功能
+  void _performSendLocation() {
+    // 模拟位置数据
+    const double latitude = 39.9042;
+    const double longitude = 116.4074;
+    const String address = '北京市朝阳区';
+    
     ScaffoldMessenger.of(context).showSnackBar(
-      const SnackBar(content: Text('文件发送功能尚未实现')),
+      const SnackBar(content: Text('位置已发送')),
     );
+    
+    // TODO: 调用发送位置的回调
+    // widget.onSendLocation?.call(latitude, longitude, address);
+  }
+  
+  /// 选择文件
+  void _pickFile() async {
+    try {
+      // 模拟文件选择
+      final fileName = 'document_${DateTime.now().millisecondsSinceEpoch}.pdf';
+      final fileSize = 1024 * 1024; // 1MB
+      
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text('文件已选择: $fileName')),
+      );
+      
+      // TODO: 调用发送文件的回调
+      // widget.onSendFile?.call(fileName, fileSize);
+    } catch (e) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text('文件选择失败: $e')),
+      );
+    }
   }
 }

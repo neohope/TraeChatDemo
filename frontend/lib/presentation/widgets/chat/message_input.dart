@@ -355,6 +355,111 @@ class _MessageInputState extends State<MessageInput> {
     );
   }
   
+  void _insertEmoji(String emoji) {
+    final text = _textController.text;
+    final selection = _textController.selection;
+    final newText = text.replaceRange(
+      selection.start,
+      selection.end,
+      emoji,
+    );
+    _textController.text = newText;
+    _textController.selection = TextSelection.collapsed(
+      offset: selection.start + emoji.length,
+    );
+  }
+
+  static const List<String> _emojis = [
+    '😀', '😃', '😄', '😁', '😆', '😅', '😂', '🤣',
+    '😊', '😇', '🙂', '🙃', '😉', '😌', '😍', '🥰',
+    '😘', '😗', '😙', '😚', '😋', '😛', '😝', '😜',
+    '🤪', '🤨', '🧐', '🤓', '😎', '🤩', '🥳', '😏',
+    '😒', '😞', '😔', '😟', '😕', '🙁', '☹️', '😣',
+    '😖', '😫', '😩', '🥺', '😢', '😭', '😤', '😠',
+    '😡', '🤬', '🤯', '😳', '🥵', '🥶', '😱', '😨',
+    '😰', '😥', '😓', '🤗', '🤔', '🤭', '🤫', '🤥',
+    '😶', '😐', '😑', '😬', '🙄', '😯', '😦', '😧',
+    '😮', '😲', '🥱', '😴', '🤤', '😪', '😵', '🤐',
+    '🥴', '🤢', '🤮', '🤧', '😷', '🤒', '🤕', '🤑',
+    '🤠', '😈', '👿', '👹', '👺', '🤡', '💩', '👻',
+    '💀', '☠️', '👽', '👾', '🤖', '🎃', '😺', '😸',
+    '😹', '😻', '😼', '😽', '🙀', '😿', '😾', '❤️',
+    '🧡', '💛', '💚', '💙', '💜', '🖤', '🤍', '🤎',
+    '💔', '❣️', '💕', '💞', '💓', '💗', '💖', '💘',
+    '💝', '💟', '👍', '👎', '👌', '🤌', '🤏', '✌️',
+    '🤞', '🤟', '🤘', '🤙', '👈', '👉', '👆', '🖕',
+    '👇', '☝️', '👋', '🤚', '🖐️', '✋', '🖖', '👏',
+    '🙌', '🤝', '👐', '🤲', '🙏', '✍️', '💅', '🤳',
+  ];
+
+  Widget _buildEmojiPicker() {
+    return Container(
+      height: 250,
+      color: Theme.of(context).cardColor,
+      child: Column(
+        children: [
+          Container(
+            padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+            child: Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: [
+                Text(
+                  '选择表情',
+                  style: TextStyle(
+                    fontSize: 16,
+                    fontWeight: FontWeight.bold,
+                    color: Theme.of(context).textTheme.titleMedium?.color,
+                  ),
+                ),
+                IconButton(
+                  onPressed: () {
+                    setState(() {
+                      _showEmojiPicker = false;
+                    });
+                  },
+                  icon: const Icon(Icons.close),
+                ),
+              ],
+            ),
+          ),
+          Expanded(
+            child: GridView.builder(
+              padding: const EdgeInsets.all(16),
+              gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
+                crossAxisCount: 8,
+                crossAxisSpacing: 8,
+                mainAxisSpacing: 8,
+              ),
+              itemCount: _emojis.length,
+              itemBuilder: (context, index) {
+                return GestureDetector(
+                  onTap: () {
+                    _insertEmoji(_emojis[index]);
+                    setState(() {
+                      _showEmojiPicker = false;
+                    });
+                  },
+                  child: Container(
+                    decoration: BoxDecoration(
+                      borderRadius: BorderRadius.circular(8),
+                      color: Theme.of(context).scaffoldBackgroundColor,
+                    ),
+                    child: Center(
+                      child: Text(
+                        _emojis[index],
+                        style: const TextStyle(fontSize: 24),
+                      ),
+                    ),
+                  ),
+                );
+              },
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     return Column(
@@ -414,22 +519,22 @@ class _MessageInputState extends State<MessageInput> {
                         ),
                       ),
                       IconButton(
-                        icon: Icon(
-                          _showEmojiPicker ? Icons.keyboard : Icons.emoji_emotions_outlined,
-                          color: Theme.of(context).primaryColor,
-                        ),
-                        onPressed: () {
-                          setState(() {
-                            _showEmojiPicker = !_showEmojiPicker;
-                            _showAttachmentOptions = false;
-                            if (_showEmojiPicker) {
-                              _focusNode.unfocus();
-                            } else {
-                              _focusNode.requestFocus();
-                            }
-                          });
-                        },
-                      ),
+                icon: Icon(
+                  _showEmojiPicker ? Icons.keyboard : Icons.emoji_emotions_outlined,
+                  color: Theme.of(context).primaryColor,
+                ),
+                onPressed: () {
+                  setState(() {
+                    _showEmojiPicker = !_showEmojiPicker;
+                    _showAttachmentOptions = false;
+                    if (_showEmojiPicker) {
+                      _focusNode.unfocus();
+                    } else {
+                      _focusNode.requestFocus();
+                    }
+                  });
+                },
+              ),
                     ],
                   ),
                 ),
@@ -472,15 +577,7 @@ class _MessageInputState extends State<MessageInput> {
         ),
         if (_isRecording) _buildRecordingView(),
         if (_showAttachmentOptions && !_isRecording) _buildAttachmentOptions(),
-        // TODO: 实现表情选择器
-        if (_showEmojiPicker && !_isRecording)
-          Container(
-            height: 200,
-            color: Theme.of(context).cardColor,
-            child: const Center(
-              child: Text('表情选择器暂未实现'),
-            ),
-          ),
+        if (_showEmojiPicker && !_isRecording) _buildEmojiPicker(),
       ],
     );
   }

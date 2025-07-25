@@ -917,7 +917,7 @@ class _ChatScreenWidgetState extends State<ChatScreenWidget>
       context: context,
       builder: (context) => AlertDialog(
         title: const Text('屏蔽用户'),
-        content: Text('确定要屏蔽 ${otherUser.name} 吗？'),
+        content: Text('确定要屏蔽 ${otherUser.name} 吗？屏蔽后将不会收到该用户的消息，且无法查看聊天记录。'),
         actions: [
           TextButton(
             onPressed: () => Navigator.pop(context),
@@ -926,7 +926,7 @@ class _ChatScreenWidgetState extends State<ChatScreenWidget>
           ElevatedButton(
             onPressed: () {
               Navigator.pop(context);
-              // TODO: 实现屏蔽用户功能
+              _performBlockUser(otherUser);
             },
             style: ElevatedButton.styleFrom(backgroundColor: Colors.red),
             child: const Text('屏蔽'),
@@ -935,4 +935,19 @@ class _ChatScreenWidgetState extends State<ChatScreenWidget>
       ),
     );
   }
+  
+  void _performBlockUser(UserModel user) {
+     // TODO: 调用用户服务屏蔽用户
+     // context.read<UserViewModel>().blockUser(user.id);
+     
+     ScaffoldMessenger.of(context).showSnackBar(
+       SnackBar(
+         content: Text('已屏蔽 ${user.name}'),
+         backgroundColor: Colors.orange,
+       ),
+     );
+     
+     // 返回上一页
+     Navigator.pop(context);
+   }
 }

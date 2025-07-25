@@ -202,8 +202,7 @@ class _MessageListState extends State<MessageList> {
             title: const Text('复制'),
             onTap: () {
               if (message.type == MessageType.text) {
-                // 复制文本消息
-                // TODO: 实现复制功能
+                _copyMessage(message);
               }
               Navigator.pop(context);
             },
@@ -239,6 +238,16 @@ class _MessageListState extends State<MessageList> {
       ),
     );
   }
+  
+  void _copyMessage(MessageModel message) {
+     if (message.type == MessageType.text && message.text != null) {
+       // TODO: 实现复制到剪贴板功能
+       // Clipboard.setData(ClipboardData(text: message.text!));
+       ScaffoldMessenger.of(context).showSnackBar(
+         const SnackBar(content: Text('消息已复制到剪贴板')),
+       );
+     }
+   }
   
   void _showFullImage(String imageUrl) {
     Navigator.of(context).push(

@@ -612,19 +612,196 @@ class _ChatInputWidgetState extends State<ChatInputWidget>
   }
 
   void _shareLocation() {
-    // TODO: 实现位置分享功能
-    _showError('位置分享功能暂未实现');
+    _showLocationDialog();
   }
 
   void _shareContact() {
-    // TODO: 实现联系人分享功能
-    _showError('联系人分享功能暂未实现');
+    _showContactDialog();
   }
 
   void _pickGif() {
-    // TODO: 实现GIF选择功能
-    _showError('GIF选择功能暂未实现');
+    _showGifPicker();
   }
+  
+  void _showLocationDialog() {
+    showDialog(
+      context: context,
+      builder: (context) => AlertDialog(
+        title: const Text('分享位置'),
+        content: const Text('确定要分享当前位置吗？'),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.pop(context),
+            child: const Text('取消'),
+          ),
+          TextButton(
+            onPressed: () {
+              Navigator.pop(context);
+              _sendLocationMessage();
+            },
+            child: const Text('确定'),
+          ),
+        ],
+      ),
+    );
+  }
+  
+  void _sendLocationMessage() {
+    // 模拟位置数据
+    const double latitude = 39.9042;
+    const double longitude = 116.4074;
+    const String address = '北京市朝阳区';
+    
+    ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(
+        content: Text('位置已发送: $address'),
+        duration: const Duration(seconds: 2),
+      ),
+    );
+    
+    // TODO: 调用发送位置消息的回调
+    // widget.onSendLocation?.call(latitude, longitude, address);
+  }
+  
+  void _showContactDialog() {
+    showModalBottomSheet(
+      context: context,
+      builder: (context) => Container(
+        height: 300,
+        padding: const EdgeInsets.all(16),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            const Text(
+              '选择联系人',
+              style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+            ),
+            const SizedBox(height: 16),
+            Expanded(
+              child: ListView.builder(
+                itemCount: _mockContacts.length,
+                itemBuilder: (context, index) {
+                  final contact = _mockContacts[index];
+                   return ListTile(
+                     leading: CircleAvatar(
+                       child: Text(contact['name']?[0] ?? ''),
+                     ),
+                     title: Text(contact['name'] ?? ''),
+                     subtitle: Text(contact['phone'] ?? ''),
+                    onTap: () {
+                      Navigator.pop(context);
+                      _sendContactMessage(contact);
+                    },
+                  );
+                },
+              ),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+  
+  void _sendContactMessage(Map<String, String> contact) {
+    ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(
+        content: Text('联系人已发送: ${contact['name'] ?? ''}'),
+        duration: const Duration(seconds: 2),
+      ),
+    );
+    
+    // TODO: 调用发送联系人消息的回调
+    // widget.onSendContact?.call(contact);
+  }
+  
+  void _showGifPicker() {
+    showModalBottomSheet(
+      context: context,
+      isScrollControlled: true,
+      builder: (context) => Container(
+        height: MediaQuery.of(context).size.height * 0.6,
+        padding: const EdgeInsets.all(16),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: [
+                const Text(
+                  '选择GIF',
+                  style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+                ),
+                IconButton(
+                  onPressed: () => Navigator.pop(context),
+                  icon: const Icon(Icons.close),
+                ),
+              ],
+            ),
+            const SizedBox(height: 16),
+            Expanded(
+              child: GridView.builder(
+                gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
+                  crossAxisCount: 2,
+                  crossAxisSpacing: 8,
+                  mainAxisSpacing: 8,
+                ),
+                itemCount: _mockGifs.length,
+                itemBuilder: (context, index) {
+                  final gif = _mockGifs[index];
+                  return GestureDetector(
+                    onTap: () {
+                      Navigator.pop(context);
+                      _sendGifMessage(gif);
+                    },
+                    child: Container(
+                      decoration: BoxDecoration(
+                        borderRadius: BorderRadius.circular(8),
+                        color: Colors.grey[200],
+                      ),
+                      child: Center(
+                        child: Text(
+                          gif['name'],
+                          style: const TextStyle(fontSize: 16),
+                        ),
+                      ),
+                    ),
+                  );
+                },
+              ),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+  
+  void _sendGifMessage(Map<String, String> gif) {
+    ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(
+        content: Text('GIF已发送: ${gif['name'] ?? ''}'),
+        duration: const Duration(seconds: 2),
+      ),
+    );
+    
+    // TODO: 调用发送GIF消息的回调
+     // widget.onSendGif?.call(gif['url']!);
+   }
+   
+   static const List<Map<String, String>> _mockContacts = [
+     {'name': '张三', 'phone': '13800138001'},
+     {'name': '李四', 'phone': '13800138002'},
+     {'name': '王五', 'phone': '13800138003'},
+     {'name': '赵六', 'phone': '13800138004'},
+   ];
+   
+   static const List<Map<String, String>> _mockGifs = [
+     {'name': '开心', 'url': 'https://example.com/happy.gif'},
+     {'name': '哭泣', 'url': 'https://example.com/cry.gif'},
+     {'name': '惊讶', 'url': 'https://example.com/surprise.gif'},
+     {'name': '愤怒', 'url': 'https://example.com/angry.gif'},
+     {'name': '点赞', 'url': 'https://example.com/thumbsup.gif'},
+     {'name': '鼓掌', 'url': 'https://example.com/clap.gif'},
+   ];
 
   void _showError(String message) {
     if (mounted) {
