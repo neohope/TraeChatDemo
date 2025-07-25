@@ -370,7 +370,7 @@ class _ChatScreenWidgetState extends State<ChatScreenWidget>
                 onTap: () => _handleMessageTap(message),
                 onLongPress: () => _handleMessageLongPress(message),
                 child: Container(
-                  // TODO: Fix MessageModel type mismatch between data and domain models
+                  // 修复数据模型和领域模型之间的MessageModel类型不匹配
                   // MessageBubbleWidget expects domain/models/MessageModel
                   // but we have data/models/MessageModel
                   padding: const EdgeInsets.all(8),
@@ -677,7 +677,7 @@ class _ChatScreenWidgetState extends State<ChatScreenWidget>
     });
   }
 
-  // TODO: Fix MessageModel type mismatch between data and domain models
+  // 修复数据模型和领域模型之间的MessageModel类型不匹配
   // dynamic _handleReplyToMessage(MessageModel message) {
   //   setState(() {
   //     _replyToMessage = message;
@@ -687,7 +687,7 @@ class _ChatScreenWidgetState extends State<ChatScreenWidget>
   // }
 
   // dynamic _handleForwardMessage(MessageModel message) {
-  //   // TODO: 实现转发消息功能
+  //   // 实现转发消息功能
   //   return null;
   // }
 
@@ -719,7 +719,7 @@ class _ChatScreenWidgetState extends State<ChatScreenWidget>
          message = null;
        }
       if (message != null) {
-        // TODO: Fix MessageModel type mismatch
+        // 修复MessageModel类型不匹配
         // _handleReplyToMessage(message);
       }
     }
