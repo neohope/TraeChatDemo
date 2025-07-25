@@ -11,12 +11,16 @@ class ChatInput extends StatefulWidget {
   final Function(String) onSendText;
   final Function(String) onSendImage;
   final Function(String, int) onSendVoice;
+  final Function(Map<String, dynamic>)? onSendLocation;
+  final Function(Map<String, dynamic>)? onSendFile;
   
   const ChatInput({
     Key? key,
     required this.onSendText,
     required this.onSendImage,
     required this.onSendVoice,
+    this.onSendLocation,
+    this.onSendFile,
   }) : super(key: key);
 
   @override
@@ -26,6 +30,7 @@ class ChatInput extends StatefulWidget {
 class _ChatInputState extends State<ChatInput> {
   final TextEditingController _textController = TextEditingController();
   bool _isRecording = false;
+  // ignore: unused_field
   DateTime? _recordStartTime;
   Timer? _recordingTimer;
   int _recordingDuration = 0;
@@ -262,16 +267,25 @@ class _ChatInputState extends State<ChatInput> {
   
   void _performSendLocation() {
     // 模拟位置数据
+    // ignore: unused_local_variable
     const double latitude = 39.9042;
+    // ignore: unused_local_variable
     const double longitude = 116.4074;
+    // ignore: unused_local_variable
     const String address = '北京市朝阳区';
+    
+    // 调用发送位置的回调
+    if (widget.onSendLocation != null) {
+      widget.onSendLocation!({
+        'latitude': latitude,
+        'longitude': longitude,
+        'address': address,
+      });
+    }
     
     ScaffoldMessenger.of(context).showSnackBar(
       const SnackBar(content: Text('位置已发送')),
     );
-    
-    // TODO: 调用发送位置的回调
-    // widget.onSendLocation?.call(latitude, longitude, address);
   }
   
   /// 选择文件
@@ -281,12 +295,19 @@ class _ChatInputState extends State<ChatInput> {
       final fileName = 'document_${DateTime.now().millisecondsSinceEpoch}.pdf';
       final fileSize = 1024 * 1024; // 1MB
       
+      // 调用发送文件的回调
+      if (widget.onSendFile != null) {
+        widget.onSendFile!({
+          'name': fileName,
+          'path': fileName,
+          'size': fileSize,
+          'extension': 'pdf',
+        });
+      }
+      
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(content: Text('文件已选择: $fileName')),
       );
-      
-      // TODO: 调用发送文件的回调
-      // widget.onSendFile?.call(fileName, fileSize);
     } catch (e) {
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(content: Text('文件选择失败: $e')),

@@ -196,6 +196,7 @@ class _MessageBubbleWidgetState extends State<MessageBubbleWidget>
     );
   }
 
+  // ignore: unused_element
   Widget _buildReplyPreview() {
     return Container(
       margin: const EdgeInsets.only(left: 12, right: 12, top: 8),

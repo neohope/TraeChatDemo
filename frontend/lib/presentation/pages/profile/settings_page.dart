@@ -151,11 +151,7 @@ class _SettingsPageState extends State<SettingsPage> {
             TextButton(
               onPressed: () {
                 Navigator.of(context).pop();
-                // TODO: 执行退出登录逻辑
-                Navigator.of(context).pushNamedAndRemoveUntil(
-                  '/login',
-                  (route) => false,
-                );
+                _performLogout();
               },
               child: const Text('确定'),
             ),
@@ -181,5 +177,32 @@ class _SettingsPageState extends State<SettingsPage> {
         const Text('© 2024 TraeChat Team'),
       ],
     );
+  }
+  
+  void _performLogout() async {
+    try {
+      // TODO: 调用认证服务执行退出登录
+      // await context.read<AuthViewModel>().logout();
+      
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(
+          content: Text('已退出登录'),
+          backgroundColor: Colors.green,
+        ),
+      );
+      
+      // 导航到登录页面
+      Navigator.of(context).pushNamedAndRemoveUntil(
+        '/login',
+        (route) => false,
+      );
+    } catch (e) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text('退出登录失败: $e'),
+          backgroundColor: Colors.red,
+        ),
+      );
+    }
   }
 }

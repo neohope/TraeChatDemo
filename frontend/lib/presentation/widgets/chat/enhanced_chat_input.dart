@@ -13,6 +13,8 @@ class EnhancedChatInput extends StatefulWidget {
   final Function(String, MessageModel) onSendReply;
   final Function(String) onSendImage;
   final Function(String, int) onSendVoice;
+  final Function(Map<String, dynamic>)? onSendFile;
+  final Function(Map<String, dynamic>)? onSendLocation;
   final MessageModel? replyToMessage;
   final VoidCallback? onCancelReply;
   final String? placeholder;
@@ -24,6 +26,8 @@ class EnhancedChatInput extends StatefulWidget {
     required this.onSendReply,
     required this.onSendImage,
     required this.onSendVoice,
+    this.onSendFile,
+    this.onSendLocation,
     this.replyToMessage,
     this.onCancelReply,
     this.placeholder,
@@ -375,12 +379,20 @@ class _EnhancedChatInputState extends State<EnhancedChatInput> {
       
       if (result != null && result.files.single.path != null) {
         final file = result.files.single;
-        // 这里可以调用发送文件的回调
+        
+        // 调用发送文件的回调
+        if (widget.onSendFile != null) {
+          widget.onSendFile!({
+            'name': file.name,
+            'path': file.path!,
+            'size': file.size,
+            'extension': file.extension ?? '',
+          });
+        }
+        
         ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text('已选择文件: ${file.name}')),
+          SnackBar(content: Text('文件已发送: ${file.name}')),
         );
-        // TODO: 添加发送文件的回调
-        // widget.onSendFile(file.path!, file.name, file.extension ?? '');
       }
     } catch (e) {
       ScaffoldMessenger.of(context).showSnackBar(
@@ -406,14 +418,20 @@ class _EnhancedChatInputState extends State<EnhancedChatInput> {
     const double mockLongitude = 116.4074;
     const String mockAddress = '北京市朝阳区';
     
+    // 调用发送位置的回调
+    if (widget.onSendLocation != null) {
+      widget.onSendLocation!({
+        'latitude': mockLatitude,
+        'longitude': mockLongitude,
+        'address': mockAddress,
+      });
+    }
+    
     ScaffoldMessenger.of(context).showSnackBar(
       SnackBar(
-        content: Text('位置: $mockAddress ($mockLatitude, $mockLongitude)'),
+        content: Text('位置已分享: $mockAddress'),
         duration: const Duration(seconds: 2),
       ),
     );
-    
-    // TODO: 添加发送位置的回调
-    // widget.onSendLocation(mockLatitude, mockLongitude, mockAddress);
   }
 }

@@ -39,17 +39,157 @@ class _GroupChatPageState extends State<GroupChatPage> {
     _messageController.clear();
   }
 
+  void _showGroupInfo() {
+    showModalBottomSheet(
+      context: context,
+      isScrollControlled: true,
+      builder: (context) => Container(
+        height: MediaQuery.of(context).size.height * 0.8,
+        padding: const EdgeInsets.all(16),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: [
+                const Text(
+                  '群组信息',
+                  style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
+                ),
+                IconButton(
+                  onPressed: () => Navigator.pop(context),
+                  icon: const Icon(Icons.close),
+                ),
+              ],
+            ),
+            const SizedBox(height: 16),
+            // 群组头像和名称
+            Row(
+              children: [
+                CircleAvatar(
+                  radius: 30,
+                  child: const Icon(Icons.group, size: 30),
+                ),
+                const SizedBox(width: 16),
+                Expanded(
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Text(
+                        widget.groupName,
+                        style: const TextStyle(
+                          fontSize: 18,
+                          fontWeight: FontWeight.bold,
+                        ),
+                      ),
+                      Text(
+                        '群组ID: ${widget.groupId}',
+                        style: TextStyle(
+                          color: Colors.grey[600],
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+              ],
+            ),
+            const SizedBox(height: 24),
+            // 群组描述
+            const Text(
+              '群组描述',
+              style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
+            ),
+            const SizedBox(height: 8),
+            Text(
+              '这是一个群聊',
+              style: TextStyle(color: Colors.grey[700]),
+            ),
+            const SizedBox(height: 24),
+            // 成员列表
+            const Text(
+              '群组成员',
+              style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
+            ),
+            const SizedBox(height: 8),
+            Expanded(
+              child: ListView.builder(
+                itemCount: 3,
+                itemBuilder: (context, index) {
+                  return ListTile(
+                    leading: CircleAvatar(
+                      child: Text('${index + 1}'),
+                    ),
+                    title: Text('用户 ${index + 1}'),
+                    subtitle: const Text('在线'),
+                    trailing: index == 0
+                        ? const Icon(Icons.star, color: Colors.orange)
+                        : null,
+                  );
+                },
+              ),
+            ),
+            // 操作按钮
+            Row(
+              children: [
+                Expanded(
+                  child: ElevatedButton.icon(
+                    onPressed: () {
+                      Navigator.pop(context);
+                      // TODO: 实现邀请成员功能
+                      ScaffoldMessenger.of(context).showSnackBar(
+                        const SnackBar(content: Text('邀请成员功能尚未实现')),
+                      );
+                    },
+                    icon: const Icon(Icons.person_add),
+                    label: const Text('邀请成员'),
+                  ),
+                ),
+                const SizedBox(width: 16),
+                Expanded(
+                  child: OutlinedButton.icon(
+                    onPressed: () {
+                      Navigator.pop(context);
+                      // TODO: 实现退出群组功能
+                      ScaffoldMessenger.of(context).showSnackBar(
+                        const SnackBar(content: Text('退出群组功能尚未实现')),
+                      );
+                    },
+                    icon: const Icon(Icons.exit_to_app, color: Colors.red),
+                    label: const Text('退出群组', style: TextStyle(color: Colors.red)),
+                  ),
+                ),
+              ],
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
         title: Text(widget.groupName),
         actions: [
-          IconButton(
-            icon: const Icon(Icons.info_outline),
-            onPressed: () {
-              // TODO: 显示群组信息
+          PopupMenuButton<String>(
+            onSelected: (value) {
+              switch (value) {
+                case 'info':
+                  _showGroupInfo();
+                  break;
+              }
             },
+            itemBuilder: (context) => [
+              PopupMenuItem(
+                value: 'info',
+                child: ListTile(
+                  leading: const Icon(Icons.info),
+                  title: const Text('群组信息'),
+                  contentPadding: EdgeInsets.zero,
+                ),
+              ),
+            ],
           ),
         ],
       ),

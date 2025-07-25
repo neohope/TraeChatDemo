@@ -354,8 +354,11 @@ class _ChatScreenWidgetState extends State<ChatScreenWidget>
           
           final message = messages[messages.length - 1 - index];
           final isFromCurrentUser = _isFromCurrentUser(message);
+          // ignore: unused_local_variable
           final sender = _getSender(message);
+          // ignore: unused_local_variable
           final showAvatar = _shouldShowAvatar(messages, index, isFromCurrentUser);
+          // ignore: unused_local_variable
           final showTimestamp = _shouldShowTimestamp(messages, index);
           
           return Column(

@@ -599,19 +599,19 @@ class MessageViewModel extends ChangeNotifier {
       }
       
       // 创建编辑后的消息
-      final editedMessage = message.copyWith(
-        text: newText,
-        isEdited: true,
-      );
-      
-      // 先更新本地消息
-      _messages[messageIndex] = editedMessage;
-      notifyListeners();
-      
-      // TODO: 调用仓库层编辑消息API
-      // final result = await _messageRepository.editMessage(messageId, newText);
-      
-      return Result.success(editedMessage);
+       final editedMessage = message.copyWith(
+         text: newText,
+         isEdited: true,
+       );
+       
+       // 先更新本地消息
+       _messages[messageIndex] = editedMessage;
+       notifyListeners();
+       
+       // TODO: 调用仓库层编辑消息API
+       // await _messageRepository.editMessage(messageId, newText);
+       
+       return Result.success(editedMessage);
     } catch (e) {
       return Result.error(e.toString());
     }

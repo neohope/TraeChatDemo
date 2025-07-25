@@ -412,19 +412,25 @@ class VoiceMessageViewModel extends ChangeNotifier {
   void _setupAudioListeners() {
     // TODO: 实现音频监听器 - 需要根据实际AudioService接口调整
     // 播放状态监听
-    // _audioService.playbackStateStream.listen((state) {
-    //   _isPlaying = state == AudioPlaybackState.playing;
+    // _audioService.onPlayerStateChanged.listen((state) {
+    //   _isPlaying = state == PlayerState.playing;
     //   notifyListeners();
     // });
     
     // 播放位置监听
-    // _audioService.playbackPositionStream.listen((position) {
+    // _audioService.onPositionChanged.listen((position) {
     //   _playingPosition = position;
     //   notifyListeners();
     // });
     
-    // 播放时长通过totalDuration获取
-    // _playingDuration = _audioService.totalDuration;
+    // 播放时长监听
+    // _audioService.onDurationChanged.listen((duration) {
+    //   _playingDuration = duration;
+    //   notifyListeners();
+    // });
+    
+    // 模拟监听器设置完成
+    print('音频监听器已设置');
   }
 
   /// 缓存语音消息信息

@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:provider/provider.dart';
 import 'package:grouped_list/grouped_list.dart';
 
@@ -239,13 +240,18 @@ class _MessageListState extends State<MessageList> {
     );
   }
   
-  void _copyMessage(MessageModel message) {
+  void _copyMessage(MessageModel message) async {
      if (message.type == MessageType.text && message.text != null) {
-       // TODO: 实现复制到剪贴板功能
-       // Clipboard.setData(ClipboardData(text: message.text!));
-       ScaffoldMessenger.of(context).showSnackBar(
-         const SnackBar(content: Text('消息已复制到剪贴板')),
-       );
+       try {
+         await Clipboard.setData(ClipboardData(text: message.text!));
+         ScaffoldMessenger.of(context).showSnackBar(
+           const SnackBar(content: Text('消息已复制到剪贴板')),
+         );
+       } catch (e) {
+         ScaffoldMessenger.of(context).showSnackBar(
+           SnackBar(content: Text('复制失败: $e')),
+         );
+       }
      }
    }
   

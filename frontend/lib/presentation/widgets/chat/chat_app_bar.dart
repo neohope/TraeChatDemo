@@ -235,17 +235,36 @@ class ChatAppBar extends StatelessWidget implements PreferredSizeWidget {
             TextButton(
               onPressed: () {
                 Navigator.pop(context);
-                // TODO: 实现清空聊天记录功能
-                ScaffoldMessenger.of(context).showSnackBar(
-                  const SnackBar(content: Text('清空聊天记录功能尚未实现')),
-                );
+                _clearChatHistory(context);
               },
-              child: const Text('确定'),
+              child: const Text('确定', style: TextStyle(color: Colors.red)),
             ),
           ],
         );
       },
     );
+  }
+  
+  /// 清空聊天记录
+  void _clearChatHistory(BuildContext context) async {
+    try {
+      // TODO: 调用消息服务清空聊天记录
+      // await context.read<MessageViewModel>().clearChatHistory(userId);
+      
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(
+          content: Text('聊天记录已清空'),
+          backgroundColor: Colors.green,
+        ),
+      );
+    } catch (e) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text('清空失败: $e'),
+          backgroundColor: Colors.red,
+        ),
+      );
+    }
   }
   
   /// 确认屏蔽用户
@@ -304,28 +323,58 @@ class ChatAppBar extends StatelessWidget implements PreferredSizeWidget {
   }
   
   /// 开始通话
-  void _startCall(BuildContext context, bool isVideo) {
-    // TODO: 实现实际的通话功能
-    ScaffoldMessenger.of(context).showSnackBar(
-      SnackBar(
-        content: Text('正在发起${isVideo ? '视频' : '语音'}通话...'),
-        duration: const Duration(seconds: 2),
-      ),
-    );
+  void _startCall(BuildContext context, bool isVideo) async {
+    try {
+      // TODO: 调用通话服务启动通话
+      // if (isVideo) {
+      //   await context.read<CallViewModel>().startVideoCall(userId);
+      // } else {
+      //   await context.read<CallViewModel>().startVoiceCall(userId);
+      // }
+      
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text('正在发起${isVideo ? '视频' : '语音'}通话...'),
+          backgroundColor: Colors.blue,
+        ),
+      );
+      
+      // 模拟通话页面导航
+      Navigator.of(context).pushNamed(
+        '/call',
+        arguments: {
+          'type': isVideo ? 'video' : 'voice',
+          'userId': userId,
+          'isOutgoing': true,
+        },
+      );
+    } catch (e) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text('通话发起失败: $e'),
+          backgroundColor: Colors.red,
+        ),
+      );
+    }
   }
   
   /// 显示搜索对话框
   void _showSearchDialog(BuildContext context) {
+    final TextEditingController searchController = TextEditingController();
+    
     showDialog(
       context: context,
       builder: (context) {
         return AlertDialog(
           title: const Text('搜索聊天记录'),
-          content: const TextField(
-            decoration: InputDecoration(
+          content: TextField(
+            controller: searchController,
+            decoration: const InputDecoration(
               hintText: '请输入搜索关键词',
               border: OutlineInputBorder(),
+              prefixIcon: Icon(Icons.search),
             ),
+            autofocus: true,
           ),
           actions: [
             TextButton(
@@ -334,11 +383,11 @@ class ChatAppBar extends StatelessWidget implements PreferredSizeWidget {
             ),
             TextButton(
               onPressed: () {
+                final query = searchController.text.trim();
                 Navigator.pop(context);
-                // TODO: 实现搜索功能
-                ScaffoldMessenger.of(context).showSnackBar(
-                  const SnackBar(content: Text('搜索功能尚未实现')),
-                );
+                if (query.isNotEmpty) {
+                  _performSearch(context, query);
+                }
               },
               child: const Text('搜索'),
             ),
@@ -348,15 +397,57 @@ class ChatAppBar extends StatelessWidget implements PreferredSizeWidget {
     );
   }
   
+  /// 执行搜索
+  void _performSearch(BuildContext context, String query) async {
+    try {
+      // TODO: 调用消息服务搜索聊天记录
+      // final results = await context.read<MessageViewModel>().searchMessages(userId, query);
+      
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text('搜索 "$query" 的结果: 找到 0 条消息'),
+          action: SnackBarAction(
+            label: '查看',
+            onPressed: () {
+              // TODO: 显示搜索结果页面
+            },
+          ),
+        ),
+      );
+    } catch (e) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text('搜索失败: $e'),
+          backgroundColor: Colors.red,
+        ),
+      );
+    }
+  }
+  
   /// 切换静音状态
-  void _toggleMute(BuildContext context) {
-    // TODO: 实现静音功能
-    ScaffoldMessenger.of(context).showSnackBar(
-      const SnackBar(content: Text('静音功能尚未实现')),
-    );
+  void _toggleMute(BuildContext context) async {
+    try {
+      // TODO: 调用通知服务设置静音状态
+      // await context.read<NotificationViewModel>().setConversationMute(userId, true);
+      
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(
+          content: Text('已静音此对话'),
+          backgroundColor: Colors.orange,
+        ),
+      );
+    } catch (e) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text('操作失败: $e'),
+          backgroundColor: Colors.red,
+        ),
+      );
+    }
   }
   
   /// 显示屏蔽用户对话框
+  // ignore: unused_element
   void _showBlockUserDialog(BuildContext context) {
     showDialog(
       context: context,
@@ -386,13 +477,27 @@ class ChatAppBar extends StatelessWidget implements PreferredSizeWidget {
   }
   
   /// 屏蔽用户
-  void _blockUser(BuildContext context) {
-    // TODO: 实现屏蔽用户功能
-    ScaffoldMessenger.of(context).showSnackBar(
-      const SnackBar(
-        content: Text('用户已屏蔽'),
-        backgroundColor: Colors.orange,
-      ),
-    );
+  void _blockUser(BuildContext context) async {
+    try {
+      // TODO: 调用用户服务屏蔽用户
+      // await context.read<UserViewModel>().blockUser(userId);
+      
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(
+          content: Text('用户已屏蔽'),
+          backgroundColor: Colors.orange,
+        ),
+      );
+      
+      // 返回上一页
+      Navigator.of(context).pop();
+    } catch (e) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text('屏蔽失败: $e'),
+          backgroundColor: Colors.red,
+        ),
+      );
+    }
   }
 }

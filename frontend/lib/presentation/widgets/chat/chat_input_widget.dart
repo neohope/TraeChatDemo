@@ -12,6 +12,9 @@ class ChatInputWidget extends StatefulWidget {
   final Function(String text, MessageType type)? onSendText;
   final Function(String voicePath, int duration)? onSendVoice;
   final Function(String filePath, String fileName, String fileType)? onSendFile;
+  final Function(Map<String, dynamic> locationData)? onSendLocation;
+  final Function(Map<String, String> contact)? onSendContact;
+  final Function(Map<String, String> gif)? onSendGif;
   final String? replyToMessageId;
   final String? replyToMessageText;
   final VoidCallback? onCancelReply;
@@ -22,6 +25,9 @@ class ChatInputWidget extends StatefulWidget {
     this.onSendText,
     this.onSendVoice,
     this.onSendFile,
+    this.onSendLocation,
+    this.onSendContact,
+    this.onSendGif,
     this.replyToMessageId,
     this.replyToMessageText,
     this.onCancelReply,
@@ -659,8 +665,12 @@ class _ChatInputWidgetState extends State<ChatInputWidget>
       ),
     );
     
-    // TODO: 调用发送位置消息的回调
-    // widget.onSendLocation?.call(latitude, longitude, address);
+    // 调用发送位置消息的回调
+    widget.onSendLocation?.call({
+      'latitude': latitude,
+      'longitude': longitude,
+      'address': address,
+    });
   }
   
   void _showContactDialog() {
@@ -710,8 +720,8 @@ class _ChatInputWidgetState extends State<ChatInputWidget>
       ),
     );
     
-    // TODO: 调用发送联系人消息的回调
-    // widget.onSendContact?.call(contact);
+    // 调用发送联系人消息的回调
+    widget.onSendContact?.call(contact);
   }
   
   void _showGifPicker() {
@@ -783,8 +793,8 @@ class _ChatInputWidgetState extends State<ChatInputWidget>
       ),
     );
     
-    // TODO: 调用发送GIF消息的回调
-     // widget.onSendGif?.call(gif['url']!);
+    // 调用发送GIF消息的回调
+    widget.onSendGif?.call(gif);
    }
    
    static const List<Map<String, String>> _mockContacts = [

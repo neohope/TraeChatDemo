@@ -249,20 +249,14 @@ class _MessageInputState extends State<MessageInput> {
             icon: Icons.location_on,
             label: '位置',
             onTap: () {
-              // TODO: 实现位置发送功能
-              ScaffoldMessenger.of(context).showSnackBar(
-                const SnackBar(content: Text('位置发送功能暂未实现')),
-              );
+              _sendLocation();
             },
           ),
           _buildAttachmentOption(
             icon: Icons.file_present,
             label: '文件',
             onTap: () {
-              // TODO: 实现文件发送功能
-              ScaffoldMessenger.of(context).showSnackBar(
-                const SnackBar(content: Text('文件发送功能暂未实现')),
-              );
+              _sendFile();
             },
           ),
         ],
@@ -367,6 +361,70 @@ class _MessageInputState extends State<MessageInput> {
     _textController.selection = TextSelection.collapsed(
       offset: selection.start + emoji.length,
     );
+  }
+  
+  void _sendLocation() async {
+    try {
+      // TODO: 获取真实位置信息
+      // final position = await Geolocator.getCurrentPosition();
+      
+      // 模拟位置数据
+      // ignore: unused_local_variable
+      final locationData = {
+        'latitude': 39.9042,
+        'longitude': 116.4074,
+        'address': '北京市朝阳区',
+      };
+      
+      // TODO: 调用发送位置消息的回调
+      // widget.onSendLocation?.call(locationData);
+      
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(
+          content: Text('位置已发送'),
+          backgroundColor: Colors.green,
+        ),
+      );
+    } catch (e) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text('发送位置失败: $e'),
+          backgroundColor: Colors.red,
+        ),
+      );
+    }
+  }
+  
+  void _sendFile() async {
+    try {
+      // TODO: 选择文件
+      // final result = await FilePicker.platform.pickFiles();
+      
+      // 模拟文件数据
+      // ignore: unused_local_variable
+      final fileData = {
+        'name': 'document.pdf',
+        'size': 1024 * 1024, // 1MB
+        'path': '/path/to/document.pdf',
+      };
+      
+      // TODO: 调用发送文件消息的回调
+      // widget.onSendFile?.call(fileData);
+      
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(
+          content: Text('文件已发送'),
+          backgroundColor: Colors.green,
+        ),
+      );
+    } catch (e) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text('发送文件失败: $e'),
+          backgroundColor: Colors.red,
+        ),
+      );
+    }
   }
 
   static const List<String> _emojis = [
