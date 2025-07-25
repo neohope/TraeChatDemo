@@ -334,6 +334,7 @@ class MessageRepositoryImpl implements MessageRepository {
     }
   }
   
+  // ignore: unused_element
   Future<void> _loadPendingRecalls() async {
     try {
       final prefs = await SharedPreferences.getInstance();
@@ -344,6 +345,7 @@ class MessageRepositoryImpl implements MessageRepository {
     }
   }
   
+  // ignore: unused_element
   Future<void> _removePendingRecall(String messageId) async {
     try {
       final prefs = await SharedPreferences.getInstance();

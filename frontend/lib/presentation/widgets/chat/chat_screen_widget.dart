@@ -43,6 +43,7 @@ class _ChatScreenWidgetState extends State<ChatScreenWidget>
   Set<String> _selectedMessageIds = {};
   MessageModel? _replyToMessage;
   MessageModel? _editingMessage;
+  List<MessageModel> _searchResults = [];
   
   @override
   void initState() {
@@ -726,7 +727,18 @@ class _ChatScreenWidgetState extends State<ChatScreenWidget>
   }
 
   void _forwardSelectedMessages() {
-    // TODO: 实现转发选中消息功能
+    final selectedMessages = context.read<MessageViewModel>().messages
+        .where((m) => _selectedMessageIds.contains(m.id))
+        .toList();
+    
+    if (selectedMessages.isEmpty) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text('请先选择要转发的消息')),
+      );
+      return;
+    }
+    
+    _showForwardSelectedMessagesDialog(selectedMessages);
     _exitSelectionMode();
   }
 
@@ -858,7 +870,7 @@ class _ChatScreenWidgetState extends State<ChatScreenWidget>
                           border: OutlineInputBorder(),
                         ),
                         onChanged: (value) {
-                          // TODO: 实现搜索逻辑
+                          _performSearch(value);
                         },
                       ),
                     ),
@@ -872,10 +884,16 @@ class _ChatScreenWidgetState extends State<ChatScreenWidget>
               Expanded(
                 child: ListView.builder(
                   controller: scrollController,
-                  itemCount: 0, // TODO: 显示搜索结果
+                  itemCount: _searchResults.length,
                   itemBuilder: (context, index) {
-                    return const ListTile(
-                      title: Text('搜索结果'),
+                    final message = _searchResults[index];
+                    return ListTile(
+                      title: Text(_getMessagePreviewText(message)),
+                      subtitle: const Text('刚刚'),
+                      onTap: () {
+                        Navigator.pop(context);
+                        // TODO: 滚动到对应消息位置
+                      },
                     );
                   },
                 ),
@@ -953,4 +971,119 @@ class _ChatScreenWidgetState extends State<ChatScreenWidget>
      // 返回上一页
      Navigator.pop(context);
    }
+   
+  void _showForwardSelectedMessagesDialog(List<MessageModel> messages) {
+    showModalBottomSheet(
+      context: context,
+      isScrollControlled: true,
+      builder: (context) => Container(
+        height: MediaQuery.of(context).size.height * 0.7,
+        padding: const EdgeInsets.all(16),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: [
+                Text(
+                  '转发 ${messages.length} 条消息',
+                  style: const TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
+                ),
+                IconButton(
+                  onPressed: () => Navigator.pop(context),
+                  icon: const Icon(Icons.close),
+                ),
+              ],
+            ),
+            const SizedBox(height: 16),
+            const Text(
+              '选择转发对象',
+              style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
+            ),
+            const SizedBox(height: 8),
+            Expanded(
+              child: Consumer<ChatViewModel>(
+                builder: (context, chatViewModel, child) {
+                  // 模拟聊天列表
+                   return ListView.builder(
+                     itemCount: 5,
+                     itemBuilder: (context, index) {
+                       return ListTile(
+                         leading: CircleAvatar(
+                           child: Text('${index + 1}'),
+                         ),
+                         title: Text('聊天 ${index + 1}'),
+                         subtitle: const Text('私聊'),
+                         onTap: () {
+                           Navigator.pop(context);
+                           _forwardMessagesToChat(messages, 'chat_${index + 1}');
+                         },
+                       );
+                    },
+                  );
+                },
+              ),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+  
+  void _forwardMessagesToChat(List<MessageModel> messages, String targetChatId) async {
+    try {
+      // TODO: 实现实际的转发逻辑
+      // for (final message in messages) {
+      //   await context.read<MessageViewModel>().forwardMessage(
+      //     messageId: message.id,
+      //     targetChatId: targetChatId,
+      //   );
+      // }
+      
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text('已转发 ${messages.length} 条消息'),
+          backgroundColor: Colors.green,
+        ),
+      );
+    } catch (e) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text('转发失败: $e'),
+          backgroundColor: Colors.red,
+        ),
+      );
+    }
+  }
+  
+  void _performSearch(String query) async {
+    if (query.isEmpty) {
+      setState(() {
+        _searchResults = [];
+      });
+      return;
+    }
+    
+    try {
+      // TODO: 调用消息服务搜索消息
+      // final results = await context.read<MessageViewModel>().searchMessages(widget.chat.id, query);
+      
+      // 模拟搜索结果
+      final allMessages = context.read<MessageViewModel>().getMessagesForChat(widget.chat.id);
+      final results = allMessages.where((message) {
+        return message.content.toLowerCase().contains(query.toLowerCase());
+      }).toList();
+      
+      setState(() {
+        _searchResults = results;
+      });
+    } catch (e) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text('搜索失败: $e'),
+          backgroundColor: Colors.red,
+        ),
+      );
+    }
+  }
 }

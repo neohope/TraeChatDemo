@@ -212,9 +212,9 @@ class _MainScreenWidgetState extends State<MainScreenWidget>
 
             // 添加未读消息徽章
             if (index == 0) { // 聊天页面
-              // TODO: Implement totalUnreadCount in ChatViewModel
-              final unreadCount = chatViewModel.conversations
-                  .fold<int>(0, (sum, conversation) => sum + conversation.unreadCount);
+              // 实现未读消息总数显示
+               final unreadCount = chatViewModel.conversations
+                   .fold<int>(0, (sum, conversation) => sum + conversation.unreadCount);
               if (unreadCount > 0) {
                 icon = badges.Badge(
                   badgeContent: Text(
@@ -319,7 +319,8 @@ class _MainScreenWidgetState extends State<MainScreenWidget>
         return;
       }
 
-      // TODO: 初始化用户数据 - implement loadCurrentUser in UserViewModel
+      // 初始化用户数据
+      // TODO: implement loadCurrentUser in UserViewModel
       // await userViewModel.loadCurrentUser();
       
       // 并行加载其他数据
@@ -331,6 +332,9 @@ class _MainScreenWidgetState extends State<MainScreenWidget>
         // TODO: implement loadNotifications in NotificationViewModel
         // notificationViewModel.loadNotifications(),
       ]);
+      
+      // 初始化未读消息总数
+      // TODO: 实现ChatViewModel中的totalUnreadCount getter
     } catch (e) {
       AppLogger.instance.error('Failed to initialize main screen data: $e');
       
