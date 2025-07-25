@@ -264,6 +264,58 @@ class MessageRepositoryImpl implements MessageRepository {
     }
   }
   
+  @override
+  Future<Result<MessageModel>> recallMessage(String messageId) async {
+    try {
+      // 首先从本地获取原始消息
+      final originalMessage = await _localDataSource.getMessage(messageId);
+      if (originalMessage == null) {
+        return Result.error('消息不存在');
+      }
+      
+      // 检查是否可以撤回
+      if (!originalMessage.canRecall()) {
+        return Result.error('消息已超过撤回时限或已被撤回');
+      }
+      
+      // 创建撤回消息
+      final recalledMessage = originalMessage.recall();
+      
+      // 尝试在远程撤回消息
+      await _remoteDataSource.recallMessage(messageId);
+      
+      // 在本地保存撤回消息
+      await _localDataSource.saveMessage(recalledMessage);
+      
+      return Result.success(recalledMessage);
+    } on ApiException catch (e) {
+      return Result.error(e.message);
+    } on SocketException {
+      // 网络错误，仅在本地标记为撤回并标记为待同步
+      try {
+        final originalMessage = await _localDataSource.getMessage(messageId);
+        if (originalMessage == null) {
+          return Result.error('消息不存在');
+        }
+        
+        if (!originalMessage.canRecall()) {
+          return Result.error('消息已超过撤回时限或已被撤回');
+        }
+        
+        final recalledMessage = originalMessage.recall();
+        await _localDataSource.saveMessage(recalledMessage);
+        
+        // TODO: 添加到待同步撤回列表
+        
+        return Result.success(recalledMessage);
+      } catch (localError) {
+        return Result.error('Network error. Please try again when connection is restored.');
+      }
+    } catch (e) {
+      return Result.error(e.toString());
+    }
+  }
+  
   /// 同步待发送的消息
   Future<void> syncPendingMessages() async {
     try {

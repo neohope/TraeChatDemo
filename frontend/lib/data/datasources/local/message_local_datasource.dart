@@ -61,6 +61,11 @@ abstract class MessageLocalDataSource {
     String? conversationId,
   });
   
+  /// 根据ID获取单条消息
+  /// 
+  /// [messageId] 消息ID
+  Future<MessageModel?> getMessage(String messageId);
+  
   /// 获取所有待发送的消息
   Future<List<MessageModel>> getPendingMessages();
   

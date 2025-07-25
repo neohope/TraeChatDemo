@@ -248,6 +248,7 @@ enum MessageType {
   location,
   system,
   custom,
+  recalled, // 撤回消息
 }
 
 /// 用户状态枚举
@@ -290,6 +291,8 @@ MessageType _parseMessageType(String? type) {
       return MessageType.system;
     case 'custom':
       return MessageType.custom;
+    case 'recalled':
+      return MessageType.recalled;
     default:
       return MessageType.text;
   }

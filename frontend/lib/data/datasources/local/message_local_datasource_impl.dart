@@ -212,6 +212,17 @@ class MessageLocalDataSourceImpl implements MessageLocalDataSource {
   }
   
   @override
+  Future<MessageModel?> getMessage(String messageId) async {
+    // 根据ID获取单条消息
+    final messageData = _messagesBox.get(messageId);
+    if (messageData == null) {
+      return null;
+    }
+    
+    return MessageModel.fromJson(Map<String, dynamic>.from(messageData));
+  }
+  
+  @override
   Future<List<MessageModel>> getPendingMessages() async {
     // 获取所有待发送的消息
     final pendingMessages = _pendingMessagesBox.values

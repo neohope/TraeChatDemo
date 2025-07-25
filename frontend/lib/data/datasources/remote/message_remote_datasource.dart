@@ -48,4 +48,9 @@ abstract class MessageRemoteDataSource {
     required String query,
     String? conversationId,
   });
+  
+  /// 撤回消息
+  /// 
+  /// [messageId] 要撤回的消息ID
+  Future<void> recallMessage(String messageId);
 }

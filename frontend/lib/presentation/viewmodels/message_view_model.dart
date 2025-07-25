@@ -377,6 +377,41 @@ class MessageViewModel extends ChangeNotifier {
     }
   }
   
+  /// 撤回消息
+  Future<Result<MessageModel>> recallMessage(String messageId) async {
+    try {
+      // 检查消息是否存在
+      final messageIndex = _messages.indexWhere((m) => m.id == messageId);
+      if (messageIndex == -1) {
+        return Result.error('消息不存在');
+      }
+      
+      final message = _messages[messageIndex];
+      
+      // 检查是否可以撤回
+      if (!message.canRecall()) {
+        return Result.error('消息已超过撤回时限或已被撤回');
+      }
+      
+      // 调用仓库层撤回消息
+      final result = await _messageRepository.recallMessage(messageId);
+      
+      return result.when(
+        success: (recalledMessage) {
+          // 更新本地消息
+          _messages[messageIndex] = recalledMessage;
+          notifyListeners();
+          return Result.success(recalledMessage);
+        },
+        error: (error) {
+          return Result.error(error);
+        },
+      );
+    } catch (e) {
+      return Result.error(e.toString());
+    }
+  }
+  
   /// 标记消息为已读
   Future<Result<bool>> markMessageAsRead(String messageId) async {
     try {

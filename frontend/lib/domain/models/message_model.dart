@@ -20,6 +20,9 @@ class MessageModel {
   final bool isEdited;
   final DateTime? readAt;
   final DateTime? deliveredAt;
+  final bool isRecalled;
+  final DateTime? recalledAt;
+  final String? originalContent; // 撤回前的原始内容
   
   MessageModel({
     required this.id,
@@ -37,6 +40,9 @@ class MessageModel {
     this.isEdited = false,
     this.readAt,
     this.deliveredAt,
+    this.isRecalled = false,
+    this.recalledAt,
+    this.originalContent,
   });
   
   /// 创建文本消息
@@ -229,6 +235,52 @@ class MessageModel {
     );
   }
   
+  /// 创建撤回消息
+  factory MessageModel.recalled({
+    required String id,
+    required String senderId,
+    required String receiverId,
+    String? conversationId,
+    required String originalContent,
+    DateTime? timestamp,
+    DateTime? recalledAt,
+  }) {
+    return MessageModel(
+      id: id,
+      senderId: senderId,
+      receiverId: receiverId,
+      conversationId: conversationId,
+      type: MessageType.recalled,
+      text: '撤回了一条消息',
+      timestamp: timestamp ?? DateTime.now(),
+      status: MessageStatus.sent,
+      isRead: false,
+      isRecalled: true,
+      recalledAt: recalledAt ?? DateTime.now(),
+      originalContent: originalContent,
+    );
+  }
+  
+  /// 撤回当前消息
+  MessageModel recall() {
+    return copyWith(
+      type: MessageType.recalled,
+      isRecalled: true,
+      recalledAt: DateTime.now(),
+      originalContent: text ?? mediaUrl ?? '消息内容',
+      text: '撤回了一条消息',
+      mediaUrl: null,
+      metadata: null,
+    );
+  }
+  
+  /// 检查消息是否可以撤回
+  bool canRecall({Duration timeLimit = const Duration(minutes: 2)}) {
+    if (isRecalled || isDeleted) return false;
+    final now = DateTime.now();
+    return now.difference(timestamp) <= timeLimit;
+  }
+  
   /// 从JSON创建消息模型
   factory MessageModel.fromJson(Map<String, dynamic> json) {
     return MessageModel(
@@ -247,6 +299,9 @@ class MessageModel {
       isEdited: json['isEdited'] ?? false,
       readAt: json['readAt'] != null ? DateTime.parse(json['readAt']) : null,
       deliveredAt: json['deliveredAt'] != null ? DateTime.parse(json['deliveredAt']) : null,
+      isRecalled: json['isRecalled'] ?? false,
+      recalledAt: json['recalledAt'] != null ? DateTime.parse(json['recalledAt']) : null,
+      originalContent: json['originalContent'],
     );
   }
   
@@ -268,6 +323,9 @@ class MessageModel {
       'isEdited': isEdited,
       'readAt': readAt?.toIso8601String(),
       'deliveredAt': deliveredAt?.toIso8601String(),
+      'isRecalled': isRecalled,
+      'recalledAt': recalledAt?.toIso8601String(),
+      'originalContent': originalContent,
     };
   }
   
@@ -288,6 +346,9 @@ class MessageModel {
     bool? isEdited,
     DateTime? readAt,
     DateTime? deliveredAt,
+    bool? isRecalled,
+    DateTime? recalledAt,
+    String? originalContent,
   }) {
     return MessageModel(
       id: id ?? this.id,
@@ -305,6 +366,9 @@ class MessageModel {
       isEdited: isEdited ?? this.isEdited,
       readAt: readAt ?? this.readAt,
       deliveredAt: deliveredAt ?? this.deliveredAt,
+      isRecalled: isRecalled ?? this.isRecalled,
+      recalledAt: recalledAt ?? this.recalledAt,
+      originalContent: originalContent ?? this.originalContent,
     );
   }
   
@@ -373,6 +437,8 @@ MessageType _parseMessageType(String? type) {
       return MessageType.location;
     case 'system':
       return MessageType.system;
+    case 'recalled':
+      return MessageType.recalled;
     default:
       return MessageType.text;
   }

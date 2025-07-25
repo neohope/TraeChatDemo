@@ -49,4 +49,9 @@ abstract class MessageRepository {
     required String query,
     String? conversationId,
   });
+  
+  /// 撤回消息
+  /// 
+  /// [messageId] 要撤回的消息ID
+  Future<Result<MessageModel>> recallMessage(String messageId);
 }

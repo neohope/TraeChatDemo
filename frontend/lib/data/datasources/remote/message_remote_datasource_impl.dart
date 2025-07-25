@@ -212,4 +212,27 @@ class MessageRemoteDataSourceImpl implements MessageRemoteDataSource {
       );
     }
   }
+  
+  @override
+  Future<void> recallMessage(String messageId) async {
+    try {
+      final url = Uri.parse('$_baseUrl/messages/$messageId/recall');
+      final response = await _client.put(url, headers: _headers);
+      
+      if (response.statusCode != 200 && response.statusCode != 204) {
+        throw ApiException(
+          statusCode: response.statusCode,
+          message: json.decode(response.body)['message'] ?? 'Failed to recall message',
+        );
+      }
+    } catch (e) {
+      if (e is ApiException) {
+        rethrow;
+      }
+      throw ApiException(
+        statusCode: 500,
+        message: e.toString(),
+      );
+    }
+  }
 }
