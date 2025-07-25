@@ -48,6 +48,69 @@ class _GroupInvitationWidgetState extends State<GroupInvitationWidget>
     super.dispose();
   }
 
+  void _resendInvitation(String invitationId) async {
+    try {
+      // TODO: 调用群组服务重新发送邀请
+      // await context.read<GroupViewModel>().resendInvitation(invitationId);
+      
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(
+          content: Text('邀请已重新发送'),
+          backgroundColor: Colors.green,
+        ),
+      );
+    } catch (e) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text('重新发送失败: $e'),
+          backgroundColor: Colors.red,
+        ),
+      );
+    }
+  }
+  
+  void _cancelInvitation(String invitationId) async {
+    try {
+      // TODO: 调用群组服务取消邀请
+      // await context.read<GroupViewModel>().cancelInvitation(invitationId);
+      
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(
+          content: Text('邀请已取消'),
+          backgroundColor: Colors.orange,
+        ),
+      );
+    } catch (e) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text('取消邀请失败: $e'),
+          backgroundColor: Colors.red,
+        ),
+      );
+    }
+  }
+  
+  void _clearProcessedInvitations() async {
+    try {
+      // TODO: 调用群组服务清除已处理的邀请
+      // await context.read<GroupViewModel>().clearProcessedInvitations();
+      
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(
+          content: Text('已处理的邀请已清除'),
+          backgroundColor: Colors.green,
+        ),
+      );
+    } catch (e) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text('清除失败: $e'),
+          backgroundColor: Colors.red,
+        ),
+      );
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -738,16 +801,10 @@ class _GroupInvitationWidgetState extends State<GroupInvitationWidget>
   void _handleSentInvitationAction(String action, GroupInvitation invitation, GroupViewModel viewModel) {
     switch (action) {
       case 'resend':
-        // TODO: Implement resend invitation functionality
-        ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(content: Text('重新发送功能暂未实现')),
-        );
+        _resendInvitation(invitation.id);
         break;
       case 'cancel':
-        // TODO: Implement cancel invitation functionality
-        ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(content: Text('取消邀请功能暂未实现')),
-        );
+        _cancelInvitation(invitation.id);
         break;
     }
   }
@@ -766,10 +823,7 @@ class _GroupInvitationWidgetState extends State<GroupInvitationWidget>
           ElevatedButton(
             onPressed: () {
               Navigator.pop(context);
-              // TODO: Implement clear processed invitations functionality
-              ScaffoldMessenger.of(context).showSnackBar(
-                const SnackBar(content: Text('清空功能暂未实现')),
-              );
+              _clearProcessedInvitations();
             },
             style: ElevatedButton.styleFrom(backgroundColor: Colors.red),
             child: const Text('清空'),

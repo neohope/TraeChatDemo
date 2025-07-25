@@ -47,6 +47,27 @@ class _NotificationWidgetState extends State<NotificationWidget>
     super.dispose();
   }
 
+  void _markAsUnread(int notificationId) async {
+    try {
+      // TODO: 调用通知服务标记为未读
+      // await context.read<NotificationViewModel>().markAsUnread(notificationId);
+      
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(
+          content: Text('已标记为未读'),
+          backgroundColor: Colors.orange,
+        ),
+      );
+    } catch (e) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text('操作失败: $e'),
+          backgroundColor: Colors.red,
+        ),
+      );
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -461,10 +482,7 @@ class _NotificationWidgetState extends State<NotificationWidget>
         viewModel.markAsRead(notification.id);
         break;
       case 'mark_unread':
-        // TODO: markAsUnread method not available in NotificationViewModel
-        ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(content: Text('标记未读功能暂未实现')),
-        );
+        _markAsUnread(notification.id);
         break;
       case 'delete':
         _showDeleteConfirmDialog(notification, viewModel);

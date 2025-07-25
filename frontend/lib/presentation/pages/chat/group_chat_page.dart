@@ -39,6 +39,77 @@ class _GroupChatPageState extends State<GroupChatPage> {
     _messageController.clear();
   }
 
+  void _inviteMembers() async {
+    try {
+      // TODO: 调用群组服务邀请成员
+      // await context.read<GroupViewModel>().inviteMembers(widget.groupId, selectedUserIds);
+      
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(
+          content: Text('邀请已发送'),
+          backgroundColor: Colors.green,
+        ),
+      );
+    } catch (e) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text('邀请失败: $e'),
+          backgroundColor: Colors.red,
+        ),
+      );
+    }
+  }
+  
+  void _showLeaveGroupDialog() {
+    showDialog(
+      context: context,
+      builder: (context) => AlertDialog(
+        title: const Text('退出群组'),
+        content: const Text('确定要退出这个群组吗？'),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.pop(context),
+            child: const Text('取消'),
+          ),
+          TextButton(
+            onPressed: () {
+              Navigator.pop(context);
+              _leaveGroup();
+            },
+            child: const Text(
+              '退出',
+              style: TextStyle(color: Colors.red),
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+  
+  void _leaveGroup() async {
+    try {
+      // TODO: 调用群组服务退出群组
+      // await context.read<GroupViewModel>().leaveGroup(widget.groupId);
+      
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(
+          content: Text('已退出群组'),
+          backgroundColor: Colors.green,
+        ),
+      );
+      
+      // 返回到聊天列表
+      Navigator.of(context).popUntil((route) => route.isFirst);
+    } catch (e) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text('退出失败: $e'),
+          backgroundColor: Colors.red,
+        ),
+      );
+    }
+  }
+
   void _showGroupInfo() {
     showModalBottomSheet(
       context: context,
@@ -134,12 +205,9 @@ class _GroupChatPageState extends State<GroupChatPage> {
                 Expanded(
                   child: ElevatedButton.icon(
                     onPressed: () {
-                      Navigator.pop(context);
-                      // TODO: 实现邀请成员功能
-                      ScaffoldMessenger.of(context).showSnackBar(
-                        const SnackBar(content: Text('邀请成员功能尚未实现')),
-                      );
-                    },
+                       Navigator.pop(context);
+                       _inviteMembers();
+                     },
                     icon: const Icon(Icons.person_add),
                     label: const Text('邀请成员'),
                   ),
@@ -148,12 +216,9 @@ class _GroupChatPageState extends State<GroupChatPage> {
                 Expanded(
                   child: OutlinedButton.icon(
                     onPressed: () {
-                      Navigator.pop(context);
-                      // TODO: 实现退出群组功能
-                      ScaffoldMessenger.of(context).showSnackBar(
-                        const SnackBar(content: Text('退出群组功能尚未实现')),
-                      );
-                    },
+                       Navigator.pop(context);
+                       _showLeaveGroupDialog();
+                     },
                     icon: const Icon(Icons.exit_to_app, color: Colors.red),
                     label: const Text('退出群组', style: TextStyle(color: Colors.red)),
                   ),

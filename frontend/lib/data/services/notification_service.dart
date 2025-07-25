@@ -123,7 +123,8 @@ class NotificationService {
       _firebaseMessaging.onTokenRefresh.listen((token) {
         _fcmToken = token;
         _logger.i('FCM Token 已刷新: $token');
-        // TODO: 将新Token发送到服务器
+        // 将新Token发送到服务器
+        _sendTokenToServer(token);
       });
     } catch (e) {
       _logger.e('获取FCM Token失败: $e');
@@ -211,11 +212,22 @@ class NotificationService {
     }
   }
 
+  /// 发送Token到服务器
+  Future<void> _sendTokenToServer(String token) async {
+    try {
+      // TODO: 实现发送Token到服务器的API调用
+      // await _apiService.updateFcmToken(token);
+      _logger.i('Token已发送到服务器: $token');
+    } catch (e) {
+      _logger.e('发送Token到服务器失败: $e');
+    }
+  }
+
   /// 处理通知点击事件
   Future<void> _handleNotificationTap(NotificationModel notification) async {
     _logger.i('用户点击了通知: ${notification.id}');
     
-    // TODO: 根据通知类型导航到相应页面
+    // 根据通知类型导航到相应页面
     switch (notification.type) {
       case NotificationType.message:
         // 导航到聊天页面

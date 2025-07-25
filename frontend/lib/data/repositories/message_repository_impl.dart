@@ -1,5 +1,7 @@
 import 'dart:io';
 
+import 'package:shared_preferences/shared_preferences.dart';
+
 import '../../domain/models/conversation_model.dart';
 import '../../domain/models/message_model.dart';
 import '../../domain/repositories/message_repository.dart';
@@ -14,6 +16,7 @@ import '../datasources/remote/api_exception.dart';
 class MessageRepositoryImpl implements MessageRepository {
   final MessageRemoteDataSource _remoteDataSource;
   final MessageLocalDataSource _localDataSource;
+  final List<String> _pendingRecalls = [];
   
   MessageRepositoryImpl({
     required MessageRemoteDataSource remoteDataSource,
@@ -305,7 +308,8 @@ class MessageRepositoryImpl implements MessageRepository {
         final recalledMessage = originalMessage.recall();
         await _localDataSource.saveMessage(recalledMessage);
         
-        // TODO: 添加到待同步撤回列表
+        // 添加到待同步撤回列表
+        await _addToPendingRecalls(messageId);
         
         return Result.success(recalledMessage);
       } catch (localError) {
@@ -316,6 +320,42 @@ class MessageRepositoryImpl implements MessageRepository {
     }
   }
   
+  Future<void> _addToPendingRecalls(String messageId) async {
+    try {
+      // 保存到本地存储，以便应用重启后能继续同步
+      final prefs = await SharedPreferences.getInstance();
+      final pendingRecalls = prefs.getStringList('pending_recalls') ?? [];
+      if (!pendingRecalls.contains(messageId)) {
+        pendingRecalls.add(messageId);
+        await prefs.setStringList('pending_recalls', pendingRecalls);
+      }
+    } catch (e) {
+      print('保存待同步撤回消息失败: $e');
+    }
+  }
+  
+  Future<void> _loadPendingRecalls() async {
+    try {
+      final prefs = await SharedPreferences.getInstance();
+      final pendingRecalls = prefs.getStringList('pending_recalls') ?? [];
+      _pendingRecalls.addAll(pendingRecalls);
+    } catch (e) {
+      print('加载待同步撤回消息失败: $e');
+    }
+  }
+  
+  Future<void> _removePendingRecall(String messageId) async {
+    try {
+      final prefs = await SharedPreferences.getInstance();
+      final pendingRecalls = prefs.getStringList('pending_recalls') ?? [];
+      pendingRecalls.remove(messageId);
+      await prefs.setStringList('pending_recalls', pendingRecalls);
+      _pendingRecalls.remove(messageId);
+    } catch (e) {
+      print('移除待同步撤回消息失败: $e');
+    }
+  }
+
   /// 同步待发送的消息
   Future<void> syncPendingMessages() async {
     try {

@@ -684,9 +684,9 @@ class _SettingsWidgetState extends State<SettingsWidget> {
             child: const Text('取消'),
           ),
           TextButton(
-            onPressed: () async {
+            onPressed: () {
               Navigator.pop(context);
-              await _deleteAccount();
+              _showDeleteAccountConfirmDialog();
             },
             style: TextButton.styleFrom(
               foregroundColor: Colors.red,
@@ -740,6 +740,34 @@ class _SettingsWidgetState extends State<SettingsWidget> {
     }
   }
 
+  void _showDeleteAccountConfirmDialog() {
+    showDialog(
+      context: context,
+      builder: (context) => AlertDialog(
+        title: const Text('最终确认'),
+        content: const Text(
+          '您即将永久删除账户，此操作无法撤销。\n\n请再次确认您要删除账户。',
+        ),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.pop(context),
+            child: const Text('取消'),
+          ),
+          TextButton(
+            onPressed: () async {
+              Navigator.pop(context);
+              await _deleteAccount();
+            },
+            style: TextButton.styleFrom(
+              foregroundColor: Colors.red,
+            ),
+            child: const Text('永久删除'),
+          ),
+        ],
+      ),
+    );
+  }
+
   Future<void> _deleteAccount() async {
     try {
       final authViewModel = Provider.of<AuthViewModel>(context, listen: false);
@@ -748,6 +776,13 @@ class _SettingsWidgetState extends State<SettingsWidget> {
       await authViewModel.logout();
       
       if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(
+            content: Text('账户删除请求已提交，正在处理中...'),
+            backgroundColor: Colors.orange,
+          ),
+        );
+        
         Navigator.of(context).pushNamedAndRemoveUntil(
           '/login',
           (route) => false,

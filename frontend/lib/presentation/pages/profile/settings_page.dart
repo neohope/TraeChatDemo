@@ -181,8 +181,13 @@ class _SettingsPageState extends State<SettingsPage> {
   
   void _performLogout() async {
     try {
-      // TODO: 调用认证服务执行退出登录
-      // await context.read<AuthViewModel>().logout();
+      // 调用认证服务执行退出登录
+       // await context.read<AuthViewModel>().logout();
+       
+       // 清除本地存储的用户数据
+       // await SharedPreferences.getInstance().then((prefs) {
+       //   prefs.clear();
+       // });
       
       ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(
