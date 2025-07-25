@@ -67,7 +67,7 @@ class _SettingsPageState extends State<SettingsPage> {
             subtitle: const Text('编辑个人信息'),
             trailing: const Icon(Icons.arrow_forward_ios),
             onTap: () {
-              // TODO: 导航到个人资料编辑页面
+              Navigator.of(context).pushNamed('/profile/edit');
             },
           ),
           ListTile(
@@ -76,7 +76,7 @@ class _SettingsPageState extends State<SettingsPage> {
             subtitle: const Text('管理隐私选项'),
             trailing: const Icon(Icons.arrow_forward_ios),
             onTap: () {
-              // TODO: 导航到隐私设置页面
+              Navigator.of(context).pushNamed('/settings/privacy');
             },
           ),
           ListTile(
@@ -85,7 +85,7 @@ class _SettingsPageState extends State<SettingsPage> {
             subtitle: const Text('密码和安全选项'),
             trailing: const Icon(Icons.arrow_forward_ios),
             onTap: () {
-              // TODO: 导航到安全设置页面
+              Navigator.of(context).pushNamed('/settings/security');
             },
           ),
           const Divider(),
@@ -97,7 +97,7 @@ class _SettingsPageState extends State<SettingsPage> {
             title: const Text('帮助与支持'),
             trailing: const Icon(Icons.arrow_forward_ios),
             onTap: () {
-              // TODO: 导航到帮助页面
+              Navigator.of(context).pushNamed('/help');
             },
           ),
           ListTile(
@@ -105,7 +105,7 @@ class _SettingsPageState extends State<SettingsPage> {
             title: const Text('关于'),
             trailing: const Icon(Icons.arrow_forward_ios),
             onTap: () {
-              // TODO: 显示关于信息
+              _showAboutDialog();
             },
           ),
           ListTile(
@@ -162,6 +162,24 @@ class _SettingsPageState extends State<SettingsPage> {
           ],
         );
       },
+    );
+  }
+
+  void _showAboutDialog() {
+    showAboutDialog(
+      context: context,
+      applicationName: 'TraeChat',
+      applicationVersion: '1.0.0',
+      applicationIcon: const Icon(
+        Icons.chat_bubble_outline,
+        size: 48,
+        color: Color(0xFF2196F3),
+      ),
+      children: [
+        const Text('一个现代化的即时通讯应用'),
+        const SizedBox(height: 16),
+        const Text('© 2024 TraeChat Team'),
+      ],
     );
   }
 }

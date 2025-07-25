@@ -10,7 +10,6 @@ import '../../viewmodels/chat_viewmodel.dart';
 import '../../viewmodels/user_viewmodel.dart';
 import '../../viewmodels/message_viewmodel.dart';
 import '../../../core/utils/app_date_utils.dart';
-import 'message_bubble_widget.dart';
 import 'chat_input_widget.dart';
 
 /// 聊天界面主组件
@@ -831,7 +830,58 @@ class _ChatScreenWidgetState extends State<ChatScreenWidget>
   }
 
   void _showSearchMessages() {
-    // TODO: 显示消息搜索界面
+    showModalBottomSheet(
+      context: context,
+      isScrollControlled: true,
+      builder: (context) => DraggableScrollableSheet(
+        initialChildSize: 0.7,
+        minChildSize: 0.3,
+        maxChildSize: 0.9,
+        builder: (context, scrollController) => Container(
+          decoration: const BoxDecoration(
+            borderRadius: BorderRadius.vertical(top: Radius.circular(16)),
+          ),
+          child: Column(
+            children: [
+              Container(
+                padding: const EdgeInsets.all(16),
+                child: Row(
+                  children: [
+                    Expanded(
+                      child: TextField(
+                        decoration: const InputDecoration(
+                          hintText: '搜索消息...',
+                          prefixIcon: Icon(Icons.search),
+                          border: OutlineInputBorder(),
+                        ),
+                        onChanged: (value) {
+                          // TODO: 实现搜索逻辑
+                        },
+                      ),
+                    ),
+                    TextButton(
+                      onPressed: () => Navigator.pop(context),
+                      child: const Text('取消'),
+                    ),
+                  ],
+                ),
+              ),
+              Expanded(
+                child: ListView.builder(
+                  controller: scrollController,
+                  itemCount: 0, // TODO: 显示搜索结果
+                  itemBuilder: (context, index) {
+                    return const ListTile(
+                      title: Text('搜索结果'),
+                    );
+                  },
+                ),
+              ),
+            ],
+          ),
+        ),
+      ),
+    );
   }
 
   void _showClearChatDialog() {

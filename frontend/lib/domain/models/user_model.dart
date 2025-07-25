@@ -35,6 +35,7 @@ class UserModel {
   final DateTime? lastSeenAt;
   final bool isFavorite;
   final bool isBlocked;
+  final bool isVerified;
   final Map<String, dynamic>? metadata;
   
   /// 检查用户是否在线
@@ -53,6 +54,7 @@ class UserModel {
     this.lastSeenAt,
     this.isFavorite = false,
     this.isBlocked = false,
+    this.isVerified = false,
     this.metadata,
   });
   
@@ -77,6 +79,7 @@ class UserModel {
           : null,
       isFavorite: json['isFavorite'] ?? false,
       isBlocked: json['isBlocked'] ?? false,
+      isVerified: json['isVerified'] ?? false,
       metadata: json['metadata'],
     );
   }
@@ -96,6 +99,7 @@ class UserModel {
       'lastSeenAt': lastSeenAt?.toIso8601String(),
       'isFavorite': isFavorite,
       'isBlocked': isBlocked,
+      'isVerified': isVerified,
       'metadata': metadata,
     };
   }
@@ -114,6 +118,7 @@ class UserModel {
     DateTime? lastSeenAt,
     bool? isFavorite,
     bool? isBlocked,
+    bool? isVerified,
     Map<String, dynamic>? metadata,
   }) {
     return UserModel(
@@ -129,6 +134,7 @@ class UserModel {
       lastSeenAt: lastSeenAt ?? this.lastSeenAt,
       isFavorite: isFavorite ?? this.isFavorite,
       isBlocked: isBlocked ?? this.isBlocked,
+      isVerified: isVerified ?? this.isVerified,
       metadata: metadata ?? this.metadata,
     );
   }
@@ -147,7 +153,8 @@ class UserModel {
         other.status == status &&
         other.lastSeen == lastSeen &&
         other.isFavorite == isFavorite &&
-        other.isBlocked == isBlocked;
+        other.isBlocked == isBlocked &&
+        other.isVerified == isVerified;
   }
   
   @override
@@ -161,6 +168,7 @@ class UserModel {
         status.hashCode ^
         lastSeen.hashCode ^
         isFavorite.hashCode ^
-        isBlocked.hashCode;
+        isBlocked.hashCode ^
+        isVerified.hashCode;
   }
 }

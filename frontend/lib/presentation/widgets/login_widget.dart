@@ -186,12 +186,7 @@ class _LoginWidgetState extends State<LoginWidget> {
                 // 注册链接
                 TextButton(
                   onPressed: () {
-                    // TODO: 导航到注册页面
-                    ScaffoldMessenger.of(context).showSnackBar(
-                      const SnackBar(
-                        content: Text('注册功能即将推出'),
-                      ),
-                    );
+                    Navigator.of(context).pushNamed('/register');
                   },
                   child: const Text('还没有账号？立即注册'),
                 ),
@@ -199,12 +194,7 @@ class _LoginWidgetState extends State<LoginWidget> {
                 // 忘记密码链接
                 TextButton(
                   onPressed: () {
-                    // TODO: 导航到忘记密码页面
-                    ScaffoldMessenger.of(context).showSnackBar(
-                      const SnackBar(
-                        content: Text('忘记密码功能即将推出'),
-                      ),
-                    );
+                    Navigator.of(context).pushNamed('/forgot-password');
                   },
                   child: const Text('忘记密码？'),
                 ),

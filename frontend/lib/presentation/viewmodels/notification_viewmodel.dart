@@ -1,5 +1,6 @@
 import 'dart:convert';
 import 'package:flutter/material.dart';
+import 'package:permission_handler/permission_handler.dart';
 
 import '../../data/services/notification_service.dart';
 import '../../domain/models/notification_model.dart';
@@ -253,14 +254,34 @@ class NotificationViewModel extends ChangeNotifier {
 
   /// 检查通知权限
   Future<bool> checkNotificationPermission() async {
-    // TODO: 实现权限检查逻辑
-    return true;
+    try {
+      final status = await Permission.notification.status;
+      return status.isGranted;
+    } catch (e) {
+      _setError('检查通知权限失败: $e');
+      return false;
+    }
   }
 
   /// 请求通知权限
   Future<bool> requestNotificationPermission() async {
-    // TODO: 实现权限请求逻辑
-    return true;
+    try {
+      final status = await Permission.notification.request();
+      if (status.isGranted) {
+        _logger.info('通知权限已授予');
+        return true;
+      } else if (status.isDenied) {
+        _setError('通知权限被拒绝');
+        return false;
+      } else if (status.isPermanentlyDenied) {
+        _setError('通知权限被永久拒绝，请在设置中手动开启');
+        return false;
+      }
+      return false;
+    } catch (e) {
+      _setError('请求通知权限失败: $e');
+      return false;
+    }
   }
 
   /// 获取通知统计

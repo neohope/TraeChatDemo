@@ -1,4 +1,3 @@
-import 'dart:typed_data';
 import 'dart:ui' as ui;
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
@@ -282,7 +281,7 @@ class ImageUtils {
         BackdropFilter(
           filter: ui.ImageFilter.blur(sigmaX: sigmaX, sigmaY: sigmaY),
           child: Container(
-            color: overlayColor ?? Colors.black.withOpacity(0.3),
+            color: overlayColor ?? Colors.black.withValues(alpha: 0.3),
           ),
         ),
         child,

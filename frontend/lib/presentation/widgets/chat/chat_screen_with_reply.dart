@@ -1,7 +1,9 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:provider/provider.dart';
 import '../../../domain/models/message_model.dart';
 import '../../../domain/models/conversation_model.dart';
+import '../../../domain/services/auth_service.dart';
 import '../../viewmodels/message_view_model.dart';
 import 'reply_message_bubble.dart';
 import 'enhanced_chat_input.dart';
@@ -321,24 +323,140 @@ class _ChatScreenWithReplyState extends State<ChatScreenWithReply> {
   }
 
   void _handleEditMessage(MessageModel message) {
-    // TODO: 实现编辑消息功能
-    ScaffoldMessenger.of(context).showSnackBar(
-      const SnackBar(content: Text('编辑功能尚未实现')),
+    if (message.type != MessageType.text) {
+      _showErrorSnackBar('只能编辑文本消息');
+      return;
+    }
+    
+    if (message.isRecalled || message.isDeleted) {
+      _showErrorSnackBar('无法编辑已撤回或已删除的消息');
+      return;
+    }
+    
+    _showEditMessageDialog(message);
+  }
+  
+  void _showEditMessageDialog(MessageModel message) {
+    final TextEditingController controller = TextEditingController(text: message.text);
+    
+    showDialog(
+      context: context,
+      builder: (context) => AlertDialog(
+        title: const Text('编辑消息'),
+        content: TextField(
+          controller: controller,
+          maxLines: null,
+          decoration: const InputDecoration(
+            hintText: '输入新的消息内容...',
+            border: OutlineInputBorder(),
+          ),
+          autofocus: true,
+        ),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.pop(context),
+            child: const Text('取消'),
+          ),
+          ElevatedButton(
+            onPressed: () {
+              final newText = controller.text.trim();
+              if (newText.isEmpty) {
+                _showErrorSnackBar('消息内容不能为空');
+                return;
+              }
+              
+              Navigator.pop(context);
+              _editMessage(message.id, newText);
+            },
+            child: const Text('保存'),
+          ),
+        ],
+      ),
     );
+  }
+  
+  void _editMessage(String messageId, String newText) {
+    context.read<MessageViewModel>().editMessage(messageId, newText)
+        .then((result) {
+      result.when(
+        success: (_) => _showSuccessSnackBar('消息已编辑'),
+        error: (error) => _showErrorSnackBar('编辑失败: $error'),
+      );
+    });
   }
 
   void _handleCopyMessage(MessageModel message) {
-    // TODO: 实现复制消息功能
-    ScaffoldMessenger.of(context).showSnackBar(
-      const SnackBar(content: Text('复制功能尚未实现')),
-    );
+    String textToCopy = '';
+    
+    switch (message.type) {
+      case MessageType.text:
+        textToCopy = message.text ?? '';
+        break;
+      case MessageType.image:
+        textToCopy = '[图片]';
+        break;
+      case MessageType.voice:
+        textToCopy = '[语音消息]';
+        break;
+      case MessageType.video:
+        textToCopy = '[视频]';
+        break;
+      case MessageType.file:
+        final fileName = message.metadata?['fileName'] ?? '文件';
+        textToCopy = '[文件: $fileName]';
+        break;
+      case MessageType.location:
+        final address = message.metadata?['address'] ?? '位置信息';
+        textToCopy = '[位置: $address]';
+        break;
+      case MessageType.system:
+        textToCopy = message.text ?? '[系统消息]';
+        break;
+      case MessageType.recalled:
+        textToCopy = '[已撤回的消息]';
+        break;
+      default:
+        textToCopy = '[消息]';
+    }
+    
+    if (textToCopy.isNotEmpty) {
+      Clipboard.setData(ClipboardData(text: textToCopy));
+      _showSuccessSnackBar('已复制到剪贴板');
+    } else {
+      _showErrorSnackBar('无法复制此消息');
+    }
   }
 
   void _handleQuotedMessageTap(MessageModel quotedMessage) {
-    // TODO: 滚动到被引用的消息位置
-    ScaffoldMessenger.of(context).showSnackBar(
-      SnackBar(content: Text('跳转到引用消息: ${quotedMessage.text}')),
-    );
+    final messageViewModel = context.read<MessageViewModel>();
+    final messages = messageViewModel.messages;
+    
+    // 查找被引用消息的索引
+    final targetIndex = messages.indexWhere((m) => m.id == quotedMessage.id);
+    
+    if (targetIndex == -1) {
+      _showErrorSnackBar('引用的消息不存在或已被删除');
+      return;
+    }
+    
+    // 计算在ListView中的实际位置（因为ListView是reverse的）
+    final listViewIndex = messages.length - 1 - targetIndex;
+    
+    // 滚动到目标消息
+    if (_scrollController.hasClients) {
+      // 估算每个消息项的高度（这里使用一个平均值）
+      const estimatedItemHeight = 80.0;
+      final targetOffset = listViewIndex * estimatedItemHeight;
+      
+      _scrollController.animateTo(
+        targetOffset,
+        duration: const Duration(milliseconds: 500),
+        curve: Curves.easeInOut,
+      ).then((_) {
+        // 滚动完成后显示提示
+        _showSuccessSnackBar('已定位到引用消息');
+      });
+    }
   }
 
   // 发送消息方法
@@ -380,10 +498,16 @@ class _ChatScreenWithReplyState extends State<ChatScreenWithReply> {
   }
 
   void _sendVoiceMessage(String voicePath, int duration) {
-    // TODO: 实现发送语音消息
-    ScaffoldMessenger.of(context).showSnackBar(
-      const SnackBar(content: Text('语音消息功能尚未实现')),
-    );
+    context.read<MessageViewModel>().sendVoiceMessage(
+      voicePath,
+      duration,
+      widget.receiverId,
+    ).then((result) {
+      result.when(
+        success: (_) => _scrollToBottom(),
+        error: (error) => _showErrorSnackBar('发送语音失败: $error'),
+      );
+    });
   }
 
   void _recallMessage(String messageId) {
@@ -398,8 +522,8 @@ class _ChatScreenWithReplyState extends State<ChatScreenWithReply> {
 
   // 辅助方法
   String _getCurrentUserId() {
-    // TODO: 从认证服务获取当前用户ID
-    return 'current_user_id';
+    final authService = context.read<AuthService>();
+    return authService.currentUser?.id ?? 'unknown_user';
   }
 
   void _scrollToBottom() {

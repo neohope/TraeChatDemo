@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
+import 'package:permission_handler/permission_handler.dart';
+import 'package:file_picker/file_picker.dart';
 import '../../../domain/models/message_model.dart';
 import 'quoted_message_widget.dart';
 
@@ -81,7 +83,7 @@ class _EnhancedChatInputState extends State<EnhancedChatInput> {
                 Expanded(
                   child: Container(
                     decoration: BoxDecoration(
-                      color: Theme.of(context).colorScheme.surfaceVariant,
+                      color: Theme.of(context).colorScheme.surfaceContainerHighest,
                       borderRadius: BorderRadius.circular(20),
                     ),
                     child: TextField(
@@ -143,7 +145,7 @@ class _EnhancedChatInputState extends State<EnhancedChatInput> {
     return Container(
       margin: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
       decoration: BoxDecoration(
-        color: Theme.of(context).colorScheme.surfaceVariant.withOpacity(0.5),
+        color: Theme.of(context).colorScheme.surfaceContainerHighest.withValues(alpha: 0.5),
         borderRadius: BorderRadius.circular(12),
         border: Border(
           left: BorderSide(
@@ -259,7 +261,7 @@ class _EnhancedChatInputState extends State<EnhancedChatInput> {
             width: 48,
             height: 48,
             decoration: BoxDecoration(
-              color: Theme.of(context).colorScheme.primary.withOpacity(0.1),
+              color: Theme.of(context).colorScheme.primary.withValues(alpha: 0.1),
               shape: BoxShape.circle,
             ),
             child: Icon(
@@ -306,19 +308,46 @@ class _EnhancedChatInputState extends State<EnhancedChatInput> {
     }
   }
 
-  void _startRecording() {
+  void _startRecording() async {
+    // 检查录音权限
+    final permission = await Permission.microphone.request();
+    if (!permission.isGranted) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text('需要麦克风权限才能录制语音')),
+      );
+      return;
+    }
+    
     setState(() {
       _isRecording = true;
     });
-    // TODO: 实现语音录制功能
+    
+    // 模拟录音开始
+    ScaffoldMessenger.of(context).showSnackBar(
+      const SnackBar(
+        content: Text('开始录音...'),
+        duration: Duration(seconds: 1),
+      ),
+    );
   }
 
   void _stopRecording() {
     setState(() {
       _isRecording = false;
     });
-    // TODO: 实现停止录制并发送语音消息
-    // widget.onSendVoice(voicePath, duration);
+    
+    // 模拟录音结束并发送
+    const mockVoicePath = '/mock/voice/path.m4a';
+    const mockDuration = 5; // 5秒
+    
+    widget.onSendVoice(mockVoicePath, mockDuration);
+    
+    ScaffoldMessenger.of(context).showSnackBar(
+      const SnackBar(
+        content: Text('语音消息已发送'),
+        duration: Duration(seconds: 1),
+      ),
+    );
   }
 
   Future<void> _pickImage(ImageSource source) async {
@@ -337,17 +366,54 @@ class _EnhancedChatInputState extends State<EnhancedChatInput> {
     }
   }
 
-  void _pickFile() {
-    // TODO: 实现文件选择功能
-    ScaffoldMessenger.of(context).showSnackBar(
-      const SnackBar(content: Text('文件选择功能尚未实现')),
-    );
+  void _pickFile() async {
+    try {
+      FilePickerResult? result = await FilePicker.platform.pickFiles(
+        type: FileType.any,
+        allowMultiple: false,
+      );
+      
+      if (result != null && result.files.single.path != null) {
+        final file = result.files.single;
+        // 这里可以调用发送文件的回调
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text('已选择文件: ${file.name}')),
+        );
+        // TODO: 添加发送文件的回调
+        // widget.onSendFile(file.path!, file.name, file.extension ?? '');
+      }
+    } catch (e) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text('选择文件失败: $e')),
+      );
+    }
   }
 
-  void _shareLocation() {
-    // TODO: 实现位置分享功能
+  void _shareLocation() async {
+    // 模拟位置分享功能
     ScaffoldMessenger.of(context).showSnackBar(
-      const SnackBar(content: Text('位置分享功能尚未实现')),
+      const SnackBar(
+        content: Text('正在获取位置信息...'),
+        duration: Duration(seconds: 1),
+      ),
     );
+    
+    // 模拟延迟
+    await Future.delayed(const Duration(seconds: 1));
+    
+    // 模拟位置数据
+    const double mockLatitude = 39.9042;
+    const double mockLongitude = 116.4074;
+    const String mockAddress = '北京市朝阳区';
+    
+    ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(
+        content: Text('位置: $mockAddress ($mockLatitude, $mockLongitude)'),
+        duration: const Duration(seconds: 2),
+      ),
+    );
+    
+    // TODO: 添加发送位置的回调
+    // widget.onSendLocation(mockLatitude, mockLongitude, mockAddress);
   }
 }

@@ -200,7 +200,7 @@ class _NotificationWidgetState extends State<NotificationWidget>
                     _showUnreadOnly = selected;
                   });
                 },
-                selectedColor: Theme.of(context).primaryColor.withOpacity(0.2),
+                selectedColor: Theme.of(context).primaryColor.withValues(alpha: 0.2),
                 checkmarkColor: Theme.of(context).primaryColor,
               ),
               const SizedBox(width: 8),
@@ -300,12 +300,12 @@ class _NotificationWidgetState extends State<NotificationWidget>
   Widget _buildNotificationItem(NotificationModel notification, NotificationViewModel viewModel) {
     return Card(
       margin: const EdgeInsets.only(bottom: 8),
-      color: notification.isRead ? null : Theme.of(context).primaryColor.withOpacity(0.05),
+      color: notification.isRead ? null : Theme.of(context).primaryColor.withValues(alpha: 0.05),
       child: ListTile(
         leading: Stack(
           children: [
             CircleAvatar(
-              backgroundColor: _getNotificationTypeColor(notification.type).withOpacity(0.2),
+              backgroundColor: _getNotificationTypeColor(notification.type).withValues(alpha: 0.2),
               child: Icon(
                 _getNotificationTypeIcon(notification.type),
                 color: _getNotificationTypeColor(notification.type),
@@ -395,10 +395,10 @@ class _NotificationWidgetState extends State<NotificationWidget>
     return Container(
       padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 2),
       decoration: BoxDecoration(
-        color: _getNotificationTypeColor(type).withOpacity(0.1),
+        color: _getNotificationTypeColor(type).withValues(alpha: 0.1),
         borderRadius: BorderRadius.circular(8),
         border: Border.all(
-          color: _getNotificationTypeColor(type).withOpacity(0.3),
+          color: _getNotificationTypeColor(type).withValues(alpha: 0.3),
         ),
       ),
       child: Text(
@@ -542,7 +542,7 @@ class _NotificationWidgetState extends State<NotificationWidget>
               const SizedBox(height: 16),
               CircleAvatar(
                 radius: 30,
-                backgroundColor: _getNotificationTypeColor(notification.type).withOpacity(0.2),
+                backgroundColor: _getNotificationTypeColor(notification.type).withValues(alpha: 0.2),
                 child: Icon(
                   _getNotificationTypeIcon(notification.type),
                   color: _getNotificationTypeColor(notification.type),

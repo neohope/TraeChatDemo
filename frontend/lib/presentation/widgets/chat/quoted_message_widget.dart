@@ -28,7 +28,7 @@ class QuotedMessageWidget extends StatelessWidget {
         margin: const EdgeInsets.only(bottom: 4),
         padding: EdgeInsets.all(isCompact ? 8 : 12),
         decoration: BoxDecoration(
-          color: theme.colorScheme.surfaceVariant.withOpacity(0.3),
+          color: theme.colorScheme.surfaceContainerHighest.withValues(alpha: 0.3),
           borderRadius: BorderRadius.circular(8),
           border: Border(
             left: BorderSide(
@@ -65,7 +65,7 @@ class QuotedMessageWidget extends StatelessWidget {
                   Text(
                     DateFormatter.formatMessageTime(quotedMessage.timestamp),
                     style: theme.textTheme.bodySmall?.copyWith(
-                      color: theme.colorScheme.onSurfaceVariant.withOpacity(0.7),
+                      color: theme.colorScheme.onSurfaceVariant.withValues(alpha: 0.7),
                       fontSize: 10,
                     ),
                   ),
@@ -91,13 +91,13 @@ class QuotedMessageWidget extends StatelessWidget {
           Icon(
             Icons.undo,
             size: 14,
-            color: theme.colorScheme.onSurfaceVariant.withOpacity(0.7),
+            color: theme.colorScheme.onSurfaceVariant.withValues(alpha: 0.7),
           ),
           const SizedBox(width: 4),
           Text(
             '已撤回的消息',
             style: theme.textTheme.bodySmall?.copyWith(
-              color: theme.colorScheme.onSurfaceVariant.withOpacity(0.7),
+              color: theme.colorScheme.onSurfaceVariant.withValues(alpha: 0.7),
               fontStyle: FontStyle.italic,
             ),
           ),
@@ -165,7 +165,7 @@ class QuotedMessageWidget extends StatelessWidget {
         return Text(
           '[消息]',
           style: theme.textTheme.bodySmall?.copyWith(
-            color: theme.colorScheme.onSurfaceVariant.withOpacity(0.7),
+            color: theme.colorScheme.onSurfaceVariant.withValues(alpha: 0.7),
             fontStyle: FontStyle.italic,
           ),
         );
@@ -186,14 +186,14 @@ class QuotedMessageWidget extends StatelessWidget {
         Icon(
           icon,
           size: 16,
-          color: theme.colorScheme.onSurfaceVariant.withOpacity(0.7),
+          color: theme.colorScheme.onSurfaceVariant.withValues(alpha: 0.7),
         ),
         const SizedBox(width: 4),
         Expanded(
           child: Text(
             duration != null ? '$label ${_formatDuration(duration)}' : label,
             style: theme.textTheme.bodySmall?.copyWith(
-              color: theme.colorScheme.onSurfaceVariant.withOpacity(0.7),
+              color: theme.colorScheme.onSurfaceVariant.withValues(alpha: 0.7),
             ),
             maxLines: 1,
             overflow: TextOverflow.ellipsis,
@@ -207,7 +207,7 @@ class QuotedMessageWidget extends StatelessWidget {
             margin: const EdgeInsets.only(left: 8),
             decoration: BoxDecoration(
               borderRadius: BorderRadius.circular(4),
-              color: theme.colorScheme.surfaceVariant,
+              color: theme.colorScheme.surfaceContainerHighest,
             ),
             child: ClipRRect(
               borderRadius: BorderRadius.circular(4),
@@ -218,7 +218,7 @@ class QuotedMessageWidget extends StatelessWidget {
                   return Icon(
                     Icons.broken_image,
                     size: 16,
-                    color: theme.colorScheme.onSurfaceVariant.withOpacity(0.5),
+                    color: theme.colorScheme.onSurfaceVariant.withValues(alpha: 0.5),
                   );
                 },
               ),
@@ -265,7 +265,7 @@ class QuotedMessageInputPreview extends StatelessWidget {
       padding: const EdgeInsets.all(12),
       margin: const EdgeInsets.symmetric(horizontal: 16),
       decoration: BoxDecoration(
-        color: theme.colorScheme.surfaceVariant.withOpacity(0.5),
+        color: theme.colorScheme.surfaceContainerHighest.withValues(alpha: 0.5),
         borderRadius: const BorderRadius.vertical(top: Radius.circular(12)),
         border: Border(
           left: BorderSide(

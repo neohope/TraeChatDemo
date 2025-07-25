@@ -4,8 +4,6 @@ import '../../../domain/models/message_model.dart';
 import '../../../domain/models/conversation_model.dart';
 import '../../viewmodels/message_view_model.dart';
 import '../../viewmodels/chat_viewmodel.dart';
-import '../../../utils/result.dart';
-import 'forwarded_message_widget.dart';
 
 /// 转发选择界面
 class ForwardSelectionScreen extends StatefulWidget {

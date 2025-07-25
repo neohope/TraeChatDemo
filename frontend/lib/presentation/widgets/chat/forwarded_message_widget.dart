@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import '../../../domain/models/message_model.dart';
 import '../../../domain/models/conversation_model.dart';
-import '../../../utils/date_formatter.dart';
 
 /// 转发消息显示组件
 class ForwardedMessageWidget extends StatelessWidget {
@@ -25,11 +24,11 @@ class ForwardedMessageWidget extends StatelessWidget {
       child: Container(
         padding: EdgeInsets.all(isCompact ? 8 : 12),
         decoration: BoxDecoration(
-          color: theme.colorScheme.surfaceVariant.withOpacity(0.3),
+          color: theme.colorScheme.surfaceContainerHighest.withValues(alpha: 0.3),
           borderRadius: BorderRadius.circular(8),
           border: Border(
             left: BorderSide(
-              color: theme.colorScheme.primary.withOpacity(0.5),
+              color: theme.colorScheme.primary.withValues(alpha: 0.5),
               width: 3,
             ),
           ),

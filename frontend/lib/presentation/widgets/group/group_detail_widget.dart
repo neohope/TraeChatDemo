@@ -98,7 +98,7 @@ class _GroupDetailWidgetState extends State<GroupDetailWidget>
               end: Alignment.bottomCenter,
               colors: [
                 _getGroupTypeColor(group.type),
-                _getGroupTypeColor(group.type).withOpacity(0.8),
+                _getGroupTypeColor(group.type).withValues(alpha: 0.8),
               ],
             ),
           ),
@@ -119,7 +119,7 @@ class _GroupDetailWidgetState extends State<GroupDetailWidget>
                       end: Alignment.bottomCenter,
                       colors: [
                         Colors.transparent,
-                        Colors.black.withOpacity(0.7),
+                        Colors.black.withValues(alpha: 0.7),
                       ],
                     ),
                   ),

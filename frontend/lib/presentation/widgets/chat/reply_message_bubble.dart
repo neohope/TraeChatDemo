@@ -69,7 +69,7 @@ class ReplyMessageBubble extends StatelessWidget {
                     decoration: BoxDecoration(
                       color: isMe 
                           ? theme.colorScheme.primary
-                          : theme.colorScheme.surfaceVariant,
+                          : theme.colorScheme.surfaceContainerHighest,
                       borderRadius: BorderRadius.circular(16).copyWith(
                         bottomLeft: isMe ? const Radius.circular(16) : const Radius.circular(4),
                         bottomRight: isMe ? const Radius.circular(4) : const Radius.circular(16),
@@ -115,7 +115,7 @@ class ReplyMessageBubble extends StatelessWidget {
                           Text(
                             DateFormatter.formatMessageTime(message.timestamp),
                             style: theme.textTheme.bodySmall?.copyWith(
-                              color: theme.colorScheme.onSurfaceVariant.withOpacity(0.7),
+                              color: theme.colorScheme.onSurfaceVariant.withValues(alpha: 0.7),
                               fontSize: 11,
                             ),
                           ),
@@ -176,7 +176,7 @@ class ReplyMessageBubble extends StatelessWidget {
         return Text(
           message.text ?? '',
           style: theme.textTheme.bodySmall?.copyWith(
-            color: textColor.withOpacity(0.8),
+            color: textColor.withValues(alpha: 0.8),
             fontStyle: FontStyle.italic,
           ),
         );
@@ -264,7 +264,7 @@ class ReplyMessageBubble extends StatelessWidget {
                 Positioned.fill(
                   child: Container(
                     decoration: BoxDecoration(
-                      color: Colors.black.withOpacity(0.3),
+                      color: Colors.black.withValues(alpha: 0.3),
                       borderRadius: BorderRadius.circular(8),
                     ),
                     child: const Center(
@@ -329,7 +329,7 @@ class ReplyMessageBubble extends StatelessWidget {
               Text(
                 _formatFileSize(fileSize),
                 style: Theme.of(context).textTheme.bodySmall?.copyWith(
-                  color: textColor.withOpacity(0.7),
+                  color: textColor.withValues(alpha: 0.7),
                 ),
               ),
             ],
@@ -391,7 +391,7 @@ class ReplyMessageBubble extends StatelessWidget {
           child: CircularProgressIndicator(
             strokeWidth: 1.5,
             valueColor: AlwaysStoppedAnimation<Color>(
-              theme.colorScheme.onSurfaceVariant.withOpacity(0.7),
+              theme.colorScheme.onSurfaceVariant.withValues(alpha: 0.7),
             ),
           ),
         );
@@ -400,14 +400,14 @@ class ReplyMessageBubble extends StatelessWidget {
         return Icon(
           Icons.check,
           size: 14,
-          color: theme.colorScheme.onSurfaceVariant.withOpacity(0.7),
+          color: theme.colorScheme.onSurfaceVariant.withValues(alpha: 0.7),
         );
         
       case MessageStatus.delivered:
         return Icon(
           Icons.done_all,
           size: 14,
-          color: theme.colorScheme.onSurfaceVariant.withOpacity(0.7),
+          color: theme.colorScheme.onSurfaceVariant.withValues(alpha: 0.7),
         );
         
       case MessageStatus.read:

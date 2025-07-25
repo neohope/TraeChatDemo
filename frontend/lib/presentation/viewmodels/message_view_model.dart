@@ -572,6 +572,50 @@ class MessageViewModel extends ChangeNotifier {
       return Result.error(e.toString());
     }
   }
+
+  /// 编辑消息
+  Future<Result<MessageModel>> editMessage(String messageId, String newText) async {
+    try {
+      // 检查消息是否存在
+      final messageIndex = _messages.indexWhere((m) => m.id == messageId);
+      if (messageIndex == -1) {
+        return Result.error('消息不存在');
+      }
+      
+      final message = _messages[messageIndex];
+      
+      // 检查是否可以编辑
+      if (message.type != MessageType.text) {
+        return Result.error('只能编辑文本消息');
+      }
+      
+      if (message.isRecalled || message.isDeleted) {
+        return Result.error('无法编辑已撤回或已删除的消息');
+      }
+      
+      final currentUser = _authService.currentUser;
+      if (currentUser == null || message.senderId != currentUser.id) {
+        return Result.error('只能编辑自己发送的消息');
+      }
+      
+      // 创建编辑后的消息
+      final editedMessage = message.copyWith(
+        text: newText,
+        isEdited: true,
+      );
+      
+      // 先更新本地消息
+      _messages[messageIndex] = editedMessage;
+      notifyListeners();
+      
+      // TODO: 调用仓库层编辑消息API
+      // final result = await _messageRepository.editMessage(messageId, newText);
+      
+      return Result.success(editedMessage);
+    } catch (e) {
+      return Result.error(e.toString());
+    }
+  }
   
   /// 标记消息为已读
   Future<Result<bool>> markMessageAsRead(String messageId) async {
