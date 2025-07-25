@@ -7,7 +7,7 @@ import (
 	"time"
 
 	"github.com/google/uuid"
-	"github.com/yourusername/chatapp/message-service/internal/domain"
+	"github.com/neohope/chatapp/message-service/internal/domain"
 	"go.uber.org/zap"
 )
 
@@ -67,8 +67,8 @@ func (s *MessageService) SendMessage(ctx context.Context, message *domain.Messag
 
 	// 更新会话的最后一条消息
 	if err := s.repo.UpdateConversationLastMessage(ctx, message.Conversation, message); err != nil {
-		s.logger.Warn("Failed to update conversation last message", 
-			zap.Error(err), 
+		s.logger.Warn("Failed to update conversation last message",
+			zap.Error(err),
 			zap.String("conversation_id", message.Conversation),
 			zap.String("message_id", message.ID),
 		)

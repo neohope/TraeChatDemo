@@ -37,7 +37,7 @@ class LoadingOverlay extends StatelessWidget {
         // 半透明背景和加载指示器
         Positioned.fill(
           child: Container(
-            color: (backgroundColor ?? Colors.black).withOpacity(opacity),
+            color: (backgroundColor ?? Colors.black).withValues(alpha: opacity),
             child: Center(
               child: Column(
                 mainAxisSize: MainAxisSize.min,

@@ -7,12 +7,12 @@ import (
 	"time"
 
 	"github.com/google/uuid"
-	"github.com/yourusername/chatapp/message-service/internal/domain"
+	"github.com/neohope/chatapp/message-service/internal/domain"
 	"go.uber.org/zap"
 )
 
 var (
-	ErrMessageNotFound = errors.New("message not found")
+	ErrMessageNotFound      = errors.New("message not found")
 	ErrConversationNotFound = errors.New("conversation not found")
 )
 
@@ -53,7 +53,7 @@ func (r *InMemoryMessageRepository) Create(ctx context.Context, message *domain.
 	// 存储消息
 	r.messages[message.ID] = message
 
-	r.logger.Debug("Message created in memory", 
+	r.logger.Debug("Message created in memory",
 		zap.String("message_id", message.ID),
 		zap.String("sender_id", message.SenderID),
 		zap.String("type", string(message.Type)),
@@ -88,7 +88,7 @@ func (r *InMemoryMessageRepository) UpdateStatus(ctx context.Context, id string,
 	message.Status = status
 	message.UpdatedAt = time.Now()
 
-	r.logger.Debug("Message status updated in memory", 
+	r.logger.Debug("Message status updated in memory",
 		zap.String("message_id", id),
 		zap.String("status", string(status)),
 	)
@@ -169,7 +169,7 @@ func (r *InMemoryMessageRepository) CreateConversation(ctx context.Context, conv
 
 	r.conversations[conversation.ID] = conversation
 
-	r.logger.Debug("Conversation created in memory", 
+	r.logger.Debug("Conversation created in memory",
 		zap.String("conversation_id", conversation.ID),
 		zap.String("type", conversation.Type),
 	)
@@ -203,7 +203,7 @@ func (r *InMemoryMessageRepository) UpdateConversationLastMessage(ctx context.Co
 	conversation.LastMessage = message
 	conversation.UpdatedAt = time.Now()
 
-	r.logger.Debug("Conversation last message updated in memory", 
+	r.logger.Debug("Conversation last message updated in memory",
 		zap.String("conversation_id", conversationID),
 		zap.String("message_id", message.ID),
 	)

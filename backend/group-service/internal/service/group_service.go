@@ -7,8 +7,8 @@ import (
 	"time"
 
 	"github.com/google/uuid"
-	"github.com/yourusername/chatapp/group-service/internal/models"
-	"github.com/yourusername/chatapp/group-service/internal/repository"
+	"github.com/neohope/chatapp/group-service/internal/models"
+	"github.com/neohope/chatapp/group-service/internal/repository"
 	"go.uber.org/zap"
 )
 

@@ -1,27 +1,62 @@
-import 'package:flutter/material.dart' as flutter;
-import 'package:flutter/material.dart' hide ThemeMode;
+import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:hive_flutter/hive_flutter.dart';
 import 'package:provider/provider.dart';
 import 'package:firebase_core/firebase_core.dart';
-import 'package:flutter_local_notifications/flutter_local_notifications.dart';
+import 'package:firebase_messaging/firebase_messaging.dart';
 
 import 'core/config/app_config.dart';
 import 'core/storage/local_storage.dart';
 import 'core/utils/app_logger.dart';
-import 'data/repositories/settings_repository.dart';
-import 'domain/viewmodels/auth_viewmodel.dart';
+import 'core/services/api_service.dart';
+import 'core/services/websocket_service.dart';
+import 'core/services/audio_service.dart';
+import 'core/services/file_service.dart';
+import 'core/services/notification_service.dart';
+import 'data/repositories/settings_repository.dart' as settings_repository;
 import 'domain/viewmodels/conversation_viewmodel.dart';
-import 'domain/viewmodels/group_viewmodel.dart';
-import 'domain/viewmodels/media_viewmodel.dart';
-import 'domain/viewmodels/message_viewmodel.dart';
-import 'domain/viewmodels/notification_viewmodel.dart';
 import 'domain/viewmodels/settings_viewmodel.dart';
-import 'domain/viewmodels/user_viewmodel.dart';
-import 'presentation/routes/app_router.dart';
-import 'presentation/themes/app_theme.dart';
+import 'presentation/viewmodels/auth_viewmodel.dart' as presentation;
+import 'presentation/viewmodels/chat_viewmodel.dart';
+import 'presentation/viewmodels/message_viewmodel.dart' as presentation;
+import 'presentation/viewmodels/group_viewmodel.dart' as presentation;
+import 'presentation/viewmodels/notification_viewmodel.dart' as presentation;
+import 'presentation/viewmodels/voice_message_viewmodel.dart';
+import 'presentation/viewmodels/file_transfer_viewmodel.dart';
+import 'presentation/widgets/auth/login_widget.dart';
+import 'presentation/widgets/main/main_screen_widget.dart';
 
 final logger = AppLogger.instance.logger;
+
+/// 初始化应用服务
+Future<void> _initializeServices() async {
+  try {
+    logger.i('Initializing TraeChat application services...');
+    
+    // 初始化音频服务
+    await AudioService().initialize();
+    logger.i('Audio service initialized');
+    
+    // 初始化文件服务
+    await FileService().initialize();
+    logger.i('File service initialized');
+    
+    // 初始化通知服务
+    await NotificationService().initialize();
+    logger.i('Notification service initialized');
+    
+    logger.i('All services initialized successfully');
+  } catch (e) {
+    logger.e('Failed to initialize services: $e');
+    rethrow;
+  }
+}
+
+/// Firebase后台消息处理器
+Future<void> firebaseMessagingBackgroundHandler(RemoteMessage message) async {
+  await Firebase.initializeApp();
+  logger.i('Handling a background message: ${message.messageId}');
+}
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -39,122 +74,151 @@ void main() async {
   // 加载配置
   await AppConfig.instance.load();
   
-  // 初始化WebSocket服务
-  try {
-    // 确保WebSocket服务实例已创建
-    logger.i('WebSocket service initialized');
-  } catch (e) {
-    logger.e('Failed to initialize WebSocket service: $e');
-  }
+  // 初始化服务
+  await _initializeServices();
   
-  // 初始化Firebase (可选，根据需要)
+  // 初始化Firebase
   try {
     await Firebase.initializeApp();
     logger.i('Firebase initialized successfully');
+    
+    // 设置后台消息处理器
+    FirebaseMessaging.onBackgroundMessage(firebaseMessagingBackgroundHandler);
+    
+    logger.i('Notification service initialized successfully');
   } catch (e) {
-    logger.w('Failed to initialize Firebase: $e');
+    logger.w('Failed to initialize Firebase or Notification service: $e');
   }
-  
-  // 初始化本地通知
-  final FlutterLocalNotificationsPlugin flutterLocalNotificationsPlugin =
-      FlutterLocalNotificationsPlugin();
-  const AndroidInitializationSettings initializationSettingsAndroid =
-      AndroidInitializationSettings('@mipmap/ic_launcher');
-  final DarwinInitializationSettings initializationSettingsIOS =
-      DarwinInitializationSettings();
-  final InitializationSettings initializationSettings = InitializationSettings(
-    android: initializationSettingsAndroid,
-    iOS: initializationSettingsIOS,
-  );
-  await flutterLocalNotificationsPlugin.initialize(initializationSettings);
   
   // 运行应用
   runApp(MultiProvider(
     providers: [
-      // 注册视图模型
-      ChangeNotifierProvider(create: (_) => AuthViewModel()),
-      ChangeNotifierProvider(create: (_) => UserViewModel()),
-      ChangeNotifierProvider(create: (_) => MessageViewModel()),
+      // 服务提供者
+      Provider<ApiService>(create: (_) => ApiService()),
+      Provider<WebSocketService>(create: (_) => WebSocketService()),
+      Provider<AudioService>(create: (_) => AudioService()),
+      Provider<FileService>(create: (_) => FileService()),
+      Provider<NotificationService>(create: (_) => NotificationService()),
+      
+      // Domain ViewModels
       ChangeNotifierProvider(create: (_) => ConversationViewModel()),
-      ChangeNotifierProvider(create: (_) => GroupViewModel()),
-      ChangeNotifierProvider(create: (_) => NotificationViewModel()),
       ChangeNotifierProvider(create: (_) => SettingsViewModel()),
-      ChangeNotifierProvider(create: (_) => MediaViewModel()),
+      
+      // Presentation ViewModels
+      ChangeNotifierProvider(create: (context) => presentation.AuthViewModel(
+        context.read<ApiService>(),
+      )),
+      // ChangeNotifierProvider(create: (context) => presentation.UserViewModel(
+      //   context.read<ApiService>(),
+      // )),
+      ChangeNotifierProvider(create: (context) => ChatViewModel(
+        context.read<ApiService>(),
+        context.read<WebSocketService>(),
+      )),
+      ChangeNotifierProvider(create: (_) => presentation.MessageViewModel()),
+      // ChangeNotifierProvider(create: (context) => FriendViewModel(
+      //   friendRepository: FriendRepository.instance,
+      //   notificationService: context.read<NotificationService>(),
+      // )),
+      ChangeNotifierProvider(create: (context) => presentation.GroupViewModel()),
+      ChangeNotifierProvider(create: (context) => presentation.NotificationViewModel()),
+      ChangeNotifierProvider(create: (context) => VoiceMessageViewModel()),
+      ChangeNotifierProvider(create: (context) => FileTransferViewModel()),
     ],
     child: const MyApp(),
   ));
 }
 
 class MyApp extends StatelessWidget {
-  const MyApp({Key? key}) : super(key: key);
+  const MyApp({super.key});
 
   @override
   Widget build(BuildContext context) {
     return Consumer<SettingsViewModel>(
-      builder: (context, settingsViewModel, _) {
-        // 根据设置选择主题
-        final themeMode = settingsViewModel.themeMode;
-        
-        return flutter.MaterialApp.router(
-          title: 'Chat App',
+      builder: (context, settingsViewModel, child) {
+        return MaterialApp(
+          title: 'TraeChat',
+          theme: _buildLightTheme(),
+          darkTheme: _buildDarkTheme(),
+          themeMode: _convertThemeMode(settingsViewModel.themeMode),
           debugShowCheckedModeBanner: false,
-          // 设置主题
-          theme: AppTheme.lightTheme,
-          darkTheme: AppTheme.darkTheme,
-          themeMode: _getThemeMode(themeMode),
-          // 使用路由配置
-          routerConfig: AppRouter.router,
-          // 错误处理
-          builder: (context, child) {
-            // 添加全局错误处理
-            flutter.ErrorWidget.builder = (flutter.FlutterErrorDetails details) {
-              return flutter.Material(
-                child: flutter.Container(
-                  color: flutter.Theme.of(context).scaffoldBackgroundColor,
-                  child: flutter.Column(
-                    mainAxisAlignment: flutter.MainAxisAlignment.center,
-                    children: [
-                      const flutter.Icon(
-                        flutter.Icons.error_outline,
-                        color: flutter.Colors.red,
-                        size: 60,
-                      ),
-                      const flutter.SizedBox(height: 16),
-                      flutter.Text(
-                        '发生了一个错误',
-                        style: flutter.Theme.of(context).textTheme.titleLarge,
-                      ),
-                      if (AppConfig.instance.isDebug)
-                        flutter.Padding(
-                          padding: const flutter.EdgeInsets.all(16.0),
-                          child: flutter.Text(
-                            details.exception.toString(),
-                            style: flutter.Theme.of(context).textTheme.bodyMedium,
-                          ),
-                        ),
-                    ],
-                  ),
-                ),
-              );
-            };
-            
-            return child!;
-          },
-        );
-      },
+          home: Consumer<presentation.AuthViewModel>(
+            builder: (context, authViewModel, child) {
+              if (authViewModel.isAuthenticated) {
+                 return const MainScreenWidget();
+               } else {
+                 return const LoginWidget();
+               }
+             },
+           ),
+         );
+       },
+     );
+   }
+ 
+   /// 转换主题模式
+   ThemeMode _convertThemeMode(settings_repository.ThemeMode themeMode) {
+     switch (themeMode) {
+       case settings_repository.ThemeMode.light:
+         return ThemeMode.light;
+       case settings_repository.ThemeMode.dark:
+         return ThemeMode.dark;
+       case settings_repository.ThemeMode.system:
+       default:
+         return ThemeMode.system;
+     }
+   }
+
+  
+  ThemeData _buildLightTheme() {
+    return ThemeData(
+      useMaterial3: true,
+      colorScheme: ColorScheme.fromSeed(
+        seedColor: const Color(0xFF2196F3),
+        brightness: Brightness.light,
+      ),
+      appBarTheme: const AppBarTheme(
+        centerTitle: true,
+        elevation: 0,
+      ),
+      cardTheme: CardThemeData(
+        elevation: 2,
+        shape: RoundedRectangleBorder(
+          borderRadius: BorderRadius.circular(12),
+        ),
+      ),
+      inputDecorationTheme: InputDecorationTheme(
+        border: OutlineInputBorder(
+          borderRadius: BorderRadius.circular(12),
+        ),
+        filled: true,
+      ),
     );
   }
   
-  // 将应用的主题模式枚举转换为Flutter的ThemeMode
-  flutter.ThemeMode _getThemeMode(ThemeMode themeMode) {
-    switch (themeMode) {
-      case ThemeMode.light:
-        return flutter.ThemeMode.light;
-      case ThemeMode.dark:
-        return flutter.ThemeMode.dark;
-      case ThemeMode.system:
-      default:
-        return flutter.ThemeMode.system;
-    }
+  ThemeData _buildDarkTheme() {
+    return ThemeData(
+      useMaterial3: true,
+      colorScheme: ColorScheme.fromSeed(
+        seedColor: const Color(0xFF2196F3),
+        brightness: Brightness.dark,
+      ),
+      appBarTheme: const AppBarTheme(
+        centerTitle: true,
+        elevation: 0,
+      ),
+      cardTheme: CardThemeData(
+        elevation: 2,
+        shape: RoundedRectangleBorder(
+          borderRadius: BorderRadius.circular(12),
+        ),
+      ),
+      inputDecorationTheme: InputDecorationTheme(
+        border: OutlineInputBorder(
+          borderRadius: BorderRadius.circular(12),
+        ),
+        filled: true,
+      ),
+    );
   }
 }

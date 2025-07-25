@@ -10,14 +10,14 @@ import (
 	"time"
 
 	"github.com/gorilla/mux"
-	"github.com/yourusername/chatapp/message-service/api/ws"
-	"github.com/yourusername/chatapp/message-service/config"
-	"github.com/yourusername/chatapp/message-service/internal/domain"
-	httpdelivery "github.com/yourusername/chatapp/message-service/internal/delivery/http"
-	"github.com/yourusername/chatapp/message-service/internal/repository"
-	"github.com/yourusername/chatapp/message-service/internal/service"
-	"github.com/yourusername/chatapp/message-service/pkg/auth"
-	"github.com/yourusername/chatapp/message-service/pkg/logger"
+	"github.com/neohope/chatapp/message-service/api/ws"
+	"github.com/neohope/chatapp/message-service/config"
+	httpdelivery "github.com/neohope/chatapp/message-service/internal/delivery/http"
+	"github.com/neohope/chatapp/message-service/internal/domain"
+	"github.com/neohope/chatapp/message-service/internal/repository"
+	"github.com/neohope/chatapp/message-service/internal/service"
+	"github.com/neohope/chatapp/message-service/pkg/auth"
+	"github.com/neohope/chatapp/message-service/pkg/logger"
 	"go.uber.org/zap"
 )
 
@@ -71,7 +71,7 @@ func main() {
 	// 创建路由
 	router := mux.NewRouter()
 	messageHandler.RegisterRoutes(router)
-	
+
 	// 注册WebSocket路由
 	ws.RegisterRoutes(router, messageService, jwtManager, log)
 

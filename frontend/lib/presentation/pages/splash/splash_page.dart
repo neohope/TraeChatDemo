@@ -92,7 +92,7 @@ class _SplashPageState extends State<SplashPage> with SingleTickerProviderStateM
             end: Alignment.bottomCenter,
             colors: [
               Theme.of(context).primaryColor,
-              Theme.of(context).primaryColor.withOpacity(0.8),
+              Theme.of(context).primaryColor.withValues(alpha: 0.8),
             ],
           ),
         ),
@@ -116,7 +116,7 @@ class _SplashPageState extends State<SplashPage> with SingleTickerProviderStateM
                           borderRadius: BorderRadius.circular(20),
                           boxShadow: [
                             BoxShadow(
-                              color: Colors.black.withOpacity(0.2),
+                              color: Colors.black.withValues(alpha: 0.2),
                               blurRadius: 10,
                               offset: const Offset(0, 5),
                             ),
@@ -139,7 +139,7 @@ class _SplashPageState extends State<SplashPage> with SingleTickerProviderStateM
                           letterSpacing: 1.2,
                           shadows: [
                             Shadow(
-                              color: Colors.black.withOpacity(0.3),
+                              color: Colors.black.withValues(alpha: 0.3),
                               offset: const Offset(0, 2),
                               blurRadius: 4,
                             ),
@@ -151,7 +151,7 @@ class _SplashPageState extends State<SplashPage> with SingleTickerProviderStateM
                       Text(
                         '安全、快速的即时通讯',
                         style: TextStyle(
-                          color: Colors.white.withOpacity(0.9),
+                          color: Colors.white.withValues(alpha: 0.9),
                           fontSize: 16,
                           letterSpacing: 0.5,
                         ),

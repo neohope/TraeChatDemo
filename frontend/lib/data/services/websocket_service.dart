@@ -6,7 +6,7 @@ import '../../core/utils/app_logger.dart';
 import '../models/api_response.dart';
 import '../models/message.dart';
 import '../../domain/models/conversation_model.dart' show MessageStatus, MessageType;
-import '../repositories/message_repository.dart';
+// import '../repositories/message_repository.dart';
 
 /// WebSocket消息类型
 enum WebSocketMessageType {
@@ -39,7 +39,7 @@ class WebSocketService {
   // WebSocket客户端
   final _wsClient = WebSocketClient.instance;
   // 消息仓库
-  final _messageRepository = MessageRepository.instance;
+  // final _messageRepository = MessageRepository.instance;
   // 日志实例
   final _logger = AppLogger.instance.logger;
   

@@ -115,6 +115,13 @@ class AppLogger {
       return false;
     }
   }
+  
+  // 便捷日志方法
+  void verbose(String message) => _logger.v(message);
+  void debug(String message) => _logger.d(message);
+  void info(String message) => _logger.i(message);
+  void warning(String message) => _logger.w(message);
+  void error(String message) => _logger.e(message);
 }
 
 // 文件输出类

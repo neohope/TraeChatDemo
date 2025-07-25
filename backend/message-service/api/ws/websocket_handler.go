@@ -5,8 +5,8 @@ import (
 	"net/http"
 
 	"github.com/gorilla/websocket"
-	"github.com/yourusername/chatapp/message-service/internal/domain"
-	"github.com/yourusername/chatapp/message-service/pkg/auth"
+	"github.com/neohope/chatapp/message-service/internal/domain"
+	"github.com/neohope/chatapp/message-service/pkg/auth"
 	"go.uber.org/zap"
 )
 
@@ -32,7 +32,7 @@ var upgrader = websocket.Upgrader{
 func NewWebSocketHandler(messageService domain.MessageService, jwtManager *auth.JWTManager, logger *zap.Logger) *WebSocketHandler {
 	// 创建客户端管理器
 	clientManager := NewClientManager(logger)
-	
+
 	handler := &WebSocketHandler{
 		clientManager:  clientManager,
 		messageService: messageService,

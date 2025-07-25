@@ -9,7 +9,7 @@ import (
 
 	"github.com/google/uuid"
 	"github.com/jmoiron/sqlx"
-	"github.com/yourusername/chatapp/group-service/internal/models"
+	"github.com/neohope/chatapp/group-service/internal/models"
 )
 
 // GroupRepository 群组仓库接口

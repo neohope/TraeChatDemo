@@ -10,12 +10,12 @@ import (
 	"time"
 
 	"github.com/gorilla/mux"
-	"github.com/yourusername/chatapp/group-service/config"
-	"github.com/yourusername/chatapp/group-service/internal/database"
-	"github.com/yourusername/chatapp/group-service/internal/handler"
-	"github.com/yourusername/chatapp/group-service/internal/repository"
-	"github.com/yourusername/chatapp/group-service/internal/service"
-	"github.com/yourusername/chatapp/group-service/pkg/jwt"
+	"github.com/neohope/chatapp/group-service/config"
+	"github.com/neohope/chatapp/group-service/internal/database"
+	"github.com/neohope/chatapp/group-service/internal/handler"
+	"github.com/neohope/chatapp/group-service/internal/repository"
+	"github.com/neohope/chatapp/group-service/internal/service"
+	"github.com/neohope/chatapp/group-service/pkg/jwt"
 	"go.uber.org/zap"
 	"go.uber.org/zap/zapcore"
 )
@@ -37,7 +37,7 @@ func main() {
 		logger.Fatal("Failed to load config", zap.Error(err))
 	}
 
-	logger.Info("Configuration loaded", 
+	logger.Info("Configuration loaded",
 		zap.Int("http_port", cfg.HTTPPort),
 		zap.String("log_level", cfg.LogLevel),
 		zap.String("db_host", cfg.Database.Host),

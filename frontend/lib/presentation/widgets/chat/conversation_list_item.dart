@@ -142,7 +142,7 @@ class ConversationListItem extends StatelessWidget {
         // 头像
         CircleAvatar(
           radius: AppTheme.avatarSizeMedium / 2,
-          backgroundColor: Theme.of(context).primaryColor.withOpacity(0.1),
+          backgroundColor: Theme.of(context).primaryColor.withValues(alpha: 0.1),
           backgroundImage: conversation.avatarUrl != null
               ? NetworkImage(conversation.avatarUrl!)
               : null,

@@ -223,7 +223,7 @@ class AppTheme {
       fillColor: WidgetStateProperty.resolveWith<Color>(
         (Set<WidgetState> states) {
           if (states.contains(WidgetState.disabled)) {
-            return Colors.grey.withOpacity(.32);
+            return Colors.grey.withValues(alpha: .32);
           }
           if (states.contains(WidgetState.selected)) {
             return primaryColor;
@@ -239,7 +239,7 @@ class AppTheme {
       fillColor: WidgetStateProperty.resolveWith<Color>(
         (Set<WidgetState> states) {
           if (states.contains(WidgetState.disabled)) {
-            return Colors.grey.withOpacity(.32);
+            return Colors.grey.withValues(alpha: .32);
           }
           if (states.contains(WidgetState.selected)) {
             return primaryColor;
@@ -252,7 +252,7 @@ class AppTheme {
       thumbColor: WidgetStateProperty.resolveWith<Color>(
         (Set<WidgetState> states) {
           if (states.contains(WidgetState.disabled)) {
-            return Colors.grey.withOpacity(.32);
+            return Colors.grey.withValues(alpha: .32);
           }
           if (states.contains(WidgetState.selected)) {
             return primaryColor;
@@ -263,12 +263,12 @@ class AppTheme {
       trackColor: WidgetStateProperty.resolveWith<Color>(
         (Set<WidgetState> states) {
           if (states.contains(WidgetState.disabled)) {
-            return Colors.grey.withOpacity(.12);
+            return Colors.grey.withValues(alpha: .12);
           }
           if (states.contains(WidgetState.selected)) {
-            return primaryColor.withOpacity(.5);
+            return primaryColor.withValues(alpha: .5);
           }
-          return Colors.grey.withOpacity(.5);
+          return Colors.grey.withValues(alpha: .5);
         },
       ),
     ),
@@ -427,7 +427,7 @@ class AppTheme {
       fillColor: WidgetStateProperty.resolveWith<Color>(
         (Set<WidgetState> states) {
           if (states.contains(WidgetState.disabled)) {
-            return Colors.grey.withOpacity(.32);
+            return Colors.grey.withValues(alpha: .32);
           }
           if (states.contains(WidgetState.selected)) {
             return primaryColor;
@@ -443,7 +443,7 @@ class AppTheme {
       fillColor: WidgetStateProperty.resolveWith<Color>(
         (Set<WidgetState> states) {
           if (states.contains(WidgetState.disabled)) {
-            return Colors.grey.withOpacity(.32);
+            return Colors.grey.withValues(alpha: .32);
           }
           if (states.contains(WidgetState.selected)) {
             return primaryColor;
@@ -456,7 +456,7 @@ class AppTheme {
       thumbColor: WidgetStateProperty.resolveWith<Color>(
         (Set<WidgetState> states) {
           if (states.contains(WidgetState.disabled)) {
-            return Colors.grey.withOpacity(.32);
+            return Colors.grey.withValues(alpha: .32);
           }
           if (states.contains(WidgetState.selected)) {
             return primaryColor;
@@ -467,12 +467,12 @@ class AppTheme {
       trackColor: WidgetStateProperty.resolveWith<Color>(
         (Set<WidgetState> states) {
           if (states.contains(WidgetState.disabled)) {
-            return Colors.grey.withOpacity(.12);
+            return Colors.grey.withValues(alpha: .12);
           }
           if (states.contains(WidgetState.selected)) {
-            return primaryColor.withOpacity(.5);
+            return primaryColor.withValues(alpha: .5);
           }
-          return Colors.grey.withOpacity(.5);
+          return Colors.grey.withValues(alpha: .5);
         },
       ),
     ),

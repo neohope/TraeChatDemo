@@ -7,7 +7,7 @@ import (
 	"github.com/jmoiron/sqlx"
 	_ "github.com/lib/pq" // PostgreSQL驱动
 
-	"github.com/yourusername/chatapp/user-service/config"
+	"github.com/neohope/chatapp/user-service/config"
 )
 
 // NewPostgresDB 创建一个新的PostgreSQL数据库连接

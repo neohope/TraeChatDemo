@@ -266,7 +266,7 @@ class MiniProgramItem extends StatelessWidget {
             width: 50,
             height: 50,
             decoration: BoxDecoration(
-              color: miniProgram.color.withOpacity(0.1),
+              color: miniProgram.color.withValues(alpha: 0.1),
               borderRadius: BorderRadius.circular(AppTheme.borderRadiusNormal),
             ),
             child: Icon(
@@ -383,7 +383,7 @@ class MiniProgramSearchDelegate extends SearchDelegate<MiniProgram?> {
             width: 40,
             height: 40,
             decoration: BoxDecoration(
-              color: miniProgram.color.withOpacity(0.1),
+              color: miniProgram.color.withValues(alpha: 0.1),
               borderRadius: BorderRadius.circular(AppTheme.borderRadiusSmall),
             ),
             child: Icon(
@@ -472,7 +472,7 @@ class _ManageMiniProgramsPageState extends State<ManageMiniProgramsPage> {
                   width: 40,
                   height: 40,
                   decoration: BoxDecoration(
-                    color: miniProgram.color.withOpacity(0.1),
+                    color: miniProgram.color.withValues(alpha: 0.1),
                     borderRadius: BorderRadius.circular(AppTheme.borderRadiusSmall),
                   ),
                   child: Icon(

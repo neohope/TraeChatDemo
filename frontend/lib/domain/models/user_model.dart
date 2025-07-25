@@ -29,11 +29,16 @@ class UserModel {
   final String? phone;
   final String? avatarUrl;
   final String? bio;
+  final String? nickname;
   final UserStatus? status;
   final DateTime? lastSeen;
+  final DateTime? lastSeenAt;
   final bool isFavorite;
   final bool isBlocked;
   final Map<String, dynamic>? metadata;
+  
+  /// 检查用户是否在线
+  bool get isOnline => status == UserStatus.online;
   
   UserModel({
     required this.id,
@@ -42,8 +47,10 @@ class UserModel {
     this.phone,
     this.avatarUrl,
     this.bio,
+    this.nickname,
     this.status,
     this.lastSeen,
+    this.lastSeenAt,
     this.isFavorite = false,
     this.isBlocked = false,
     this.metadata,
@@ -58,11 +65,15 @@ class UserModel {
       phone: json['phone'],
       avatarUrl: json['avatarUrl'],
       bio: json['bio'],
+      nickname: json['nickname'],
       status: json['status'] != null
           ? _parseStatus(json['status'])
           : null,
       lastSeen: json['lastSeen'] != null
           ? DateTime.parse(json['lastSeen'])
+          : null,
+      lastSeenAt: json['lastSeenAt'] != null
+          ? DateTime.parse(json['lastSeenAt'])
           : null,
       isFavorite: json['isFavorite'] ?? false,
       isBlocked: json['isBlocked'] ?? false,
@@ -79,8 +90,10 @@ class UserModel {
       'phone': phone,
       'avatarUrl': avatarUrl,
       'bio': bio,
+      'nickname': nickname,
       'status': status?.toString().split('.').last,
       'lastSeen': lastSeen?.toIso8601String(),
+      'lastSeenAt': lastSeenAt?.toIso8601String(),
       'isFavorite': isFavorite,
       'isBlocked': isBlocked,
       'metadata': metadata,
@@ -95,8 +108,10 @@ class UserModel {
     String? phone,
     String? avatarUrl,
     String? bio,
+    String? nickname,
     UserStatus? status,
     DateTime? lastSeen,
+    DateTime? lastSeenAt,
     bool? isFavorite,
     bool? isBlocked,
     Map<String, dynamic>? metadata,
@@ -108,8 +123,10 @@ class UserModel {
       phone: phone ?? this.phone,
       avatarUrl: avatarUrl ?? this.avatarUrl,
       bio: bio ?? this.bio,
+      nickname: nickname ?? this.nickname,
       status: status ?? this.status,
       lastSeen: lastSeen ?? this.lastSeen,
+      lastSeenAt: lastSeenAt ?? this.lastSeenAt,
       isFavorite: isFavorite ?? this.isFavorite,
       isBlocked: isBlocked ?? this.isBlocked,
       metadata: metadata ?? this.metadata,

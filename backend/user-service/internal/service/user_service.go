@@ -7,23 +7,23 @@ import (
 
 	"go.uber.org/zap"
 
-	"github.com/yourusername/chatapp/user-service/internal/domain"
-	"github.com/yourusername/chatapp/user-service/pkg/auth"
+	"github.com/neohope/chatapp/user-service/internal/domain"
+	"github.com/neohope/chatapp/user-service/pkg/auth"
 )
 
 // UserService 实现domain.UserService接口
 type UserService struct {
-	userRepo domain.UserRepository
+	userRepo   domain.UserRepository
 	jwtManager *auth.JWTManager
-	logger    *zap.Logger
+	logger     *zap.Logger
 }
 
 // NewUserService 创建一个新的用户服务
 func NewUserService(userRepo domain.UserRepository, jwtManager *auth.JWTManager, logger *zap.Logger) domain.UserService {
 	return &UserService{
-		userRepo: userRepo,
+		userRepo:   userRepo,
 		jwtManager: jwtManager,
-		logger:    logger,
+		logger:     logger,
 	}
 }
 
@@ -116,9 +116,9 @@ func (s *UserService) UpdateUser(ctx context.Context, user *domain.User) error {
 	}
 
 	// 保留不应更新的字段
-	user.Email = existingUser.Email      // 不允许更新邮箱
-	user.Username = existingUser.Username // 不允许更新用户名
-	user.Password = existingUser.Password // 保留原密码
+	user.Email = existingUser.Email         // 不允许更新邮箱
+	user.Username = existingUser.Username   // 不允许更新用户名
+	user.Password = existingUser.Password   // 保留原密码
 	user.CreatedAt = existingUser.CreatedAt // 保留创建时间
 
 	// 更新用户

@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 
-import '../../../data/models/user.dart';
+import '../../../domain/models/user_model.dart';
 import '../../../domain/models/conversation_model.dart'; // 导入 UserStatus 枚举
 import '../../themes/app_theme.dart';
 
@@ -8,7 +8,7 @@ import '../../themes/app_theme.dart';
 /// 
 /// 用于显示联系人列表中的用户项，包括头像、名称、状态、尾随部件等
 class UserListItem extends StatelessWidget {
-  final User user;
+  final UserModel user;
   final VoidCallback onTap;
   final VoidCallback? onLongPress;
   final Widget? trailing;
@@ -143,7 +143,9 @@ class UserListItem extends StatelessWidget {
   }
   
   // 获取状态文本
-  String _getStatusText(UserStatus status) {
+  String _getStatusText(UserStatus? status) {
+    if (status == null) return '离线';
+    
     switch (status) {
       case UserStatus.online:
         return '在线';
@@ -154,7 +156,7 @@ class UserListItem extends StatelessWidget {
       case UserStatus.busy:
         return '忙碌';
       default:
-        return '';
+        return '离线';
     }
   }
 }

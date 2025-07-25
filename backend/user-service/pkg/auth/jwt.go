@@ -6,7 +6,7 @@ import (
 
 	"github.com/golang-jwt/jwt/v4"
 
-	"github.com/yourusername/chatapp/user-service/internal/domain"
+	"github.com/neohope/chatapp/user-service/internal/domain"
 )
 
 // JWTManager JWT管理器
@@ -17,9 +17,9 @@ type JWTManager struct {
 
 // CustomClaims 自定义JWT声明
 type CustomClaims struct {
-	UserID   string         `json:"user_id"`
-	Username string         `json:"username"`
-	Email    string         `json:"email"`
+	UserID   string            `json:"user_id"`
+	Username string            `json:"username"`
+	Email    string            `json:"email"`
 	Status   domain.UserStatus `json:"status"`
 	jwt.RegisteredClaims
 }

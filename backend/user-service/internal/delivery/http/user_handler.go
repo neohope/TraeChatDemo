@@ -11,8 +11,8 @@ import (
 	"github.com/gorilla/mux"
 	"go.uber.org/zap"
 
-	"github.com/yourusername/chatapp/user-service/internal/domain"
-	"github.com/yourusername/chatapp/user-service/pkg/auth"
+	"github.com/neohope/chatapp/user-service/internal/domain"
+	"github.com/neohope/chatapp/user-service/pkg/auth"
 )
 
 // UserHandler 处理用户相关的HTTP请求

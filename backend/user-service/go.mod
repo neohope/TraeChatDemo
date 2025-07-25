@@ -1,4 +1,4 @@
-module github.com/yourusername/chatapp/user-service
+module github.com/neohope/chatapp/user-service
 
 go 1.19
 

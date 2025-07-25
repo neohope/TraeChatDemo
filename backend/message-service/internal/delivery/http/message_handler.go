@@ -10,8 +10,8 @@ import (
 
 	"github.com/google/uuid"
 	"github.com/gorilla/mux"
-	"github.com/yourusername/chatapp/message-service/internal/domain"
-	"github.com/yourusername/chatapp/message-service/pkg/auth"
+	"github.com/neohope/chatapp/message-service/internal/domain"
+	"github.com/neohope/chatapp/message-service/pkg/auth"
 	"go.uber.org/zap"
 )
 
@@ -166,8 +166,8 @@ func (h *MessageHandler) UpdateMessageStatus(w http.ResponseWriter, r *http.Requ
 
 	// 更新状态
 	if err := h.service.UpdateMessageStatus(r.Context(), messageID, req.Status); err != nil {
-		h.logger.Error("Failed to update message status", 
-			zap.Error(err), 
+		h.logger.Error("Failed to update message status",
+			zap.Error(err),
 			zap.String("message_id", messageID),
 			zap.String("status", string(req.Status)),
 		)
@@ -200,8 +200,8 @@ func (h *MessageHandler) GetConversationMessages(w http.ResponseWriter, r *http.
 	// 获取消息
 	messages, err := h.service.GetConversationMessages(r.Context(), conversationID, limit, offset)
 	if err != nil {
-		h.logger.Error("Failed to get conversation messages", 
-			zap.Error(err), 
+		h.logger.Error("Failed to get conversation messages",
+			zap.Error(err),
 			zap.String("conversation_id", conversationID),
 		)
 		respondError(w, http.StatusInternalServerError, "failed to get conversation messages")

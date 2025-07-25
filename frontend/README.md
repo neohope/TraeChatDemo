@@ -75,7 +75,7 @@ TraeChatDemo 前端是一个使用 Flutter 开发的跨平台聊天应用客户�
 
 1. 克隆仓库：
    ```bash
-   git clone https://github.com/yourusername/TraeChatDemo.git
+   git clone https://github.com/neohope/TraeChatDemo.git
    cd TraeChatDemo/frontend
    ```
 

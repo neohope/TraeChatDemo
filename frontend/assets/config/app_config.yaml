@@ -1,0 +1,49 @@
+# ChatApp 前端应用配置文件
+
+# API服务配置
+api_base_url: "http://localhost:8080"
+ws_base_url: "ws://localhost:8080/ws"
+
+# 应用配置
+is_debug: true
+default_language: "zh"
+
+# 网络配置
+connection_timeout: 30000
+receive_timeout: 30000
+
+# 安全配置
+encryption_enabled: false
+
+# 推送通知配置
+push_notification:
+  enabled: true
+  firebase_project_id: "chatapp-demo"
+  vapid_key: ""
+
+# 媒体配置
+media:
+  max_file_size: 10485760  # 10MB
+  allowed_image_types: ["jpg", "jpeg", "png", "gif", "webp"]
+  allowed_video_types: ["mp4", "mov", "avi"]
+  allowed_audio_types: ["mp3", "wav", "aac"]
+  allowed_document_types: ["pdf", "doc", "docx", "txt"]
+
+# UI配置
+ui:
+  default_theme: "system"  # light, dark, system
+  animation_duration: 300
+  page_size: 20
+  auto_scroll_threshold: 5
+
+# 缓存配置
+cache:
+  message_cache_size: 1000
+  image_cache_size: 100
+  cache_duration: 86400  # 24小时
+
+# 开发配置
+development:
+  mock_data: false
+  show_debug_info: true
+  log_level: "debug"  # debug, info, warning, error

@@ -9,7 +9,7 @@ import (
 	"github.com/google/uuid"
 	"github.com/jmoiron/sqlx"
 
-	"github.com/yourusername/chatapp/user-service/internal/domain"
+	"github.com/neohope/chatapp/user-service/internal/domain"
 )
 
 // UserRepository 实现domain.UserRepository接口

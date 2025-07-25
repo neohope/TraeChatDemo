@@ -8,9 +8,9 @@ import (
 
 	"github.com/google/uuid"
 	"github.com/gorilla/mux"
-	"github.com/yourusername/chatapp/group-service/internal/models"
-	"github.com/yourusername/chatapp/group-service/internal/service"
-	"github.com/yourusername/chatapp/group-service/pkg/jwt"
+	"github.com/neohope/chatapp/group-service/internal/models"
+	"github.com/neohope/chatapp/group-service/internal/service"
+	"github.com/neohope/chatapp/group-service/pkg/jwt"
 	"go.uber.org/zap"
 )
 

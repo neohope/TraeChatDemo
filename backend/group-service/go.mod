@@ -1,4 +1,4 @@
-module github.com/yourusername/chatapp/group-service
+module github.com/neohope/chatapp/group-service
 
 go 1.21
 

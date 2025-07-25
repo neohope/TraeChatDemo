@@ -13,12 +13,12 @@ import (
 	"github.com/gorilla/mux"
 	"go.uber.org/zap"
 
-	"github.com/yourusername/chatapp/user-service/config"
-	"github.com/yourusername/chatapp/user-service/internal/delivery/http"
-	"github.com/yourusername/chatapp/user-service/internal/repository"
-	"github.com/yourusername/chatapp/user-service/internal/service"
-	"github.com/yourusername/chatapp/user-service/pkg/auth"
-	"github.com/yourusername/chatapp/user-service/pkg/logger"
+	"github.com/neohope/chatapp/user-service/config"
+	httpdelivery "github.com/neohope/chatapp/user-service/internal/delivery/http"
+	"github.com/neohope/chatapp/user-service/internal/repository"
+	"github.com/neohope/chatapp/user-service/internal/service"
+	"github.com/neohope/chatapp/user-service/pkg/auth"
+	"github.com/neohope/chatapp/user-service/pkg/logger"
 )
 
 func main() {

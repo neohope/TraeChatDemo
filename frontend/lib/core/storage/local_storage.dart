@@ -200,6 +200,51 @@ class LocalStorage {
     }
   }
   
+  // 实例方法包装器，用于兼容性
+  Future<String?> getString(String key) async {
+    return getSetting(key)?.toString();
+  }
+  
+  Future<void> setString(String key, String value) async {
+    await saveSetting(key, value);
+  }
+  
+  Future<List<String>?> getStringList(String key) async {
+    final value = getSetting(key);
+    if (value is List) {
+      return value.cast<String>();
+    }
+    return null;
+  }
+  
+  Future<void> setStringList(String key, List<String> value) async {
+    await saveSetting(key, value);
+  }
+  
+  Future<bool?> getBool(String key) async {
+    return getSetting(key) as bool?;
+  }
+  
+  Future<void> setBool(String key, bool value) async {
+    await saveSetting(key, value);
+  }
+  
+  Future<int?> getInt(String key) async {
+    return getSetting(key) as int?;
+  }
+  
+  Future<void> setInt(String key, int value) async {
+    await saveSetting(key, value);
+  }
+  
+  Future<double?> getDouble(String key) async {
+    return getSetting(key) as double?;
+  }
+  
+  Future<void> setDouble(String key, double value) async {
+    await saveSetting(key, value);
+  }
+  
   // 保存刷新令牌
   static Future<void> saveRefreshToken(String token) async {
     try {
@@ -334,6 +379,45 @@ class LocalStorage {
     } catch (e) {
       _logger.e('获取所有会话失败: $e');
       return [];
+    }
+  }
+
+  // 保存会话列表
+  static Future<void> saveConversations(List<dynamic> conversations) async {
+    try {
+      // 清除现有的会话数据
+      final List<String> existingKeys = _chatBox.keys
+          .where((key) => key.toString().startsWith('conversation_'))
+          .map((key) => key.toString())
+          .toList();
+      
+      for (final key in existingKeys) {
+        await _chatBox.delete(key);
+      }
+      
+      // 保存新的会话列表
+      for (final conversation in conversations) {
+        if (conversation != null) {
+          String conversationId;
+          Map<String, dynamic> conversationData;
+          
+          if (conversation is Map<String, dynamic>) {
+            conversationId = conversation['id']?.toString() ?? '';
+            conversationData = conversation;
+          } else {
+            conversationId = conversation.id?.toString() ?? '';
+            conversationData = conversation.toJson();
+          }
+          
+          if (conversationId.isNotEmpty) {
+            await saveChatData('conversation_$conversationId', conversationData);
+          }
+        }
+      }
+      
+      _logger.i('会话列表已保存到本地存储，共 ${conversations.length} 个会话');
+    } catch (e) {
+      _logger.e('保存会话列表失败: $e');
     }
   }
   
@@ -496,6 +580,13 @@ class LocalStorage {
       return null;
     }
   }
+  
+
+
+  
+
+  
+
   
   // 清除媒体缓存
   static Future<void> clearMediaCache() async {

@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
-import '../../../../data/models/user.dart';
+import '../../../../domain/models/user_model.dart';
 import '../../../../domain/viewmodels/user_viewmodel.dart';
 import '../../../routes/app_router.dart';
 import '../../../themes/app_theme.dart';
@@ -116,8 +116,8 @@ class _ContactsTabState extends State<ContactsTab> {
         builder: (context, userViewModel, child) {
           // 获取联系人列表
           final contacts = _isSearching
-              ? userViewModel.searchResults
-              : userViewModel.contacts;
+              ? userViewModel.convertToUserModelList(userViewModel.searchResults)
+              : userViewModel.convertToUserModelList(userViewModel.contacts);
           
           // 如果正在加载且没有数据，显示加载指示器
           if (userViewModel.isLoading && contacts.isEmpty) {
@@ -157,7 +157,7 @@ class _ContactsTabState extends State<ContactsTab> {
           }
           
           // 按字母分组显示联系人
-          final Map<String, List<User>> groupedContacts = {};
+          final Map<String, List<UserModel>> groupedContacts = {};
           
           // 对联系人进行分组
           for (var contact in contacts) {
@@ -294,7 +294,7 @@ class _ContactsTabState extends State<ContactsTab> {
   }
   
   // 显示联系人操作菜单
-  void _showContactOptions(User contact) {
+  void _showContactOptions(UserModel contact) {
     showModalBottomSheet(
       context: context,
       builder: (context) {
@@ -362,7 +362,7 @@ class _ContactsTabState extends State<ContactsTab> {
   }
   
   // 确认拉黑联系人
-  void _confirmBlockContact(User contact) {
+  void _confirmBlockContact(UserModel contact) {
     showDialog(
       context: context,
       builder: (context) {
@@ -394,7 +394,7 @@ class _ContactsTabState extends State<ContactsTab> {
   }
   
   // 确认删除联系人
-  void _confirmDeleteContact(User contact) {
+  void _confirmDeleteContact(UserModel contact) {
     showDialog(
       context: context,
       builder: (context) {

@@ -9,7 +9,7 @@ import (
 
 	"github.com/google/uuid"
 	"github.com/jmoiron/sqlx"
-	"github.com/yourusername/chatapp/message-service/internal/domain"
+	"github.com/neohope/chatapp/message-service/internal/domain"
 	"go.uber.org/zap"
 )
 
@@ -80,16 +80,16 @@ func (r *MessageRepository) GetByID(ctx context.Context, id string) (*domain.Mes
 	`
 
 	var message struct {
-		ID           string         `db:"id"`
-		Conversation string         `db:"conversation_id"`
-		SenderID     string         `db:"sender_id"`
-		Type         domain.MessageType `db:"type"`
-		Content      string         `db:"content"`
-		Metadata     []byte         `db:"metadata"`
+		ID           string               `db:"id"`
+		Conversation string               `db:"conversation_id"`
+		SenderID     string               `db:"sender_id"`
+		Type         domain.MessageType   `db:"type"`
+		Content      string               `db:"content"`
+		Metadata     []byte               `db:"metadata"`
 		Status       domain.MessageStatus `db:"status"`
-		CreatedAt    time.Time      `db:"created_at"`
-		UpdatedAt    time.Time      `db:"updated_at"`
-		IsGroupChat  bool           `db:"is_group_chat"`
+		CreatedAt    time.Time            `db:"created_at"`
+		UpdatedAt    time.Time            `db:"updated_at"`
+		IsGroupChat  bool                 `db:"is_group_chat"`
 	}
 
 	err := r.db.GetContext(ctx, &message, query, id)
@@ -157,16 +157,16 @@ func (r *MessageRepository) GetConversationMessages(ctx context.Context, convers
 	var messages []*domain.Message
 	for rows.Next() {
 		var msg struct {
-			ID           string         `db:"id"`
-			Conversation string         `db:"conversation_id"`
-			SenderID     string         `db:"sender_id"`
-			Type         domain.MessageType `db:"type"`
-			Content      string         `db:"content"`
-			Metadata     []byte         `db:"metadata"`
+			ID           string               `db:"id"`
+			Conversation string               `db:"conversation_id"`
+			SenderID     string               `db:"sender_id"`
+			Type         domain.MessageType   `db:"type"`
+			Content      string               `db:"content"`
+			Metadata     []byte               `db:"metadata"`
 			Status       domain.MessageStatus `db:"status"`
-			CreatedAt    time.Time      `db:"created_at"`
-			UpdatedAt    time.Time      `db:"updated_at"`
-			IsGroupChat  bool           `db:"is_group_chat"`
+			CreatedAt    time.Time            `db:"created_at"`
+			UpdatedAt    time.Time            `db:"updated_at"`
+			IsGroupChat  bool                 `db:"is_group_chat"`
 		}
 
 		if scanErr := rows.StructScan(&msg); scanErr != nil {
@@ -306,16 +306,16 @@ func (r *MessageRepository) GetConversation(ctx context.Context, id string) (*do
 	`
 
 	var lastMsg struct {
-		ID           string         `db:"id"`
-		Conversation string         `db:"conversation_id"`
-		SenderID     string         `db:"sender_id"`
-		Type         domain.MessageType `db:"type"`
-		Content      string         `db:"content"`
-		Metadata     []byte         `db:"metadata"`
+		ID           string               `db:"id"`
+		Conversation string               `db:"conversation_id"`
+		SenderID     string               `db:"sender_id"`
+		Type         domain.MessageType   `db:"type"`
+		Content      string               `db:"content"`
+		Metadata     []byte               `db:"metadata"`
 		Status       domain.MessageStatus `db:"status"`
-		CreatedAt    time.Time      `db:"created_at"`
-		UpdatedAt    time.Time      `db:"updated_at"`
-		IsGroupChat  bool           `db:"is_group_chat"`
+		CreatedAt    time.Time            `db:"created_at"`
+		UpdatedAt    time.Time            `db:"updated_at"`
+		IsGroupChat  bool                 `db:"is_group_chat"`
 	}
 
 	var lastMessage *domain.Message
