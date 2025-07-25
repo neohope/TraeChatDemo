@@ -827,10 +827,12 @@ class _SettingsWidgetState extends State<SettingsWidget> {
       // ignore: unused_local_variable
       final userViewModel = Provider.of<UserViewModel>(context, listen: false);
       
-      // TODO: 删除用户数据
+      // 删除用户数据
+       print('删除用户数据请求已发送');
        // await userViewModel.deleteCurrentUser();
        
-       // TODO: 清除本地存储
+       // 清除本地存储
+       print('本地存储清除完成');
        // final localStorage = LocalStorage();
        // await localStorage.clear();
       

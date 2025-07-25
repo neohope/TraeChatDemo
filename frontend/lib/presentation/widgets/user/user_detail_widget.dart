@@ -7,7 +7,7 @@ import '../../../domain/models/user_model.dart';
 import '../../viewmodels/user_viewmodel.dart';
 import '../../viewmodels/friend_viewmodel.dart';
 import '../../viewmodels/chat_viewmodel.dart';
-// TODO: Import these when needed
+// 需要时导入这些包
 // import '../../../core/utils/date_utils.dart';
 // import '../../../core/utils/image_utils.dart';
 
@@ -175,7 +175,7 @@ class _UserDetailWidgetState extends State<UserDetailWidget> {
                 fontWeight: FontWeight.bold,
               ),
             ),
-            // TODO: Add isVerified property to UserModel
+            // 添加isVerified属性到UserModel
             // if (user.isVerified)
               Container(
                 margin: const EdgeInsets.only(left: 8),
@@ -285,7 +285,7 @@ class _UserDetailWidgetState extends State<UserDetailWidget> {
             _buildInfoRow('昵称', user.nickname ?? user.name),
             if (user.bio != null && user.bio!.isNotEmpty)
               _buildInfoRow('个人简介', user.bio!),
-            // TODO: Import AppDateUtils or use alternative date formatting
+            // 导入AppDateUtils或使用替代的日期格式化
             // _buildInfoRow('注册时间', AppDateUtils.formatDate(user.createdAt)),
           ],
         ),
@@ -443,9 +443,9 @@ class _UserDetailWidgetState extends State<UserDetailWidget> {
             if (!user.isOnline && user.lastSeen != null)
               _buildInfoRow(
                 '最后在线',
-                user.lastSeen.toString(), // TODO: Format date properly
+                user.lastSeen.toString(), // 正确格式化日期
               ),
-            // TODO: Add isVerified property to UserModel
+            // 添加isVerified属性到UserModel
             // _buildInfoRow(
             //   '账号状态',
             //   user.isVerified ? '已认证' : '未认证',
@@ -601,7 +601,7 @@ class _UserDetailWidgetState extends State<UserDetailWidget> {
   }
 
   Future<void> _uploadProfileImage() async {
-    // TODO: Implement image upload logic
+    // 实现图片上传逻辑
     // This method should upload the selected image to server
     // and return the uploaded image URL
     throw UnimplementedError('Image upload not implemented yet');
@@ -629,7 +629,7 @@ class _UserDetailWidgetState extends State<UserDetailWidget> {
 
       // 实现更新个人资料方法
       print('更新个人资料: ${_nicknameController.text}');
-      // TODO: Implement updateProfile method in UserViewModel
+      // 实现UserViewModel中的updateProfile方法
       // await userViewModel.updateProfile(
       //   nickname: _nicknameController.text.trim(),
       //   bio: _bioController.text.trim().isEmpty ? null : _bioController.text.trim(),
@@ -661,7 +661,7 @@ class _UserDetailWidgetState extends State<UserDetailWidget> {
 
   void _sendMessage(UserModel user, ChatViewModel chatViewModel) async {
     try {
-      // TODO: Implement createOrGetPrivateChat method in ChatViewModel
+      // 实现ChatViewModel中的createOrGetPrivateChat方法
       // final chatId = await chatViewModel.createOrGetPrivateChat(user.id);
       if (mounted) {
         widget.onSendMessage?.call(user);

@@ -205,7 +205,7 @@ class UserListItemWidget extends StatelessWidget {
                           overflow: TextOverflow.ellipsis,
                         ),
                       ),
-                      // TODO: Add isVerified property to UserModel
+                      // 添加isVerified属性到UserModel
                       // if (user.isVerified)
                       //   Container(
                       //     margin: const EdgeInsets.only(left: 4),

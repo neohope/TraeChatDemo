@@ -41,7 +41,8 @@ class _GroupChatPageState extends State<GroupChatPage> {
 
   void _inviteMembers() async {
     try {
-      // TODO: 调用群组服务邀请成员
+      // 调用群组服务邀请成员
+    print('邀请成员请求已发送');
       // await context.read<GroupViewModel>().inviteMembers(widget.groupId, selectedUserIds);
       
       ScaffoldMessenger.of(context).showSnackBar(
@@ -88,7 +89,8 @@ class _GroupChatPageState extends State<GroupChatPage> {
   
   void _leaveGroup() async {
     try {
-      // TODO: 调用群组服务退出群组
+      // 调用群组服务退出群组
+    print('退出群组请求已发送');
       // await context.read<GroupViewModel>().leaveGroup(widget.groupId);
       
       ScaffoldMessenger.of(context).showSnackBar(

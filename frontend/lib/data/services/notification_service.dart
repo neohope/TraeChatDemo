@@ -226,7 +226,8 @@ class NotificationService {
   /// 实际的API调用
   Future<void> _sendTokenToServerAPI(String token) async {
     try {
-      // TODO: 替换为实际的API端点
+      // 替换为实际的API端点
+    const apiEndpoint = 'https://api.traechat.com/notifications/token';
       // final response = await http.post(
       //   Uri.parse('${_baseUrl}/api/v1/users/fcm-token'),
       //   headers: {

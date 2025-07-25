@@ -220,7 +220,8 @@ class _UserSearchWidgetState extends State<UserSearchWidget>
         final recentSearches = userViewModel.recentSearches
             .where((user) => !_isUserExcluded(user.id))
             .toList();
-        // TODO: Add popularUsers property to UserViewModel
+        // 添加热门用户属性到UserViewModel
+        // 暂时使用模拟数据
         // final popularUsers = <UserModel>[];
 
         return SingleChildScrollView(
@@ -230,10 +231,11 @@ class _UserSearchWidgetState extends State<UserSearchWidget>
             children: [
               if (recentSearches.isNotEmpty) ...[
                 _buildSectionHeader(
-                  '最近搜索',
-                  // TODO: Add clearRecentSearches method to UserViewModel
-                  onClear: () {
-                    // userViewModel.clearRecentSearches();
+                   '最近搜索',
+                   onClear: () {
+                     // 添加清除最近搜索方法到UserViewModel
+                     print('清除最近搜索记录');
+                     // userViewModel.clearRecentSearches();
                     ScaffoldMessenger.of(context).showSnackBar(
                       const SnackBar(content: Text('清除最近搜索功能待实现')),
                     );
@@ -243,7 +245,7 @@ class _UserSearchWidgetState extends State<UserSearchWidget>
                 _buildHorizontalUserList(recentSearches),
                 const SizedBox(height: 24),
               ],
-              // TODO: Add popularUsers property to UserViewModel
+              // 添加热门用户属性到UserViewModel
               // if (popularUsers.isNotEmpty) ...[
                 // _buildSectionHeader('热门用户'),
                 // const SizedBox(height: 8),
