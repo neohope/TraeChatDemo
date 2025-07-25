@@ -174,12 +174,12 @@ class _MessageBubbleWidgetState extends State<MessageBubbleWidget>
     return Container(
       decoration: BoxDecoration(
         color: widget.isSelected
-            ? Theme.of(context).primaryColor.withOpacity(0.3)
+            ? Theme.of(context).primaryColor.withValues(alpha: 0.3)
             : _getBubbleColor(),
         borderRadius: _getBubbleBorderRadius(),
         boxShadow: [
           BoxShadow(
-            color: Colors.black.withOpacity(0.1),
+            color: Colors.black.withValues(alpha: 0.1),
             blurRadius: 2,
             offset: const Offset(0, 1),
           ),
@@ -201,7 +201,7 @@ class _MessageBubbleWidgetState extends State<MessageBubbleWidget>
       margin: const EdgeInsets.only(left: 12, right: 12, top: 8),
       padding: const EdgeInsets.all(8),
       decoration: BoxDecoration(
-        color: Colors.black.withOpacity(0.1),
+        color: Colors.black.withValues(alpha: 0.1),
         borderRadius: BorderRadius.circular(8),
         border: Border(
           left: BorderSide(
@@ -425,7 +425,7 @@ class _MessageBubbleWidgetState extends State<MessageBubbleWidget>
               width: 60,
               height: 60,
               decoration: BoxDecoration(
-                color: Colors.black.withOpacity(0.6),
+                color: Colors.black.withValues(alpha: 0.6),
                 shape: BoxShape.circle,
               ),
               child: const Icon(
@@ -441,7 +441,7 @@ class _MessageBubbleWidgetState extends State<MessageBubbleWidget>
                 child: Container(
                   padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 2),
                   decoration: BoxDecoration(
-                    color: Colors.black.withOpacity(0.6),
+                    color: Colors.black.withValues(alpha: 0.6),
                     borderRadius: BorderRadius.circular(4),
                   ),
                   child: Text(
@@ -516,7 +516,7 @@ class _MessageBubbleWidgetState extends State<MessageBubbleWidget>
                     style: TextStyle(
                       fontSize: 12,
                       color: widget.isFromCurrentUser
-                          ? Colors.white.withOpacity(0.8)
+                          ? Colors.white.withValues(alpha: 0.8)
                           : Colors.grey[600],
                     ),
                   ),
@@ -526,7 +526,7 @@ class _MessageBubbleWidgetState extends State<MessageBubbleWidget>
           Icon(
             Icons.download,
             color: widget.isFromCurrentUser
-                ? Colors.white.withOpacity(0.8)
+                ? Colors.white.withValues(alpha: 0.8)
                 : Colors.grey[600],
             size: 20,
           ),
@@ -604,14 +604,14 @@ class _MessageBubbleWidgetState extends State<MessageBubbleWidget>
               '已编辑',
               style: TextStyle(
                 fontSize: 10,
-                color: Colors.white.withOpacity(0.7),
+                color: Colors.white.withValues(alpha: 0.7),
               ),
             ),
           if (widget.message.isEdited) const SizedBox(width: 4),
           Icon(
             _getStatusIcon(),
             size: 12,
-            color: Colors.white.withOpacity(0.7),
+            color: Colors.white.withValues(alpha: 0.7),
           ),
         ],
       ),
@@ -633,7 +633,7 @@ class _MessageBubbleWidgetState extends State<MessageBubbleWidget>
 
   Color _getBubbleColor() {
     if (widget.message.type == MessageType.system) {
-      return Colors.grey.withOpacity(0.2);
+      return Colors.grey.withValues(alpha: 0.2);
     }
     return widget.isFromCurrentUser
         ? Theme.of(context).primaryColor
