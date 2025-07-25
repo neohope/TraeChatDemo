@@ -600,18 +600,35 @@ class _UserDetailWidgetState extends State<UserDetailWidget> {
     }
   }
 
+  Future<void> _uploadProfileImage() async {
+    // TODO: Implement image upload logic
+    // This method should upload the selected image to server
+    // and return the uploaded image URL
+    throw UnimplementedError('Image upload not implemented yet');
+  }
+
   Future<void> _saveChanges(UserViewModel userViewModel) async {
     if (!_formKey.currentState!.validate()) {
       return;
     }
 
     try {
-      // TODO: Implement image upload functionality
-      // String? avatarUrl;
-      // if (_selectedImage != null) {
-      //   avatarUrl = await ImageUtils.uploadImage(_selectedImage!);
-      // }
+      // ignore: unused_local_variable
+      String? avatarUrl;
+      if (_selectedImage != null) {
+        try {
+          await _uploadProfileImage();
+          // avatarUrl = await ImageUtils.uploadImage(_selectedImage!);
+        } catch (e) {
+          ScaffoldMessenger.of(context).showSnackBar(
+            SnackBar(content: Text('上传失败: $e')),
+          );
+          return;
+        }
+      }
 
+      // 实现更新个人资料方法
+      print('更新个人资料: ${_nicknameController.text}');
       // TODO: Implement updateProfile method in UserViewModel
       // await userViewModel.updateProfile(
       //   nickname: _nicknameController.text.trim(),

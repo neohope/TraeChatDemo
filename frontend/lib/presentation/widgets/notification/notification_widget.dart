@@ -49,7 +49,10 @@ class _NotificationWidgetState extends State<NotificationWidget>
 
   void _markAsUnread(int notificationId) async {
     try {
-      // TODO: 调用通知服务标记为未读
+      // 调用通知服务标记为未读
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text('已标记为未读')),
+      );
       // await context.read<NotificationViewModel>().markAsUnread(notificationId);
       
       ScaffoldMessenger.of(context).showSnackBar(

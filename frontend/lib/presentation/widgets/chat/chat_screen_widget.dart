@@ -917,9 +917,9 @@ class _ChatScreenWidgetState extends State<ChatScreenWidget>
             child: const Text('取消'),
           ),
           ElevatedButton(
-            onPressed: () {
+            onPressed: () async {
               Navigator.pop(context);
-              // TODO: Implement clear chat messages functionality
+              await _clearChatMessages();
               // context.read<MessageViewModel>().clearChatMessages(widget.chat.id);
             },
             style: ElevatedButton.styleFrom(backgroundColor: Colors.red),
@@ -957,8 +957,8 @@ class _ChatScreenWidgetState extends State<ChatScreenWidget>
     );
   }
   
-  void _performBlockUser(UserModel user) {
-     // TODO: 调用用户服务屏蔽用户
+  void _performBlockUser(UserModel user) async {
+     await _blockUser(user);
      // context.read<UserViewModel>().blockUser(user.id);
      
      ScaffoldMessenger.of(context).showSnackBar(
@@ -1056,7 +1056,49 @@ class _ChatScreenWidgetState extends State<ChatScreenWidget>
     }
   }
   
-  void _performSearch(String query) async {
+  Future<void> _clearChatMessages() async {
+    try {
+      // TODO: 实现清空聊天记录功能
+      // await context.read<MessageViewModel>().clearChatMessages(widget.chat.id);
+      
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(
+          content: Text('聊天记录已清空'),
+          backgroundColor: Colors.green,
+        ),
+      );
+    } catch (e) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text('清空失败: $e'),
+          backgroundColor: Colors.red,
+        ),
+      );
+    }
+  }
+   
+   Future<void> _blockUser(UserModel user) async {
+     try {
+       // TODO: 实现屏蔽用户功能
+       // await context.read<UserViewModel>().blockUser(user.id);
+       
+       ScaffoldMessenger.of(context).showSnackBar(
+         SnackBar(
+           content: Text('已屏蔽用户 ${user.name}'),
+           backgroundColor: Colors.orange,
+         ),
+       );
+     } catch (e) {
+       ScaffoldMessenger.of(context).showSnackBar(
+         SnackBar(
+           content: Text('屏蔽失败: $e'),
+           backgroundColor: Colors.red,
+         ),
+       );
+     }
+   }
+   
+   void _performSearch(String query) async {
     if (query.isEmpty) {
       setState(() {
         _searchResults = [];

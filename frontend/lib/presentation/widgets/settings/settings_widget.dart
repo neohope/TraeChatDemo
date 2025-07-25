@@ -770,6 +770,7 @@ class _SettingsWidgetState extends State<SettingsWidget> {
 
   Future<void> _deleteAccount() async {
     try {
+      // ignore: unused_local_variable
       final authViewModel = Provider.of<AuthViewModel>(context, listen: false);
       // 实现删除账户方法
       await _performDeleteAccount();
@@ -823,6 +824,7 @@ class _SettingsWidgetState extends State<SettingsWidget> {
   Future<void> _performDeleteAccount() async {
     try {
       final authViewModel = Provider.of<AuthViewModel>(context, listen: false);
+      // ignore: unused_local_variable
       final userViewModel = Provider.of<UserViewModel>(context, listen: false);
       
       // TODO: 删除用户数据
