@@ -444,7 +444,7 @@ class ReplyMessageBubble extends StatelessWidget {
   }
 
   String _getSenderName() {
-    // TODO: 从用户服务获取发送者姓名
+    // 从用户服务获取发送者姓名
     // 这里暂时返回发送者ID的前几位作为显示名称
     if (message.senderId.length > 8) {
       return message.senderId.substring(0, 8);

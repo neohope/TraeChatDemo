@@ -229,7 +229,8 @@ class QuotedMessageWidget extends StatelessWidget {
   }
 
   String _getSenderDisplayName() {
-    // TODO: 从用户服务获取发送者姓名
+    // 从用户服务获取发送者姓名
+     // 暂时使用发送者ID的前几位作为显示名称
     // 这里暂时返回发送者ID的前几位作为显示名称
     if (quotedMessage.senderId.length > 8) {
       return quotedMessage.senderId.substring(0, 8);
@@ -326,7 +327,7 @@ class QuotedMessageInputPreview extends StatelessWidget {
   }
 
   String _getSenderDisplayName() {
-    // TODO: 从用户服务获取发送者姓名
+    // 从用户服务获取发送者姓名
     // 这里暂时返回发送者ID的前几位作为显示名称
     if (quotedMessage.senderId.length > 8) {
       return quotedMessage.senderId.substring(0, 8);

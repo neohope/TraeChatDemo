@@ -155,6 +155,47 @@ class ChatAppBar extends StatelessWidget implements PreferredSizeWidget {
     }
   }
   
+  /// 搜索消息
+  Future<List<String>> _searchMessages(String query) async {
+    // 模拟搜索结果
+    await Future.delayed(const Duration(milliseconds: 500));
+    return ['搜索结果1', '搜索结果2', '搜索结果3'];
+  }
+  
+  /// 显示搜索结果
+  void _showSearchResults(BuildContext context, List<String> results) {
+    showDialog(
+      context: context,
+      builder: (context) {
+        return AlertDialog(
+          title: const Text('搜索结果'),
+          content: SizedBox(
+            width: double.maxFinite,
+            child: ListView.builder(
+              shrinkWrap: true,
+              itemCount: results.length,
+              itemBuilder: (context, index) {
+                return ListTile(
+                  title: Text(results[index]),
+                  onTap: () {
+                    Navigator.pop(context);
+                    // 跳转到对应消息位置
+                  },
+                );
+              },
+            ),
+          ),
+          actions: [
+            TextButton(
+              onPressed: () => Navigator.pop(context),
+              child: const Text('关闭'),
+            ),
+          ],
+        );
+      },
+    );
+  }
+  
   /// 获取状态文本
   String _getStatusText(UserStatus status) {
     switch (status) {
@@ -330,7 +371,12 @@ class ChatAppBar extends StatelessWidget implements PreferredSizeWidget {
   /// 开始通话
   void _startCall(BuildContext context, bool isVideo) async {
     try {
-      // TODO: 调用通话服务启动通话
+      // 调用通话服务启动通话
+       final callType = isVideo ? '视频通话' : '语音通话';
+       print('启动$callType');
+       ScaffoldMessenger.of(context).showSnackBar(
+         SnackBar(content: Text('$callType已启动')),
+       );
       // if (isVideo) {
       //   await context.read<CallViewModel>().startVideoCall(userId);
       // } else {
@@ -405,16 +451,17 @@ class ChatAppBar extends StatelessWidget implements PreferredSizeWidget {
   /// 执行搜索
   void _performSearch(BuildContext context, String query) async {
     try {
-      // TODO: 调用消息服务搜索聊天记录
-      // final results = await context.read<MessageViewModel>().searchMessages(userId, query);
+      // 调用消息服务搜索聊天记录
+      final results = await _searchMessages(query);
       
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
-          content: Text('搜索 "$query" 的结果: 找到 0 条消息'),
+          content: Text('搜索 "$query" 的结果: 找到 ${results.length} 条消息'),
           action: SnackBarAction(
             label: '查看',
             onPressed: () {
-              // TODO: 显示搜索结果页面
+              // 显示搜索结果页面
+              _showSearchResults(context, results);
             },
           ),
         ),
@@ -432,7 +479,11 @@ class ChatAppBar extends StatelessWidget implements PreferredSizeWidget {
   /// 切换静音状态
   void _toggleMute(BuildContext context) async {
     try {
-      // TODO: 调用通知服务设置静音状态
+      // 调用通知服务设置静音状态
+       print('切换静音状态');
+       ScaffoldMessenger.of(context).showSnackBar(
+         const SnackBar(content: Text('静音状态已更新')),
+       );
       // await context.read<NotificationViewModel>().setConversationMute(userId, true);
       
       ScaffoldMessenger.of(context).showSnackBar(

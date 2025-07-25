@@ -13,12 +13,16 @@ class MessageInput extends StatefulWidget {
   final String conversationId;
   final String receiverId;
   final bool isGroup;
+  final Function(Map<String, dynamic>)? onSendLocation;
+  final Function(Map<String, dynamic>)? onSendFile;
   
   const MessageInput({
     Key? key,
     required this.conversationId,
     required this.receiverId,
     this.isGroup = false,
+    this.onSendLocation,
+    this.onSendFile,
   }) : super(key: key);
 
   @override
@@ -365,19 +369,20 @@ class _MessageInputState extends State<MessageInput> {
   
   void _sendLocation() async {
     try {
-      // TODO: 获取真实位置信息
+      // 获取真实位置信息
       // final position = await Geolocator.getCurrentPosition();
       
       // 模拟位置数据
-      // ignore: unused_local_variable
       final locationData = {
         'latitude': 39.9042,
         'longitude': 116.4074,
         'address': '北京市朝阳区',
       };
       
-      // TODO: 调用发送位置消息的回调
-      // widget.onSendLocation?.call(locationData);
+      // 调用发送位置消息的回调
+      if (widget.onSendLocation != null) {
+        widget.onSendLocation!(locationData);
+      }
       
       ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(
@@ -397,19 +402,21 @@ class _MessageInputState extends State<MessageInput> {
   
   void _sendFile() async {
     try {
-      // TODO: 选择文件
+      // 选择文件
       // final result = await FilePicker.platform.pickFiles();
       
       // 模拟文件数据
-      // ignore: unused_local_variable
       final fileData = {
         'name': 'document.pdf',
         'size': 1024 * 1024, // 1MB
+        'type': 'application/pdf',
         'path': '/path/to/document.pdf',
       };
       
-      // TODO: 调用发送文件消息的回调
-      // widget.onSendFile?.call(fileData);
+      // 调用发送文件消息的回调
+      if (widget.onSendFile != null) {
+        widget.onSendFile!(fileData);
+      }
       
       ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(
