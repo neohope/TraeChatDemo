@@ -760,9 +760,9 @@ class _ChatInputWidgetState extends State<ChatInputWidget>
                       ),
                       child: Center(
                         child: Text(
-                          gif['name'],
-                          style: const TextStyle(fontSize: 16),
-                        ),
+                           gif['name'] ?? '',
+                           style: const TextStyle(fontSize: 16),
+                         ),
                       ),
                     ),
                   );
