@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
 import '../../../domain/models/message_model.dart';
-import '../../../utils/date_formatter.dart';
 import 'quoted_message_widget.dart';
 
 /// 增强的聊天输入组件

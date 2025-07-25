@@ -3,11 +3,10 @@ import 'package:provider/provider.dart';
 import '../../../domain/models/message_model.dart';
 import '../../../domain/models/conversation_model.dart';
 import '../../viewmodels/message_view_model.dart';
-import '../../viewmodels/chat_viewmodel.dart';
-import '../../../utils/result.dart';
 import 'reply_message_bubble.dart';
 import 'enhanced_chat_input.dart';
 import 'recalled_message_widget.dart';
+import 'forward_selection_screen.dart';
 
 /// 支持引用回复的聊天界面
 class ChatScreenWithReply extends StatefulWidget {
@@ -264,9 +263,13 @@ class _ChatScreenWithReplyState extends State<ChatScreenWithReply> {
   }
 
   void _handleForwardMessage(MessageModel message) {
-    // TODO: 实现转发消息功能
-    ScaffoldMessenger.of(context).showSnackBar(
-      const SnackBar(content: Text('转发功能尚未实现')),
+    Navigator.push(
+      context,
+      MaterialPageRoute(
+        builder: (context) => ForwardSelectionScreen(
+          messageToForward: message,
+        ),
+      ),
     );
   }
 

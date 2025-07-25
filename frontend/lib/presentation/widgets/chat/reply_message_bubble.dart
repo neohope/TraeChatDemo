@@ -3,6 +3,7 @@ import '../../../domain/models/message_model.dart';
 import '../../../domain/models/conversation_model.dart';
 import '../../../utils/date_formatter.dart';
 import 'quoted_message_widget.dart';
+import 'forwarded_message_widget.dart';
 import 'message_action_menu.dart';
 
 /// 支持引用回复的消息气泡组件
@@ -85,6 +86,16 @@ class ReplyMessageBubble extends StatelessWidget {
                               quotedMessage: message.replyToMessage!,
                               isCompact: true,
                               onTap: () => onQuotedMessageTap?.call(message.replyToMessage!),
+                            ),
+                          ),
+                        
+                        // 转发消息
+                        if (message.isForwarded && message.forwardFromMessage != null)
+                          Padding(
+                            padding: const EdgeInsets.only(bottom: 8),
+                            child: ForwardedMessageWidget(
+                              forwardedMessage: message.forwardFromMessage!,
+                              isCompact: true,
                             ),
                           ),
                         

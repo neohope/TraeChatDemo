@@ -431,6 +431,113 @@ class MessageViewModel extends ChangeNotifier {
     }
   }
 
+  /// 转发消息
+  Future<Result<MessageModel>> forwardMessage({
+    required MessageModel messageToForward,
+    required String receiverId,
+    String? conversationId,
+  }) async {
+    final targetConversationId = conversationId ?? _currentConversationId;
+    if (targetConversationId == null) {
+      return Result.error('No active conversation');
+    }
+
+    final currentUser = _authService.currentUser;
+    if (currentUser == null) {
+      return Result.error('User not authenticated');
+    }
+
+    try {
+      // 创建临时消息ID
+      final tempId = DateTime.now().millisecondsSinceEpoch.toString();
+      
+      // 创建转发消息
+      final forwardMessage = MessageModel.forward(
+        id: tempId,
+        senderId: currentUser.id,
+        receiverId: receiverId,
+        conversationId: targetConversationId,
+        forwardFromMessage: messageToForward,
+      );
+
+      // 添加到本地消息列表（显示为发送中状态）
+      _messages = [..._messages, forwardMessage];
+      notifyListeners();
+
+      // 发送到服务器
+      final result = await _messageRepository.sendMessage(forwardMessage);
+
+      return result.when(
+        success: (sentMessage) {
+          // 更新本地消息
+          _updateMessage(tempId, sentMessage);
+          return Result.success(sentMessage);
+        },
+        error: (error) {
+          // 更新消息状态为失败
+          _updateMessageStatus(tempId, MessageStatus.failed);
+          return Result.error(error);
+        },
+      );
+    } catch (e) {
+      return Result.error(e.toString());
+    }
+  }
+
+  /// 转发消息到多个会话
+  Future<Result<List<MessageModel>>> forwardMessageToMultiple({
+    required MessageModel messageToForward,
+    required List<String> conversationIds,
+  }) async {
+    final currentUser = _authService.currentUser;
+    if (currentUser == null) {
+      return Result.error('User not authenticated');
+    }
+
+    try {
+      final List<MessageModel> forwardedMessages = [];
+      final List<String> errors = [];
+
+      for (final conversationId in conversationIds) {
+        try {
+          // 创建临时消息ID
+          final tempId = DateTime.now().millisecondsSinceEpoch.toString();
+          
+          // 创建转发消息
+          final forwardMessage = MessageModel.forward(
+            id: tempId,
+            senderId: currentUser.id,
+            receiverId: '', // 群聊或单聊的接收者ID需要根据会话类型确定
+            conversationId: conversationId,
+            forwardFromMessage: messageToForward,
+          );
+
+          // 发送到服务器
+          final result = await _messageRepository.sendMessage(forwardMessage);
+          
+          result.when(
+            success: (sentMessage) {
+              forwardedMessages.add(sentMessage);
+            },
+            error: (error) {
+              errors.add('转发到会话 $conversationId 失败: $error');
+            },
+          );
+        } catch (e) {
+          errors.add('转发到会话 $conversationId 失败: $e');
+        }
+      }
+
+      if (errors.isNotEmpty) {
+        return Result.error('部分转发失败: ${errors.join(', ')}');
+      }
+
+      return Result.success(forwardedMessages);
+    } catch (e) {
+      return Result.error(e.toString());
+    }
+  }
+
   /// 撤回消息
   Future<Result<MessageModel>> recallMessage(String messageId) async {
     try {
