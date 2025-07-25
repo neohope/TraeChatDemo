@@ -23,6 +23,8 @@ class MessageModel {
   final bool isRecalled;
   final DateTime? recalledAt;
   final String? originalContent; // 撤回前的原始内容
+  final String? replyToId; // 引用的消息ID
+  final MessageModel? replyToMessage; // 引用的消息对象
   
   MessageModel({
     required this.id,
@@ -43,6 +45,8 @@ class MessageModel {
     this.isRecalled = false,
     this.recalledAt,
     this.originalContent,
+    this.replyToId,
+    this.replyToMessage,
   });
   
   /// 创建文本消息
@@ -281,6 +285,62 @@ class MessageModel {
     return now.difference(timestamp) <= timeLimit;
   }
   
+  /// 创建引用回复消息
+  factory MessageModel.reply({
+    required String id,
+    required String senderId,
+    required String receiverId,
+    String? conversationId,
+    required String text,
+    required MessageModel replyToMessage,
+    DateTime? timestamp,
+    MessageStatus status = MessageStatus.sent,
+    bool isRead = false,
+  }) {
+    return MessageModel(
+      id: id,
+      senderId: senderId,
+      receiverId: receiverId,
+      conversationId: conversationId,
+      type: MessageType.text,
+      text: text,
+      timestamp: timestamp ?? DateTime.now(),
+      status: status,
+      isRead: isRead,
+      replyToId: replyToMessage.id,
+      replyToMessage: replyToMessage,
+    );
+  }
+  
+  /// 检查消息是否为引用回复
+  bool get isReply => replyToId != null;
+  
+  /// 获取引用消息的预览文本
+  String getReplyPreviewText() {
+    if (replyToMessage == null) return '';
+    
+    switch (replyToMessage!.type) {
+      case MessageType.text:
+        return replyToMessage!.text ?? '';
+      case MessageType.image:
+        return '[图片]';
+      case MessageType.voice:
+        return '[语音]';
+      case MessageType.video:
+        return '[视频]';
+      case MessageType.file:
+        return '[文件]';
+      case MessageType.location:
+        return '[位置]';
+      case MessageType.system:
+        return '[系统消息]';
+      case MessageType.recalled:
+        return '[已撤回的消息]';
+      default:
+        return '[消息]';
+    }
+  }
+  
   /// 从JSON创建消息模型
   factory MessageModel.fromJson(Map<String, dynamic> json) {
     return MessageModel(
@@ -302,6 +362,8 @@ class MessageModel {
       isRecalled: json['isRecalled'] ?? false,
       recalledAt: json['recalledAt'] != null ? DateTime.parse(json['recalledAt']) : null,
       originalContent: json['originalContent'],
+      replyToId: json['replyToId'],
+      replyToMessage: json['replyToMessage'] != null ? MessageModel.fromJson(json['replyToMessage']) : null,
     );
   }
   
@@ -326,6 +388,8 @@ class MessageModel {
       'isRecalled': isRecalled,
       'recalledAt': recalledAt?.toIso8601String(),
       'originalContent': originalContent,
+      'replyToId': replyToId,
+      'replyToMessage': replyToMessage?.toJson(),
     };
   }
   
@@ -349,6 +413,8 @@ class MessageModel {
     bool? isRecalled,
     DateTime? recalledAt,
     String? originalContent,
+    String? replyToId,
+    MessageModel? replyToMessage,
   }) {
     return MessageModel(
       id: id ?? this.id,
@@ -369,6 +435,8 @@ class MessageModel {
       isRecalled: isRecalled ?? this.isRecalled,
       recalledAt: recalledAt ?? this.recalledAt,
       originalContent: originalContent ?? this.originalContent,
+      replyToId: replyToId ?? this.replyToId,
+      replyToMessage: replyToMessage ?? this.replyToMessage,
     );
   }
   

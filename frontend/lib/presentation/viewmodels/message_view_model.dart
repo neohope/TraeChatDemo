@@ -377,6 +377,60 @@ class MessageViewModel extends ChangeNotifier {
     }
   }
   
+  /// 发送引用回复消息
+  Future<Result<MessageModel>> sendReplyMessage({
+    required String text,
+    required MessageModel replyToMessage,
+    String? conversationId,
+  }) async {
+    final targetConversationId = conversationId ?? _currentConversationId;
+    if (targetConversationId == null) {
+      return Result.error('No active conversation');
+    }
+
+    final currentUser = _authService.currentUser;
+    if (currentUser == null) {
+      return Result.error('User not authenticated');
+    }
+
+    try {
+      // 创建临时消息ID
+      final tempId = DateTime.now().millisecondsSinceEpoch.toString();
+      
+      // 创建引用回复消息
+      final replyMessage = MessageModel.reply(
+        id: tempId,
+        senderId: currentUser.id,
+        receiverId: replyToMessage.senderId,
+        conversationId: targetConversationId,
+        text: text,
+        replyToMessage: replyToMessage,
+      );
+
+      // 添加到本地消息列表（显示为发送中状态）
+      _messages = [..._messages, replyMessage];
+      notifyListeners();
+
+      // 发送到服务器
+      final result = await _messageRepository.sendMessage(replyMessage);
+
+      return result.when(
+        success: (sentMessage) {
+          // 更新本地消息
+          _updateMessage(tempId, sentMessage);
+          return Result.success(sentMessage);
+        },
+        error: (error) {
+          // 更新消息状态为失败
+          _updateMessageStatus(tempId, MessageStatus.failed);
+          return Result.error(error);
+        },
+      );
+    } catch (e) {
+      return Result.error(e.toString());
+    }
+  }
+
   /// 撤回消息
   Future<Result<MessageModel>> recallMessage(String messageId) async {
     try {
