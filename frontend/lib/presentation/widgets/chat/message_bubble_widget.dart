@@ -973,7 +973,7 @@ class _VoicePlayerWidgetState extends State<VoicePlayerWidget>
         height: 32,
         decoration: BoxDecoration(
           shape: BoxShape.circle,
-          color: color.withOpacity(0.2),
+          color: color.withValues(alpha: 0.2),
         ),
         child: Icon(
           icon,
@@ -1019,7 +1019,7 @@ class _VoicePlayerWidgetState extends State<VoicePlayerWidget>
           style: TextStyle(
             fontSize: 10,
             color: widget.isFromCurrentUser
-                ? Colors.white.withOpacity(0.8)
+                ? Colors.white.withValues(alpha: 0.8)
                 : Colors.grey[600],
           ),
         ),
@@ -1028,7 +1028,7 @@ class _VoicePlayerWidgetState extends State<VoicePlayerWidget>
           style: TextStyle(
             fontSize: 10,
             color: widget.isFromCurrentUser
-                ? Colors.white.withOpacity(0.8)
+                ? Colors.white.withValues(alpha: 0.8)
                 : Colors.grey[600],
           ),
         ),
@@ -1066,8 +1066,8 @@ class _VoicePlayerWidgetState extends State<VoicePlayerWidget>
       return widget.isFromCurrentUser ? Colors.white : Theme.of(context).primaryColor;
     } else {
       return widget.isFromCurrentUser
-          ? Colors.white.withOpacity(0.5)
-          : Colors.grey.withOpacity(0.5);
+          ? Colors.white.withValues(alpha: 0.5)
+          : Colors.grey.withValues(alpha: 0.5);
     }
   }
 
