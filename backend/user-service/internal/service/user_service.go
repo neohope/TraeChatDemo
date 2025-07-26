@@ -66,9 +66,11 @@ func (s *UserService) Login(ctx context.Context, email, password string) (string
 	// 查找用户
 	user, err := s.userRepo.GetByEmail(ctx, email)
 	if err != nil {
-		s.logger.Info("User not found", zap.String("email", email))
+		s.logger.Info("User not found", zap.String("email", email), zap.Error(err))
 		return "", errors.New("invalid email or password")
 	}
+
+	s.logger.Info("User found for login", zap.String("email", email), zap.String("userID", user.ID))
 
 	// 检查用户状态
 	if user.Status != domain.UserStatusActive {
@@ -77,10 +79,13 @@ func (s *UserService) Login(ctx context.Context, email, password string) (string
 	}
 
 	// 验证密码
+	s.logger.Info("Checking password", zap.String("email", email))
 	if checkErr := auth.CheckPassword(password, user.Password); checkErr != nil {
-		s.logger.Info("Invalid password", zap.String("email", email))
+		s.logger.Info("Invalid password", zap.String("email", email), zap.Error(checkErr))
 		return "", errors.New("invalid email or password")
 	}
+
+	s.logger.Info("Password verified successfully", zap.String("email", email))
 
 	// 生成JWT令牌
 	token, err := s.jwtManager.GenerateToken(user)

@@ -27,23 +27,26 @@ class AuthRepository {
   Future<ApiResponse<User>> login(String username, String password) async {
     try {
       final response = await _apiService.post<Map<String, dynamic>>(
-        '/auth/login',
+        '/api/v1/users/login',
         data: {
-          'username': username,
+          'email': username,
           'password': password,
         },
       );
       
       if (response.success && response.data != null) {
+        // 后端直接返回 {token, user} 格式，不是包装在 data 字段中
+        final responseData = response.data!;
+        
         // 保存认证令牌
-        final token = response.data!['token'] as String;
+        final token = responseData['token'] as String;
         await LocalStorage.saveAuthToken(token);
         
         // 设置HTTP客户端的认证令牌
         _httpClient.setAuthToken(token);
         
         // 解析并返回用户信息
-        final userData = response.data!['user'] as Map<String, dynamic>;
+        final userData = responseData['user'] as Map<String, dynamic>;
         final user = User.fromJson(userData);
         
         // 保存当前用户到本地存储
@@ -72,13 +75,13 @@ class AuthRepository {
         'username': username,
         'password': password,
         'email': email,
+        'full_name': displayName ?? username,
       };
       
-      if (displayName != null) data['display_name'] = displayName;
       if (phone != null) data['phone'] = phone;
       
       final response = await _apiService.post<Map<String, dynamic>>(
-        '/auth/register',
+        '/api/v1/users/register',
         data: data,
       );
       
@@ -110,7 +113,7 @@ class AuthRepository {
   /// 退出登录
   Future<ApiResponse<bool>> logout() async {
     try {
-      await _apiService.post<Map<String, dynamic>>('/auth/logout');
+      await _apiService.post<Map<String, dynamic>>('/api/v1/users/logout');
       
       // 无论服务器响应如何，都清除本地存储的认证信息
       await LocalStorage.clearAuthData();
@@ -139,7 +142,7 @@ class AuthRepository {
       
       final options = Options(headers: {'Authorization': 'Bearer $currentToken'});
       final response = await _apiService.post<Map<String, dynamic>>(
-        '/auth/refresh-token',
+        '/api/v1/auth/refresh-token',
         options: options,
       );
       
@@ -169,7 +172,7 @@ class AuthRepository {
         return ApiResponse<bool>.error('无认证令牌');
       }
       
-      final response = await _apiService.get<Map<String, dynamic>>('/auth/verify');
+      final response = await _apiService.get<Map<String, dynamic>>('/api/v1/auth/verify');
       
       return ApiResponse<bool>.success(response.success);
     } catch (e) {
@@ -182,7 +185,7 @@ class AuthRepository {
   Future<ApiResponse<bool>> sendPasswordResetEmail(String email) async {
     try {
       final response = await _apiService.post<Map<String, dynamic>>(
-        '/auth/forgot-password',
+        '/api/v1/auth/forgot-password',
         data: {'email': email},
       );
       
@@ -197,7 +200,7 @@ class AuthRepository {
   Future<ApiResponse<bool>> resetPassword(String token, String newPassword) async {
     try {
       final response = await _apiService.post<Map<String, dynamic>>(
-        '/auth/reset-password',
+        '/api/v1/auth/reset-password',
         data: {
           'token': token,
           'new_password': newPassword,
@@ -215,7 +218,7 @@ class AuthRepository {
   Future<ApiResponse<bool>> changePassword(String currentPassword, String newPassword) async {
     try {
       final response = await _apiService.post<Map<String, dynamic>>(
-        '/auth/change-password',
+        '/api/v1/auth/change-password',
         data: {
           'current_password': currentPassword,
           'new_password': newPassword,
@@ -233,7 +236,7 @@ class AuthRepository {
   Future<ApiResponse<bool>> sendVerificationEmail() async {
     try {
       final response = await _apiService.post<Map<String, dynamic>>(
-        '/auth/send-verification-email',
+        '/api/v1/auth/send-verification-email',
       );
       
       return ApiResponse<bool>.success(response.success, message: response.message);
@@ -247,7 +250,7 @@ class AuthRepository {
   Future<ApiResponse<bool>> verifyEmail(String token) async {
     try {
       final response = await _apiService.post<Map<String, dynamic>>(
-        '/auth/verify-email',
+        '/api/v1/auth/verify-email',
         data: {'token': token},
       );
       
@@ -271,7 +274,7 @@ class AuthRepository {
   Future<ApiResponse<User>> socialLogin(String provider, String accessToken) async {
     try {
       final response = await _apiService.post<Map<String, dynamic>>(
-        '/auth/social-login',
+        '/api/v1/users/social-login',
         data: {
           'provider': provider,
           'access_token': accessToken,

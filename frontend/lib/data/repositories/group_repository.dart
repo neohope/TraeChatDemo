@@ -23,7 +23,7 @@ class GroupRepository {
   /// 获取用户的群组列表
   Future<ApiResponse<List<Group>>> getUserGroups() async {
     try {
-      final response = await _apiService.get<List<dynamic>>('/groups');
+      final response = await _apiService.get<List<dynamic>>('/api/v1/groups');
       
       if (response.success && response.data != null) {
         final groups = response.data!.map((json) => Group.fromJson(json)).toList();
@@ -56,7 +56,7 @@ class GroupRepository {
   /// 获取群组详情
   Future<ApiResponse<Group>> getGroupById(String groupId) async {
     try {
-      final response = await _apiService.get<Map<String, dynamic>>('/groups/$groupId');
+      final response = await _apiService.get<Map<String, dynamic>>('/api/v1/groups/$groupId');
       
       if (response.success && response.data != null) {
         final group = Group.fromJson(response.data!);
@@ -104,7 +104,7 @@ class GroupRepository {
       // 如果有头像文件，先上传头像
       if (avatarFile != null) {
         final uploadResponse = await _apiService.uploadFile<Map<String, dynamic>>(
-          '/upload/group-avatar',
+          '/api/v1/media/upload/group-avatar',
           avatarFile,
         );
         
@@ -116,7 +116,7 @@ class GroupRepository {
       }
       
       final response = await _apiService.post<Map<String, dynamic>>(
-        '/groups',
+        '/api/v1/groups',
         data: data,
       );
       
@@ -164,7 +164,7 @@ class GroupRepository {
       }
       
       final response = await _apiService.put<Map<String, dynamic>>(
-        '/groups/$groupId',
+        '/api/v1/groups/$groupId',
         data: data,
       );
       
@@ -186,7 +186,7 @@ class GroupRepository {
   Future<ApiResponse<bool>> dissolveGroup(String groupId) async {
     try {
       final response = await _apiService.delete<Map<String, dynamic>>(
-        '/groups/$groupId',
+        '/api/v1/groups/$groupId',
       );
       
       if (response.success) {
@@ -204,7 +204,7 @@ class GroupRepository {
   /// 获取群组成员列表
   Future<ApiResponse<List<GroupMember>>> getGroupMembers(String groupId) async {
     try {
-      final response = await _apiService.get<List<dynamic>>('/groups/$groupId/members');
+      final response = await _apiService.get<List<dynamic>>('/api/v1/groups/$groupId/members');
       
       if (response.success && response.data != null) {
         final members = response.data!.map((json) => GroupMember.fromJson(json)).toList();
@@ -222,7 +222,7 @@ class GroupRepository {
   Future<ApiResponse<bool>> inviteUsersToGroup(String groupId, List<String> userIds) async {
     try {
       final response = await _apiService.post<Map<String, dynamic>>(
-        '/groups/$groupId/members',
+        '/api/v1/groups/$groupId/members',
         data: {'user_ids': userIds},
       );
       
@@ -237,7 +237,7 @@ class GroupRepository {
   Future<ApiResponse<bool>> removeGroupMember(String groupId, String userId) async {
     try {
       final response = await _apiService.delete<Map<String, dynamic>>(
-        '/groups/$groupId/members/$userId',
+        '/api/v1/groups/$groupId/members/$userId',
       );
       
       return ApiResponse<bool>.success(response.success);
@@ -266,7 +266,7 @@ class GroupRepository {
   Future<ApiResponse<bool>> leaveGroup(String groupId) async {
     try {
       final response = await _apiService.post<Map<String, dynamic>>(
-        '/groups/$groupId/leave',
+        '/api/v1/groups/$groupId/leave',
       );
       
       if (response.success) {
@@ -285,7 +285,7 @@ class GroupRepository {
   Future<ApiResponse<List<Group>>> searchGroups(String keyword) async {
     try {
       final response = await _apiService.get<List<dynamic>>(
-        '/groups/search',
+        '/api/v1/groups/search',
         queryParameters: {'keyword': keyword},
       );
       

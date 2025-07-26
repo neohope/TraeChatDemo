@@ -424,6 +424,7 @@ class ReplyMessageBubble extends StatelessWidget {
           color: theme.colorScheme.error,
         );
         
+      // ignore: unreachable_switch_default
       default:
         return const SizedBox.shrink();
     }

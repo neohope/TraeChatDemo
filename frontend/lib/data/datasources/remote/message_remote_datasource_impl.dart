@@ -134,7 +134,7 @@ class MessageRemoteDataSourceImpl implements MessageRemoteDataSource {
   @override
   Future<void> markAllMessagesAsRead(String conversationId) async {
     try {
-      final url = Uri.parse('$_baseUrl/conversations/$conversationId/read');
+      final url = Uri.parse('$_baseUrl/api/v1//conversations/$conversationId/read');
       final response = await _client.put(url, headers: _headers);
       
       if (response.statusCode != 200 && response.statusCode != 204) {

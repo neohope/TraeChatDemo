@@ -16,15 +16,15 @@ const (
 
 // User 用户实体
 type User struct {
-	ID        string     `json:"id"`
-	Username  string     `json:"username"`
-	Email     string     `json:"email"`
-	Password  string     `json:"-"` // 不在JSON中暴露密码
-	FullName  string     `json:"full_name"`
-	AvatarURL string     `json:"avatar_url"`
-	Status    UserStatus `json:"status"`
-	CreatedAt time.Time  `json:"created_at"`
-	UpdatedAt time.Time  `json:"updated_at"`
+	ID        string     `json:"id" db:"id"`
+	Username  string     `json:"username" db:"username"`
+	Email     string     `json:"email" db:"email"`
+	Password  string     `json:"-" db:"password"` // 不在JSON中暴露密码
+	FullName  string     `json:"full_name" db:"full_name"`
+	AvatarURL string     `json:"avatar_url" db:"avatar_url"`
+	Status    UserStatus `json:"status" db:"status"`
+	CreatedAt time.Time  `json:"created_at" db:"created_at"`
+	UpdatedAt time.Time  `json:"updated_at" db:"updated_at"`
 }
 
 // UserRepository 用户仓库接口

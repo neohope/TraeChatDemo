@@ -1,5 +1,3 @@
-version: '3.8'
-
 services:
   # 数据库服务
   postgres:
@@ -48,6 +46,12 @@ services:
         condition: service_healthy
     environment:
       DB_HOST: postgres
+      DB_PORT: 5432
+      DB_USERNAME: postgres
+      DB_PASSWORD: postgres
+      DB_NAME: chatapp
+      DB_SSLMODE: disable
+      JWT_SECRET_KEY: chatapp-secret-key-2025
       REDIS_ADDR: redis:6379
     ports:
       - "8081:8081"
@@ -142,16 +146,15 @@ services:
       - media-service
       - notification-service
     environment:
-      USER_SVC_HOST: user-service
-      USER_SVC_PORT: 8081
-      MESSAGE_SVC_HOST: message-service
-      MESSAGE_SVC_PORT: 8082
-      GROUP_SVC_HOST: group-service
-      GROUP_SVC_PORT: 8083
-      MEDIA_SVC_HOST: media-service
-      MEDIA_SVC_PORT: 8084
-      NOTIFY_SVC_HOST: notification-service
-      NOTIFY_SVC_PORT: 8085
+      USER_SERVICE_URL: http://user-service:8081
+      GROUP_SERVICE_URL: http://group-service:8083
+      MESSAGE_SERVICE_URL: http://message-service:8082
+      MEDIA_SERVICE_URL: http://media-service:8084
+      NOTIFICATION_SERVICE_URL: http://notification-service:8085
+      JWT_SECRET_KEY: chatapp-secret-key-2025
+      LOG_LEVEL: info
+      RATE_LIMIT_ENABLED: true
+      RATE_LIMIT_RPS: 100
     ports:
       - "8080:8080"
     networks:

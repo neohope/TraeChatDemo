@@ -46,19 +46,36 @@ func (m *Middleware) CORS(allowedOrigins, allowedMethods, allowedHeaders []strin
 	return func(next http.Handler) http.Handler {
 		return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 			origin := r.Header.Get("Origin")
-			if origin != "" {
+			
+			// 检查是否允许所有来源
+			allowAll := false
+			for _, allowedOrigin := range allowedOrigins {
+				if allowedOrigin == "*" {
+					allowAll = true
+					break
+				}
+			}
+
+			if allowAll {
+				// 允许所有来源
+				w.Header().Set("Access-Control-Allow-Origin", "*")
+			} else if origin != "" {
+				// 检查特定来源
 				for _, allowedOrigin := range allowedOrigins {
-					if allowedOrigin == "*" || allowedOrigin == origin {
+					if allowedOrigin == origin {
 						w.Header().Set("Access-Control-Allow-Origin", origin)
+						w.Header().Set("Access-Control-Allow-Credentials", "true")
 						break
 					}
 				}
 			}
 
+			// 设置其他CORS头
 			w.Header().Set("Access-Control-Allow-Methods", joinStrings(allowedMethods, ", "))
 			w.Header().Set("Access-Control-Allow-Headers", joinStrings(allowedHeaders, ", "))
-			w.Header().Set("Access-Control-Allow-Credentials", "true")
+			w.Header().Set("Access-Control-Max-Age", "86400") // 24小时预检缓存
 
+			// 处理预检请求
 			if r.Method == "OPTIONS" {
 				w.WriteHeader(http.StatusOK)
 				return

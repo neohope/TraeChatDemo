@@ -1,7 +1,7 @@
 import 'dart:async';
 import 'dart:io';
 import 'package:flutter/foundation.dart';
-import 'package:file_picker/file_picker.dart';
+// import 'package:file_picker/file_picker.dart';
 import 'package:path/path.dart' as path;
 import 'package:permission_handler/permission_handler.dart';
 import 'api_service.dart';
@@ -58,232 +58,232 @@ class FileService {
   static const int _maxDocumentSize = 20 * 1024 * 1024; // 20MB
   
   /// 选择单个文件
-  Future<PlatformFile?> pickSingleFile({
-    FileType type = FileType.any,
-    List<String>? allowedExtensions,
-  }) async {
-    try {
-      final result = await FilePicker.platform.pickFiles(
-        type: type,
-        allowedExtensions: allowedExtensions,
-        allowMultiple: false,
-      );
-      
-      if (result != null && result.files.isNotEmpty) {
-        final file = result.files.first;
-        _logger.logger.i('选择文件: ${file.name}, 大小: ${file.size} bytes');
-        return file;
-      }
-      
-      return null;
-    } catch (e) {
-      _logger.logger.e('选择文件失败: $e');
-      return null;
-    }
-  }
+  // Future<PlatformFile?> pickSingleFile({
+  //   FileType type = FileType.any,
+  //   List<String>? allowedExtensions,
+  // }) async {
+  //   try {
+  //     final result = await FilePicker.platform.pickFiles(
+  //       type: type,
+  //       allowedExtensions: allowedExtensions,
+  //       allowMultiple: false,
+  //     );
+  //     
+  //     if (result != null && result.files.isNotEmpty) {
+  //       final file = result.files.first;
+  //       _logger.logger.i('选择文件: ${file.name}, 大小: ${file.size} bytes');
+  //       return file;
+  //     }
+  //     
+  //     return null;
+  //   } catch (e) {
+  //     _logger.logger.e('选择文件失败: $e');
+  //     return null;
+  //   }
+  // }
   
   /// 选择多个文件
-  Future<List<PlatformFile>?> pickMultipleFiles({
-    FileType type = FileType.any,
-    List<String>? allowedExtensions,
-    int? maxFiles,
-  }) async {
-    try {
-      final result = await FilePicker.platform.pickFiles(
-        type: type,
-        allowedExtensions: allowedExtensions,
-        allowMultiple: true,
-      );
-      
-      if (result != null && result.files.isNotEmpty) {
-        var files = result.files;
-        
-        // 限制文件数量
-        if (maxFiles != null && files.length > maxFiles) {
-          files = files.take(maxFiles).toList();
-        }
-        
-        _logger.logger.i('选择了 ${files.length} 个文件');
-        return files;
-      }
-      
-      return null;
-    } catch (e) {
-      _logger.logger.e('选择多个文件失败: $e');
-      return null;
-    }
-  }
+  // Future<List<PlatformFile>?> pickMultipleFiles({
+  //   FileType type = FileType.any,
+  //   List<String>? allowedExtensions,
+  //   int? maxFiles,
+  // }) async {
+  //   try {
+  //     final result = await FilePicker.platform.pickFiles(
+  //       type: type,
+  //       allowedExtensions: allowedExtensions,
+  //       allowMultiple: true,
+  //     );
+  //     
+  //     if (result != null && result.files.isNotEmpty) {
+  //       var files = result.files;
+  //       
+  //       // 限制文件数量
+  //       if (maxFiles != null && files.length > maxFiles) {
+  //         files = files.take(maxFiles).toList();
+  //       }
+  //       
+  //       _logger.logger.i('选择了 ${files.length} 个文件');
+  //       return files;
+  //     }
+  //     
+  //     return null;
+  //   } catch (e) {
+  //     _logger.logger.e('选择多个文件失败: $e');
+  //     return null;
+  //   }
+  // }
   
   /// 选择图片文件
-  Future<PlatformFile?> pickImage() async {
-    return await pickSingleFile(
-      type: FileType.custom,
-      allowedExtensions: _supportedImageTypes,
-    );
-  }
+  // Future<PlatformFile?> pickImage() async {
+  //   return await pickSingleFile(
+  //     type: FileType.custom,
+  //     allowedExtensions: _supportedImageTypes,
+  //   );
+  // }
   
   /// 选择视频文件
-  Future<PlatformFile?> pickVideo() async {
-    return await pickSingleFile(
-      type: FileType.custom,
-      allowedExtensions: _supportedVideoTypes,
-    );
-  }
+  // Future<PlatformFile?> pickVideo() async {
+  //   return await pickSingleFile(
+  //     type: FileType.custom,
+  //     allowedExtensions: _supportedVideoTypes,
+  //   );
+  // }
   
   /// 选择音频文件
-  Future<PlatformFile?> pickAudio() async {
-    return await pickSingleFile(
-      type: FileType.custom,
-      allowedExtensions: _supportedAudioTypes,
-    );
-  }
+  // Future<PlatformFile?> pickAudio() async {
+  //   return await pickSingleFile(
+  //     type: FileType.custom,
+  //     allowedExtensions: _supportedAudioTypes,
+  //   );
+  // }
   
   /// 选择文档文件
-  Future<PlatformFile?> pickDocument() async {
-    return await pickSingleFile(
-      type: FileType.custom,
-      allowedExtensions: _supportedDocumentTypes,
-    );
-  }
+  // Future<PlatformFile?> pickDocument() async {
+  //   return await pickSingleFile(
+  //     type: FileType.custom,
+  //     allowedExtensions: _supportedDocumentTypes,
+  //   );
+  // }
   
   /// 验证文件
-  FileValidationResult validateFile(PlatformFile file) {
-    final extension = path.extension(file.name).toLowerCase().replaceFirst('.', '');
-    final fileType = getFileType(extension);
-    
-    // 检查文件类型
-    if (fileType == FileCategory.unknown) {
-      return FileValidationResult(
-        isValid: false,
-        error: '不支持的文件类型: $extension',
-      );
-    }
-    
-    // 检查文件大小
-    final maxSize = _getMaxSizeForType(fileType);
-    if (file.size > maxSize) {
-      return FileValidationResult(
-        isValid: false,
-        error: '文件大小超过限制: ${_formatFileSize(file.size)} > ${_formatFileSize(maxSize)}',
-      );
-    }
-    
-    return FileValidationResult(isValid: true);
-  }
+  // FileValidationResult validateFile(PlatformFile file) {
+  //   final extension = path.extension(file.name).toLowerCase().replaceFirst('.', '');
+  //   final fileType = getFileType(extension);
+  //   
+  //   // 检查文件类型
+  //   if (fileType == FileCategory.unknown) {
+  //     return FileValidationResult(
+  //       isValid: false,
+  //       error: '不支持的文件类型: $extension',
+  //     );
+  //   }
+  //   
+  //   // 检查文件大小
+  //   final maxSize = _getMaxSizeForType(fileType);
+  //   if (file.size > maxSize) {
+  //     return FileValidationResult(
+  //       isValid: false,
+  //       error: '文件大小超过限制: ${_formatFileSize(file.size)} > ${_formatFileSize(maxSize)}',
+  //     );
+  //   }
+  //   
+  //   return FileValidationResult(isValid: true);
+  // }
   
   /// 上传文件
-  Future<FileUploadResult> uploadFile(
-    PlatformFile file, {
-    String? customPath,
-    Map<String, dynamic>? metadata,
-    Function(double)? onProgress,
-  }) async {
-    try {
-      // 验证文件
-      final validation = validateFile(file);
-      if (!validation.isValid) {
-        return FileUploadResult(
-          success: false,
-          error: validation.error,
-        );
-      }
-      
-      // 准备上传数据
-      final uploadData = {
-        'fileName': file.name,
-        'fileSize': file.size,
-        'fileType': getFileType(path.extension(file.name)).toString(),
-        'customPath': customPath,
-        ...?metadata,
-      };
-      
-      // 上传文件
-      String? filePath;
-      if (kIsWeb) {
-        // Web平台使用bytes
-        filePath = await _uploadFileWeb(file, uploadData, onProgress);
-      } else {
-        // 移动平台使用文件路径
-        filePath = await _uploadFileMobile(file, uploadData, onProgress);
-      }
-      
-      if (filePath != null) {
-        _logger.logger.i('文件上传成功: $filePath');
-        return FileUploadResult(
-          success: true,
-          filePath: filePath,
-          fileName: file.name,
-          fileSize: file.size,
-        );
-      } else {
-        return FileUploadResult(
-          success: false,
-          error: '文件上传失败',
-        );
-      }
-    } catch (e) {
-      _logger.logger.e('上传文件异常: $e');
-      return FileUploadResult(
-        success: false,
-        error: '上传文件异常: $e',
-      );
-    }
-  }
+  // Future<FileUploadResult> uploadFile(
+  //   PlatformFile file, {
+  //   String? customPath,
+  //   Map<String, dynamic>? metadata,
+  //   Function(double)? onProgress,
+  // }) async {
+  //   try {
+  //     // 验证文件
+  //     final validation = validateFile(file);
+  //     if (!validation.isValid) {
+  //       return FileUploadResult(
+  //         success: false,
+  //         error: validation.error,
+  //       );
+  //     }
+  //     
+  //     // 准备上传数据
+  //     final uploadData = {
+  //       'fileName': file.name,
+  //       'fileSize': file.size,
+  //       'fileType': getFileType(path.extension(file.name)).toString(),
+  //       'customPath': customPath,
+  //       ...?metadata,
+  //     };
+  //     
+  //     // 上传文件
+  //     String? filePath;
+  //     if (kIsWeb) {
+  //       // Web平台使用bytes
+  //       filePath = await _uploadFileWeb(file, uploadData, onProgress);
+  //     } else {
+  //       // 移动平台使用文件路径
+  //       filePath = await _uploadFileMobile(file, uploadData, onProgress);
+  //     }
+  //     
+  //     if (filePath != null) {
+  //       _logger.logger.i('文件上传成功: $filePath');
+  //       return FileUploadResult(
+  //         success: true,
+  //         filePath: filePath,
+  //         fileName: file.name,
+  //         fileSize: file.size,
+  //       );
+  //     } else {
+  //       return FileUploadResult(
+  //         success: false,
+  //         error: '文件上传失败',
+  //       );
+  //     }
+  //   } catch (e) {
+  //     _logger.logger.e('上传文件异常: $e');
+  //     return FileUploadResult(
+  //       success: false,
+  //       error: '上传文件异常: $e',
+  //     );
+  //   }
+  // }
   
   /// Web平台文件上传
-  Future<String?> _uploadFileWeb(
-    PlatformFile file,
-    Map<String, dynamic> uploadData,
-    Function(double)? onProgress,
-  ) async {
-    try {
-      // 模拟上传进度
-      if (onProgress != null) {
-        for (int i = 0; i <= 100; i += 10) {
-          await Future.delayed(Duration(milliseconds: 100));
-          onProgress(i / 100.0);
-        }
-      }
-      
-      // 返回模拟的文件URL
-      return 'https://example.com/files/${DateTime.now().millisecondsSinceEpoch}_${file.name}';
-    } catch (e) {
-      _logger.logger.e('Web文件上传失败: $e');
-      return null;
-    }
-  }
+  // Future<String?> _uploadFileWeb(
+  //   PlatformFile file,
+  //   Map<String, dynamic> uploadData,
+  //   Function(double)? onProgress,
+  // ) async {
+  //   try {
+  //     // 模拟上传进度
+  //     if (onProgress != null) {
+  //       for (int i = 0; i <= 100; i += 10) {
+  //         await Future.delayed(Duration(milliseconds: 100));
+  //         onProgress(i / 100.0);
+  //       }
+  //     }
+  //     
+  //     // 返回模拟的文件URL
+  //     return 'https://example.com/files/${DateTime.now().millisecondsSinceEpoch}_${file.name}';
+  //   } catch (e) {
+  //     _logger.logger.e('Web文件上传失败: $e');
+  //     return null;
+  //   }
+  // }
   
   /// 移动平台文件上传
-  Future<String?> _uploadFileMobile(
-    PlatformFile file,
-    Map<String, dynamic> uploadData,
-    Function(double)? onProgress,
-  ) async {
-    try {
-      if (file.path == null) {
-        _logger.logger.e('文件路径为空');
-        return null;
-      }
-      
-      // 使用API服务上传文件
-      final response = await _apiService.uploadFile(
-        '/files/upload',
-        file.path!,
-        fileName: file.name,
-        data: uploadData,
-        onSendProgress: (sent, total) {
-          if (onProgress != null) {
-            onProgress(sent / total);
-          }
-        },
-      );
-      
-      return response['filePath'];
-    } catch (e) {
-      _logger.logger.e('移动端文件上传失败: $e');
-      return null;
-    }
-  }
+  // Future<String?> _uploadFileMobile(
+  //   PlatformFile file,
+  //   Map<String, dynamic> uploadData,
+  //   Function(double)? onProgress,
+  // ) async {
+  //   try {
+  //     if (file.path == null) {
+  //       _logger.logger.e('文件路径为空');
+  //       return null;
+  //     }
+  //     
+  //     // 使用API服务上传文件
+  //     final response = await _apiService.uploadFile(
+  //       '/files/upload',
+  //       file.path!,
+  //       fileName: file.name,
+  //       data: uploadData,
+  //       onSendProgress: (sent, total) {
+  //         if (onProgress != null) {
+  //           onProgress(sent / total);
+  //         }
+  //       },
+  //     );
+  //     
+  //     return response['filePath'];
+  //   } catch (e) {
+  //     _logger.logger.e('移动端文件上传失败: $e');
+  //     return null;
+  //   }
+  // }
   
   /// 下载文件
   Future<FileDownloadResult> downloadFile(
@@ -444,6 +444,7 @@ class FileService {
   }
   
   /// 获取文件类型的最大大小限制
+  // ignore: unused_element
   int _getMaxSizeForType(FileCategory category) {
     switch (category) {
       case FileCategory.image:

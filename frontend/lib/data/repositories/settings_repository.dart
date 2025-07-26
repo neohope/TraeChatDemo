@@ -270,33 +270,47 @@ class SettingsRepository {
   /// 获取应用设置
   Future<ApiResponse<AppSettings>> getSettings() async {
     try {
-      // 先尝试从本地获取
-      final localSettings = await LocalStorage.getSettings();
-      if (localSettings != null) {
+      // 尝试从本地获取
+      final localSettingsData = await LocalStorage.getSettings();
+      if (localSettingsData != null) {
+        final localSettings = AppSettings.fromJson(localSettingsData);
+        _logger.i('从本地加载设置成功');
         return ApiResponse<AppSettings>.success(localSettings);
       }
-      
-      // 如果本地没有，则从服务器获取
-      final response = await _apiService.get<Map<String, dynamic>>('/settings');
-      
+
+      // 检查用户是否已认证
+      final isAuthenticated = await _apiService.isAuthenticated();
+      if (!isAuthenticated) {
+        _logger.i('用户未认证，返回默认设置');
+        final defaultSettings = AppSettings();
+        await LocalStorage.saveSettings(defaultSettings);
+        return ApiResponse<AppSettings>.success(defaultSettings, message: '用户未认证，使用默认设置');
+      }
+
+      // 如果本地没有，并且用户已认证，则从服务器获取
+      _logger.i('尝试从服务器获取设置');
+      final response = await _apiService.get<Map<String, dynamic>>('/api/v1/settings');
+
       if (response.success && response.data != null) {
+        _logger.i('从服务器获取设置成功');
         final settings = AppSettings.fromJson(response.data!);
         // 保存到本地存储
         await LocalStorage.saveSettings(settings);
         return ApiResponse<AppSettings>.success(settings);
       } else {
+        _logger.w('从服务器获取设置失败，返回默认设置');
         // 如果服务器获取失败，则返回默认设置
         final defaultSettings = AppSettings();
         await LocalStorage.saveSettings(defaultSettings);
-        return ApiResponse<AppSettings>.success(defaultSettings, message: '使用默认设置');
+        return ApiResponse<AppSettings>.success(defaultSettings, message: '无法从服务器获取设置，使用默认设置');
       }
     } catch (e) {
       _logger.e('获取应用设置失败: $e');
-      
-      // 返回默认设置
+
+      // 发生任何异常都返回默认设置
       final defaultSettings = AppSettings();
       await LocalStorage.saveSettings(defaultSettings);
-      return ApiResponse<AppSettings>.success(defaultSettings, message: '使用默认设置');
+      return ApiResponse<AppSettings>.success(defaultSettings, message: '获取设置时发生错误，使用默认设置');
     }
   }
   

@@ -673,6 +673,7 @@ class _MessageBubbleWidgetState extends State<MessageBubbleWidget>
         return Icons.done_all;
       case MessageStatus.failed:
         return Icons.error;
+      // ignore: unreachable_switch_default
       default:
         return Icons.check;
     }

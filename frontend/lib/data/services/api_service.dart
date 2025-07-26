@@ -3,6 +3,7 @@ import 'dart:io';
 import 'package:dio/dio.dart';
 
 import '../../core/network/http_client.dart';
+import '../../core/storage/local_storage.dart';
 import '../../core/utils/app_logger.dart';
 import '../models/api_response.dart';
 
@@ -19,6 +20,13 @@ class ApiService {
   
   // 私有构造函数
   ApiService._internal();
+
+  /// 检查用户是否已认证
+  Future<bool> isAuthenticated() async {
+    // 这里的逻辑是检查本地是否存有有效的token
+    final token = await LocalStorage.getAuthToken();
+    return token != null && token.isNotEmpty;
+  }
   
   // 通用请求处理方法
   Future<ApiResponse<T>> _handleResponse<T>(
@@ -42,6 +50,9 @@ class ApiService {
             } else {
               return ApiResponse<T>.error(message ?? '未知错误');
             }
+          } else if (responseData.containsKey('token') && responseData.containsKey('user')) {
+            // 处理登录API的特殊响应格式 {token, user}
+            return ApiResponse<T>.success(response.data);
           } else {
             // 直接返回数据
             return ApiResponse<T>.success(response.data);
@@ -67,6 +78,7 @@ class ApiService {
   
   // 处理Dio错误
   String _handleDioError(DioException error) {
+    _logger.e('Dio error details: ${error.response?.data}');
     switch (error.type) {
       case DioExceptionType.connectionTimeout:
         return '连接超时，请检查网络';
@@ -87,6 +99,7 @@ class ApiService {
           return '网络连接失败，请检查网络';
         }
         return '未知错误: ${error.message}';
+      // ignore: unreachable_switch_default
       default:
         return '请求失败: ${error.message}';
     }

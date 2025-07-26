@@ -53,29 +53,32 @@ func (h *Handler) RegisterRoutes(router *mux.Router, corsConfig struct {
 	userRoutes.HandleFunc("/register", h.proxyToUserService).Methods("POST")
 	userRoutes.HandleFunc("/login", h.proxyToUserService).Methods("POST")
 	// 其他用户相关操作需要认证
-	userAuthRoutes := userRoutes.PathPrefix("").Subrouter()
+	userAuthRoutes := userRoutes.PathPrefix("/").Subrouter()
 	userAuthRoutes.Use(h.middleware.JWTAuth())
-	userAuthRoutes.PathPrefix("").HandlerFunc(h.proxyToUserService)
+	userAuthRoutes.PathPrefix("/").HandlerFunc(h.proxyToUserService)
 
 	// 群组服务路由（需要认证）
 	groupRoutes := api.PathPrefix("/groups").Subrouter()
 	groupRoutes.Use(h.middleware.JWTAuth())
-	groupRoutes.PathPrefix("").HandlerFunc(h.proxyToGroupService)
+	groupRoutes.PathPrefix("/").HandlerFunc(h.proxyToGroupService)
 
 	// 消息服务路由（需要认证）
 	messageRoutes := api.PathPrefix("/messages").Subrouter()
 	messageRoutes.Use(h.middleware.JWTAuth())
-	messageRoutes.PathPrefix("").HandlerFunc(h.proxyToMessageService)
+	messageRoutes.PathPrefix("/").HandlerFunc(h.proxyToMessageService)
+
+	// 会话服务路由（需要认证）- 也代理到消息服务
+	api.PathPrefix("/conversations").Handler(h.middleware.JWTAuth()(http.HandlerFunc(h.proxyToMessageService)))
 
 	// 媒体服务路由（需要认证）
 	mediaRoutes := api.PathPrefix("/media").Subrouter()
 	mediaRoutes.Use(h.middleware.JWTAuth())
-	mediaRoutes.PathPrefix("").HandlerFunc(h.proxyToMediaService)
+	mediaRoutes.PathPrefix("/").HandlerFunc(h.proxyToMediaService)
 
 	// 通知服务路由（需要认证）
 	notificationRoutes := api.PathPrefix("/notifications").Subrouter()
 	notificationRoutes.Use(h.middleware.JWTAuth())
-	notificationRoutes.PathPrefix("").HandlerFunc(h.proxyToNotificationService)
+	notificationRoutes.PathPrefix("/").HandlerFunc(h.proxyToNotificationService)
 
 	// WebSocket路由（需要认证）
 	api.HandleFunc("/ws", h.middleware.JWTAuth()(http.HandlerFunc(h.proxyToMessageServiceWS)).ServeHTTP).Methods("GET")
@@ -113,6 +116,7 @@ func (h *Handler) HealthCheck(w http.ResponseWriter, r *http.Request) {
 }
 
 func (h *Handler) proxyToUserService(w http.ResponseWriter, r *http.Request) {
+	h.logger.Info("Proxying to user service", zap.String("method", r.Method), zap.String("path", r.URL.Path))
 	h.proxyService.ProxyRequest(w, r, "users")
 }
 
@@ -121,6 +125,7 @@ func (h *Handler) proxyToGroupService(w http.ResponseWriter, r *http.Request) {
 }
 
 func (h *Handler) proxyToMessageService(w http.ResponseWriter, r *http.Request) {
+	h.logger.Info("Proxying to message service", zap.String("method", r.Method), zap.String("path", r.URL.Path))
 	h.proxyService.ProxyRequest(w, r, "messages")
 }
 

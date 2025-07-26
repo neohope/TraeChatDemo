@@ -88,6 +88,11 @@ func (r *UserRepository) GetByEmail(ctx context.Context, email string) (*domain.
 	WHERE email = $1
 	`
 
+	// 添加调试日志
+	var count int
+	countQuery := "SELECT COUNT(*) FROM users WHERE email = $1"
+	r.db.GetContext(ctx, &count, countQuery, email)
+	
 	err := r.db.GetContext(ctx, &user, query, email)
 	if err != nil {
 		if errors.Is(err, sql.ErrNoRows) {

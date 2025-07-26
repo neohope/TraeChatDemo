@@ -14,19 +14,18 @@ class ApiService {
   late Dio _dio;
   final AppLogger _logger = AppLogger.instance;
   
-  // 基础配置
-  static const String _baseUrl = 'http://localhost:3000/api';
-  static const int _connectTimeout = 30000;
-  static const int _receiveTimeout = 30000;
-  static const int _sendTimeout = 30000;
-
   /// 初始化API服务
-  void initialize({String? baseUrl}) {
+  void initialize({
+    required String baseUrl,
+    required int connectTimeout,
+    required int receiveTimeout,
+    required int sendTimeout,
+  }) {
     _dio = Dio(BaseOptions(
-      baseUrl: baseUrl ?? _baseUrl,
-      connectTimeout: Duration(milliseconds: _connectTimeout),
-      receiveTimeout: Duration(milliseconds: _receiveTimeout),
-      sendTimeout: Duration(milliseconds: _sendTimeout),
+      baseUrl: baseUrl,
+      connectTimeout: Duration(milliseconds: connectTimeout),
+      receiveTimeout: Duration(milliseconds: receiveTimeout),
+      sendTimeout: Duration(milliseconds: sendTimeout),
       headers: {
         'Content-Type': 'application/json',
         'Accept': 'application/json',
@@ -167,7 +166,7 @@ class ApiService {
         return false;
       }
 
-      final response = await _dio.post('/auth/refresh', data: {
+      final response = await _dio.post('/api/v1/auth/refresh', data: {
         'refreshToken': refreshToken,
       });
 

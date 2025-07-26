@@ -1,5 +1,7 @@
-import 'dart:convert';
+import 'package:firebase_core/firebase_core.dart';
+import 'package:flutter/foundation.dart';
 import 'package:flutter/services.dart';
+import 'package:yaml/yaml.dart';
 import '../utils/app_logger.dart';
 
 /// 应用配置类，用于管理应用的全局配置
@@ -19,6 +21,7 @@ class AppConfig {
   late int receiveTimeout;
   late bool encryptionEnabled;
   late Map<String, dynamic> pushNotificationConfig;
+  late FirebaseOptions firebaseOptions;
   
   // 日志实例
   final logger = AppLogger.instance.logger;
@@ -28,7 +31,8 @@ class AppConfig {
     try {
       // 从assets加载配置文件
       final configString = await rootBundle.loadString('assets/config/app_config.yaml');
-      final Map<String, dynamic> config = json.decode(configString);
+      final dynamic yamlData = loadYaml(configString);
+      final Map<String, dynamic> config = Map<String, dynamic>.from(yamlData);
       
       // 设置配置属性
       apiBaseUrl = config['api_base_url'] ?? 'http://localhost:8080';
@@ -38,11 +42,23 @@ class AppConfig {
       connectionTimeout = config['connection_timeout'] ?? 30000;
       receiveTimeout = config['receive_timeout'] ?? 30000;
       encryptionEnabled = config['encryption_enabled'] ?? false;
-      pushNotificationConfig = config['push_notification'] ?? {};
+      pushNotificationConfig = Map<String, dynamic>.from(config['push_notification'] ?? {});
+
+      if (kIsWeb) {
+        final firebaseConfig = Map<String, dynamic>.from(config['firebase_web_config'] ?? {});
+        firebaseOptions = FirebaseOptions(
+          apiKey: firebaseConfig['apiKey'] ?? '',
+          authDomain: firebaseConfig['authDomain'] ?? '',
+          projectId: firebaseConfig['projectId'] ?? '',
+          storageBucket: firebaseConfig['storageBucket'] ?? '',
+          messagingSenderId: firebaseConfig['messagingSenderId'] ?? '',
+          appId: firebaseConfig['appId'] ?? '',
+        );
+      }
       
       logger.i('配置加载成功');
-    } catch (e) {
-      logger.e('加载配置失败: $e');
+    } catch (e, s) {
+       logger.e('无法加载配置', e, s);
       // 设置默认值
       apiBaseUrl = 'http://localhost:8080';
       wsBaseUrl = 'ws://localhost:8080/ws';
@@ -52,6 +68,16 @@ class AppConfig {
       receiveTimeout = 30000;
       encryptionEnabled = false;
       pushNotificationConfig = {};
+      if (kIsWeb) {
+        firebaseOptions = const FirebaseOptions(
+          apiKey: '',
+          authDomain: '',
+          projectId: '',
+          storageBucket: '',
+          messagingSenderId: '',
+          appId: '',
+        );
+      }
     }
   }
   

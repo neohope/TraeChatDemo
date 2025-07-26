@@ -234,7 +234,7 @@ class MessageViewModel extends ChangeNotifier {
     
     try {
       final response = await _apiService.get(
-        '/chats/$chatId/messages',
+        '/api/v1/chats/$chatId/messages',
         queryParameters: {
           'page': _currentPage,
           'limit': _pageSize,
@@ -352,7 +352,7 @@ class MessageViewModel extends ChangeNotifier {
   /// 删除消息
   Future<bool> deleteMessage(String messageId) async {
     try {
-      await _apiService.delete('/messages/$messageId');
+      await _apiService.delete('/api/v1/messages/$messageId');
       
       _messages.removeWhere((m) => m.id == messageId);
       notifyListeners();
@@ -370,7 +370,7 @@ class MessageViewModel extends ChangeNotifier {
   Future<bool> editMessage(String messageId, String newContent) async {
     try {
       final response = await _apiService.put(
-        '/messages/$messageId',
+        '/api/v1/messages/$messageId',
         data: {'content': newContent},
       );
       
@@ -394,7 +394,7 @@ class MessageViewModel extends ChangeNotifier {
   /// 标记消息为已读
   Future<void> markMessageAsRead(String messageId) async {
     try {
-      await _apiService.post('/messages/$messageId/read');
+      await _apiService.post('/api/v1/messages/$messageId/read');
       
       // 更新本地状态
       final messageIndex = _messages.indexWhere((m) => m.id == messageId);
@@ -426,7 +426,7 @@ class MessageViewModel extends ChangeNotifier {
     
     try {
       final response = await _apiService.get(
-        '/messages/search',
+        '/api/v1/messages/search',
         queryParameters: {
           'query': query,
           if (chatId != null) 'chatId': chatId,

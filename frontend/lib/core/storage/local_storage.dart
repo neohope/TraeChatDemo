@@ -572,9 +572,21 @@ class LocalStorage {
   }
   
   // 获取应用设置
-  static Future<dynamic> getSettings() async {
+  static Future<Map<String, dynamic>?> getSettings() async {
     try {
-      return getSetting('app_settings');
+      final data = getSetting('app_settings');
+      if (data == null) return null;
+      
+      // 确保返回的是Map<String, dynamic>类型
+      if (data is Map<String, dynamic>) {
+        return data;
+      } else if (data is Map) {
+        // 如果是其他类型的Map，转换为Map<String, dynamic>
+        return Map<String, dynamic>.from(data);
+      } else {
+        _logger.w('应用设置数据类型不正确: ${data.runtimeType}');
+        return null;
+      }
     } catch (e) {
       _logger.e('获取应用设置失败: $e');
       return null;

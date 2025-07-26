@@ -150,6 +150,7 @@ class ChatAppBar extends StatelessWidget implements PreferredSizeWidget {
         return AppTheme.busyStatusColor;
       case UserStatus.away:
         return AppTheme.awayStatusColor;
+      // ignore: unreachable_switch_default
       default:
         return AppTheme.offlineStatusColor;
     }
@@ -207,6 +208,7 @@ class ChatAppBar extends StatelessWidget implements PreferredSizeWidget {
         return '忙碌';
       case UserStatus.away:
         return '离开';
+      // ignore: unreachable_switch_default
       default:
         return '离线';
     }

@@ -227,6 +227,7 @@ class NotificationService {
   Future<void> _sendTokenToServerAPI(String token) async {
     try {
       // 替换为实际的API端点
+    // ignore: unused_local_variable
     const apiEndpoint = 'https://api.traechat.com/notifications/token';
       // final response = await http.post(
       //   Uri.parse('${_baseUrl}/api/v1/users/fcm-token'),

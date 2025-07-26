@@ -61,11 +61,11 @@ class UserModel {
   /// 从JSON创建用户模型
   factory UserModel.fromJson(Map<String, dynamic> json) {
     return UserModel(
-      id: json['id'],
-      name: json['name'],
+      id: json['id'] ?? '',
+      name: json['name'] ?? json['full_name'] ?? json['username'] ?? 'Unknown User',
       email: json['email'],
       phone: json['phone'],
-      avatarUrl: json['avatarUrl'],
+      avatarUrl: json['avatarUrl'] ?? json['avatar_url'],
       bio: json['bio'],
       nickname: json['nickname'],
       status: json['status'] != null

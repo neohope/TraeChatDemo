@@ -155,6 +155,7 @@ class UserListItem extends StatelessWidget {
         return '离开';
       case UserStatus.busy:
         return '忙碌';
+      // ignore: unreachable_switch_default
       default:
         return '离线';
     }

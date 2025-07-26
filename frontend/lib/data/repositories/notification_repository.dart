@@ -145,7 +145,7 @@ class NotificationRepository {
       }
       
       final response = await _apiService.get<List<dynamic>>(
-        '/notifications',
+        '/api/v1/notifications',
         queryParameters: queryParams,
       );
       
@@ -188,7 +188,7 @@ class NotificationRepository {
   Future<ApiResponse<int>> getUnreadNotificationCount() async {
     try {
       final response = await _apiService.get<Map<String, dynamic>>(
-        '/notifications/unread-count',
+        '/api/v1/notifications/unread-count',
       );
       
       if (response.success && response.data != null) {
@@ -222,7 +222,7 @@ class NotificationRepository {
   Future<ApiResponse<bool>> markNotificationAsRead(String notificationId) async {
     try {
       final response = await _apiService.put<Map<String, dynamic>>(
-        '/notifications/$notificationId/read',
+        '/api/v1/notifications/$notificationId/read',
       );
       
       if (response.success) {
@@ -250,7 +250,7 @@ class NotificationRepository {
   Future<ApiResponse<bool>> markAllNotificationsAsRead() async {
     try {
       final response = await _apiService.put<Map<String, dynamic>>(
-        '/notifications/read-all',
+        '/api/v1/notifications/read-all',
       );
       
       if (response.success) {
@@ -278,7 +278,7 @@ class NotificationRepository {
   Future<ApiResponse<bool>> deleteNotification(String notificationId) async {
     try {
       final response = await _apiService.delete<Map<String, dynamic>>(
-        '/notifications/$notificationId',
+        '/api/v1/notifications/$notificationId',
       );
       
       if (response.success) {
@@ -306,7 +306,7 @@ class NotificationRepository {
   Future<ApiResponse<bool>> clearAllNotifications() async {
     try {
       final response = await _apiService.delete<Map<String, dynamic>>(
-        '/notifications/clear-all',
+        '/api/v1/notifications/clear-all',
       );
       
       if (response.success) {
@@ -334,7 +334,7 @@ class NotificationRepository {
   Future<ApiResponse<bool>> updatePushToken(String token, String deviceType) async {
     try {
       final response = await _apiService.post<Map<String, dynamic>>(
-        '/notifications/push-token',
+        '/api/v1/notifications/push-token',
         data: {
           'token': token,
           'device_type': deviceType,
@@ -380,7 +380,7 @@ class NotificationRepository {
       
       // 发送到服务器
       final response = await _apiService.put<Map<String, dynamic>>(
-        '/notifications/settings',
+        '/api/v1/notifications/settings',
         data: updatedSettings.toJson(),
       );
       

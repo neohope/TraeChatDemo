@@ -2,7 +2,7 @@ import 'dart:async';
 import 'dart:io';
 
 import 'package:crypto/crypto.dart';
-import 'package:file_picker/file_picker.dart';
+// import 'package:file_picker/file_picker.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:path/path.dart' as path;
@@ -290,40 +290,42 @@ class FileService {
     bool multiple = false,
     AppFileType? type,
   }) async {
-    try {
-      // 检查存储权限
-      if (!await _checkStoragePermission()) {
-        throw Exception('需要存储权限才能选择文件');
-      }
-      
-      final result = await FilePicker.platform.pickFiles(
-        type: _convertFileType(type),
-        allowedExtensions: allowedExtensions,
-        allowMultiple: multiple,
-        withData: false,
-        withReadStream: false,
-      );
-      
-      if (result != null) {
-        final fileInfos = <FileInfo>[];
-        for (final file in result.files) {
-          if (file.path != null) {
-            final fileType = _getFileTypeFromExtension(file.extension);
-            final fileInfo = await _createFileInfo(file.path!, fileType);
-            if (fileInfo != null) {
-              fileInfos.add(fileInfo);
-            }
-          }
-        }
-        
-        _logger.info('选择了${fileInfos.length}个文件');
-        return fileInfos;
-      }
-    } catch (e) {
-      _logger.error('选择文件失败: $e');
-      rethrow;
-    }
+    _logger.warning('pickFiles is not implemented');
     return [];
+    // try {
+    //   // 检查存储权限
+    //   if (!await _checkStoragePermission()) {
+    //     throw Exception('需要存储权限才能选择文件');
+    //   }
+      
+    //   final result = await FilePicker.platform.pickFiles(
+    //     type: _convertFileType(type),
+    //     allowedExtensions: allowedExtensions,
+    //     allowMultiple: multiple,
+    //     withData: false,
+    //     withReadStream: false,
+    //   );
+      
+    //   if (result != null) {
+    //     final fileInfos = <FileInfo>[];
+    //     for (final file in result.files) {
+    //       if (file.path != null) {
+    //         final fileType = _getFileTypeFromExtension(file.extension);
+    //         final fileInfo = await _createFileInfo(file.path!, fileType);
+    //         if (fileInfo != null) {
+    //           fileInfos.add(fileInfo);
+    //         }
+    //       }
+    //     }
+        
+    //     _logger.info('选择了${fileInfos.length}个文件');
+    //     return fileInfos;
+    //   }
+    // } catch (e) {
+    //   _logger.error('选择文件失败: $e');
+    //   rethrow;
+    // }
+    // return [];
   }
 
   /// 上传文件
@@ -626,6 +628,7 @@ class FileService {
   }
 
   /// 检查存储权限
+  // ignore: unused_element
   Future<bool> _checkStoragePermission() async {
     if (Platform.isAndroid) {
       final status = await Permission.storage.status;
@@ -637,21 +640,22 @@ class FileService {
     return true;
   }
 
-  /// 转换文件类型
-  FileType _convertFileType(AppFileType? type) {
-    switch (type) {
-      case AppFileType.image:
-        return FileType.image;
-      case AppFileType.video:
-        return FileType.video;
-      case AppFileType.audio:
-        return FileType.audio;
-      default:
-        return FileType.any;
-    }
-  }
+  // /// 转换文件类型
+  // FileType _convertFileType(AppFileType? type) {
+  //   switch (type) {
+  //     case AppFileType.image:
+  //       return FileType.image;
+  //     case AppFileType.video:
+  //       return FileType.video;
+  //     case AppFileType.audio:
+  //       return FileType.audio;
+  //     default:
+  //       return FileType.any;
+  //   }
+  // }
 
   /// 根据扩展名获取文件类型
+  // ignore: unused_element
   AppFileType _getFileTypeFromExtension(String? extension) {
     if (extension == null) return AppFileType.other;
     

@@ -88,7 +88,7 @@ class ChatViewModel extends ChangeNotifier {
       }
 
       // 从服务器获取最新数据
-      final response = await _apiService.get('/conversations');
+      final response = await _apiService.get('/api/v1/conversations');
       
       if (response['success'] == true) {
         final List<dynamic> conversationList = response['data'] as List<dynamic>;
@@ -149,7 +149,7 @@ class ChatViewModel extends ChangeNotifier {
       }
 
       // 从服务器获取最新消息
-      final response = await _apiService.get('/conversations/$conversationId/messages');
+      final response = await _apiService.get('/api/v1/conversations/$conversationId/messages');
       
       if (response['success'] == true) {
         final List<dynamic> messageList = response['data'] as List<dynamic>;
@@ -192,7 +192,7 @@ class ChatViewModel extends ChangeNotifier {
       notifyListeners();
 
       // 发送到服务器
-      final response = await _apiService.post('/messages', data: {
+      final response = await _apiService.post('/api/v1/messages', data: {
         'conversationId': conversationId,
         'content': content,
         'type': type,
@@ -255,7 +255,7 @@ class ChatViewModel extends ChangeNotifier {
   /// 删除消息
   Future<bool> deleteMessage(String messageId) async {
     try {
-      final response = await _apiService.delete('/messages/$messageId');
+      final response = await _apiService.delete('/api/v1/messages/$messageId');
       
       if (response['success'] == true) {
         _currentMessages.removeWhere((msg) => msg.id == messageId);
@@ -288,7 +288,7 @@ class ChatViewModel extends ChangeNotifier {
     _setError(null);
 
     try {
-      final response = await _apiService.post('/conversations', data: {
+      final response = await _apiService.post('/api/v1/conversations', data: {
         'participantIds': [participantId],
         'type': type,
         'title': title,
@@ -319,7 +319,7 @@ class ChatViewModel extends ChangeNotifier {
   /// 标记消息为已读
   Future<void> _markAsRead(String conversationId) async {
     try {
-      await _apiService.put('/conversations/$conversationId/read');
+      await _apiService.put('/api/v1/conversations/$conversationId/read');
       
       // 更新本地对话的未读计数
       final index = _conversations.indexWhere((conv) => conv.id == conversationId);

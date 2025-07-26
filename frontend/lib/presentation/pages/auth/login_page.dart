@@ -24,13 +24,21 @@ class _LoginPageState extends State<LoginPage> {
   bool _rememberMe = false;
   
   @override
+  void initState() {
+    super.initState();
+    // 移除自动登录功能，用户需要手动输入凭据
+  }
+
+  @override
   void dispose() {
     _emailController.dispose();
     _passwordController.dispose();
     super.dispose();
   }
   
-  // 处理登录
+
+  
+  // 手动登录处理
   Future<void> _handleLogin() async {
     // 验证表单
     if (_formKey.currentState?.validate() != true) {
@@ -40,20 +48,34 @@ class _LoginPageState extends State<LoginPage> {
     final email = _emailController.text.trim();
     final password = _passwordController.text.trim();
     
+    print('开始登录: email=$email, password长度=${password.length}');
+    
     // 获取AuthViewModel并调用登录方法
     final authViewModel = Provider.of<AuthViewModel>(context, listen: false);
-    final result = await authViewModel.login(email, password);
-    
+    final response = await authViewModel.login(email, password);
+
     if (!mounted) return;
     
-    if (result.success) {
-      // 登录成功，导航到首页
-      AppRouter.router.go(AppRouter.home);
+    print('登录结果: success=${response.success}, isAuthenticated=${authViewModel.isAuthenticated}');
+    print('错误信息: ${authViewModel.errorMessage}');
+
+    if (response.success) {
+      // 登录成功，等待状态更新后导航到首页
+      print('登录成功，准备跳转到首页');
+      await Future.delayed(const Duration(milliseconds: 200));
+      if (mounted && authViewModel.isAuthenticated) {
+        print('执行页面跳转到首页');
+        AppRouter.router.go(AppRouter.home);
+      } else {
+        print('认证状态异常，无法跳转: isAuthenticated=${authViewModel.isAuthenticated}');
+      }
     } else {
       // 登录失败，显示错误信息
+      final errorMessage = authViewModel.errorMessage ?? response.message ?? '登录失败，请重试';
+      print('登录失败，显示错误: $errorMessage');
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
-          content: Text(result.message ?? '登录失败，请重试'),
+          content: Text(errorMessage),
           backgroundColor: Colors.red,
         ),
       );

@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:permission_handler/permission_handler.dart';
-import 'package:file_picker/file_picker.dart';
+// import 'package:file_picker/file_picker.dart';
 import '../../../domain/models/message_model.dart';
 import 'quoted_message_widget.dart';
 
@@ -371,34 +371,38 @@ class _EnhancedChatInputState extends State<EnhancedChatInput> {
   }
 
   void _pickFile() async {
-    try {
-      FilePickerResult? result = await FilePicker.platform.pickFiles(
-        type: FileType.any,
-        allowMultiple: false,
-      );
-      
-      if (result != null && result.files.single.path != null) {
-        final file = result.files.single;
-        
-        // 调用发送文件的回调
-        if (widget.onSendFile != null) {
-          widget.onSendFile!({
-            'name': file.name,
-            'path': file.path!,
-            'size': file.size,
-            'extension': file.extension ?? '',
-          });
-        }
-        
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text('文件已发送: ${file.name}')),
-        );
-      }
-    } catch (e) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text('选择文件失败: $e')),
-      );
-    }
+    // File picker functionality temporarily disabled
+    ScaffoldMessenger.of(context).showSnackBar(
+      const SnackBar(content: Text('文件选择功能暂时不可用')),
+    );
+    // try {
+    //   FilePickerResult? result = await FilePicker.platform.pickFiles(
+    //     type: FileType.any,
+    //     allowMultiple: false,
+    //   );
+    //   
+    //   if (result != null && result.files.single.path != null) {
+    //     final file = result.files.single;
+    //     
+    //     // 调用发送文件的回调
+    //     if (widget.onSendFile != null) {
+    //       widget.onSendFile!({
+    //         'name': file.name,
+    //         'path': file.path!,
+    //         'size': file.size,
+    //         'extension': file.extension ?? '',
+    //       });
+    //     }
+    //     
+    //     ScaffoldMessenger.of(context).showSnackBar(
+    //       SnackBar(content: Text('文件已发送: ${file.name}')),
+    //     );
+    //   }
+    // } catch (e) {
+    //   ScaffoldMessenger.of(context).showSnackBar(
+    //     SnackBar(content: Text('选择文件失败: $e')),
+    //   );
+    // }
   }
 
   void _shareLocation() async {

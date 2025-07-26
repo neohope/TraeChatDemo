@@ -30,7 +30,7 @@ class UserRepository {
       }
       
       // 从服务器获取
-      final response = await _apiService.get<Map<String, dynamic>>('/users/me');
+      final response = await _apiService.get<Map<String, dynamic>>('/api/v1/users/me');
       
       if (response.success && response.data != null) {
         final user = User.fromJson(response.data!);
@@ -49,7 +49,7 @@ class UserRepository {
   /// 获取用户信息
   Future<ApiResponse<User>> getUserById(String userId) async {
     try {
-      final response = await _apiService.get<Map<String, dynamic>>('/users/$userId');
+      final response = await _apiService.get<Map<String, dynamic>>('/api/v1/users/$userId');
       
       if (response.success && response.data != null) {
         final user = User.fromJson(response.data!);
@@ -79,7 +79,7 @@ class UserRepository {
       if (status != null) data['status'] = status.toString().split('.').last;
       
       final response = await _apiService.put<Map<String, dynamic>>(
-        '/users/me',
+        '/api/v1/users/me',
         data: data,
       );
       
@@ -101,7 +101,7 @@ class UserRepository {
   Future<ApiResponse<User>> updateAvatar(File imageFile) async {
     try {
       final response = await _apiService.uploadFile<Map<String, dynamic>>(
-        '/users/me/avatar',
+        '/api/v1/users/me/avatar',
         imageFile,
       );
       
@@ -127,7 +127,7 @@ class UserRepository {
       };
       
       final response = await _apiService.put<Map<String, dynamic>>(
-        '/users/me/status',
+        '/api/v1/users/me/status',
         data: data,
       );
       
@@ -153,7 +153,7 @@ class UserRepository {
   Future<ApiResponse<List<User>>> searchUsersByKeyword(String keyword) async {
     try {
       final response = await _apiService.get<List<dynamic>>(
-        '/users/search',
+        '/api/v1/users/search',
         queryParameters: {'keyword': keyword},
       );
       
@@ -172,7 +172,7 @@ class UserRepository {
   /// 获取联系人列表
   Future<ApiResponse<List<User>>> getContacts() async {
     try {
-      final response = await _apiService.get<List<dynamic>>('/users/contacts');
+      final response = await _apiService.get<List<dynamic>>('/api/v1/users/contacts');
       
       if (response.success && response.data != null) {
         final contacts = response.data!.map((json) => User.fromJson(json)).toList();
@@ -190,7 +190,7 @@ class UserRepository {
   Future<ApiResponse<List<User>>> searchUsers(String query) async {
     try {
       final response = await _apiService.get<List<dynamic>>(
-        '/users/search',
+        '/api/v1/users/search',
         queryParameters: {'q': query},
       );
       
@@ -210,7 +210,7 @@ class UserRepository {
   Future<ApiResponse<bool>> addContact(String userId) async {
     try {
       final response = await _apiService.post<Map<String, dynamic>>(
-        '/users/contacts',
+        '/api/v1/users/contacts',
         data: {'user_id': userId},
       );
       
@@ -225,7 +225,7 @@ class UserRepository {
   Future<ApiResponse<bool>> removeContact(String userId) async {
     try {
       final response = await _apiService.delete<Map<String, dynamic>>(
-        '/users/contacts/$userId',
+        '/api/v1/users/contacts/$userId',
       );
       
       return ApiResponse<bool>.success(response.success);
@@ -239,7 +239,7 @@ class UserRepository {
   Future<ApiResponse<bool>> toggleFavoriteContact(String userId) async {
     try {
       final response = await _apiService.post<Map<String, dynamic>>(
-        '/users/contacts/$userId/favorite',
+        '/api/v1/users/contacts/$userId/favorite',
       );
       
       return ApiResponse<bool>.success(response.success);
@@ -253,7 +253,7 @@ class UserRepository {
   Future<ApiResponse<bool>> blockContact(String userId) async {
     try {
       final response = await _apiService.post<Map<String, dynamic>>(
-        '/users/contacts/$userId/block',
+        '/api/v1/users/contacts/$userId/block',
       );
       
       return ApiResponse<bool>.success(response.success);

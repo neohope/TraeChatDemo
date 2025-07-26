@@ -1,11 +1,11 @@
 {
-    "name": "Chat App",
-    "short_name": "Chat App",
+    "name": "chat_app",
+    "short_name": "chat_app",
     "start_url": ".",
     "display": "standalone",
     "background_color": "#0175C2",
     "theme_color": "#0175C2",
-    "description": "A cross-platform chat application",
+    "description": "A new Flutter project.",
     "orientation": "portrait-primary",
     "prefer_related_applications": false,
     "icons": [

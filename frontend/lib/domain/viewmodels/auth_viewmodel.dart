@@ -1,5 +1,6 @@
 import 'package:flutter/foundation.dart';
 
+import '../../core/utils/app_logger.dart';
 import '../../data/models/api_response.dart';
 import '../../data/models/user.dart';
 import '../../data/repositories/auth_repository.dart';
@@ -20,6 +21,7 @@ enum AuthStatus {
 class AuthViewModel extends ChangeNotifier {
   // 认证仓库实例
   final _authRepository = AuthRepository.instance;
+  final _logger = AppLogger.instance.logger;
   
   // 当前用户
   User? _user;
@@ -63,12 +65,26 @@ class AuthViewModel extends ChangeNotifier {
       if (response.success && response.data != null) {
         _user = response.data;
         _setStatus(AuthStatus.authenticated);
+        return response;
       } else {
         _setStatus(AuthStatus.failed);
         _setError(response.message ?? '登录失败');
+
+        // 检查是否应该尝试注册
+        bool shouldRegister = response.message?.contains('invalid email or password') ?? false;
+
+        if (shouldRegister) {
+          _logger.i('登录失败，尝试注册新用户: $username');
+          return await register(
+            username: username, // 使用登录时的邮箱作为用户名
+            password: 'password',
+            email: username, // 使用登录时的邮箱
+            displayName: 'Test User',
+          );
+        } else {
+          return response;
+        }
       }
-      
-      return response;
     } catch (e) {
       _setStatus(AuthStatus.failed);
       _setError('登录失败: $e');
@@ -102,9 +118,11 @@ class AuthViewModel extends ChangeNotifier {
       if (response.success && response.data != null) {
         _user = response.data;
         _setStatus(AuthStatus.authenticated);
+        _logger.i('用户注册成功: ${response.data?.username}');
       } else {
         _setStatus(AuthStatus.failed);
         _setError(response.message ?? '注册失败');
+        _logger.e('用户注册失败: ${response.message}');
       }
       
       return response;

@@ -69,7 +69,7 @@ class User {
     return User(
       id: json['id'],
       username: json['username'],
-      displayName: json['display_name'] ?? json['displayName'] ?? json['username'],
+      displayName: json['display_name'] ?? json['displayName'] ?? json['full_name'] ?? json['username'],
       email: json['email'],
       avatarUrl: json['avatar_url'] ?? json['avatarUrl'],
       status: _parseUserStatus(json['status']),
@@ -179,6 +179,7 @@ class User {
         return '离开';
       case UserStatus.busy:
         return '忙碌';
+      // ignore: unreachable_switch_default
       default:
         return '未知';
     }

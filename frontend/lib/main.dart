@@ -23,6 +23,8 @@ import 'presentation/viewmodels/group_viewmodel.dart' as presentation;
 import 'presentation/viewmodels/notification_viewmodel.dart' as presentation;
 import 'presentation/viewmodels/voice_message_viewmodel.dart';
 import 'presentation/viewmodels/file_transfer_viewmodel.dart';
+import 'presentation/viewmodels/friend_viewmodel.dart';
+import 'data/repositories/friend_repository_impl.dart';
 import 'presentation/widgets/auth/login_widget.dart';
 import 'presentation/widgets/main/main_screen_widget.dart';
 
@@ -32,6 +34,16 @@ final logger = AppLogger.instance.logger;
 Future<void> _initializeServices() async {
   try {
     logger.i('Initializing TraeChat application services...');
+    
+    // 初始化API服务
+    final appConfig = AppConfig.instance;
+    ApiService.instance.initialize(
+      baseUrl: appConfig.apiBaseUrl,
+      connectTimeout: appConfig.connectionTimeout,
+      receiveTimeout: appConfig.receiveTimeout,
+      sendTimeout: 30000, // You may want to add sendTimeout to your AppConfig as well
+    );
+    logger.i('API service initialized');
     
     // 初始化音频服务
     await AudioService().initialize();
@@ -59,6 +71,8 @@ Future<void> firebaseMessagingBackgroundHandler(RemoteMessage message) async {
 }
 
 void main() async {
+  // Add a log to confirm the application is starting
+  logger.i('Application starting...');
   WidgetsFlutterBinding.ensureInitialized();
   
   // 设置应用方向
@@ -67,19 +81,21 @@ void main() async {
     DeviceOrientation.portraitDown,
   ]);
   
+  // 加载配置
+  await AppConfig.instance.load();
+
   // 初始化本地存储
   await Hive.initFlutter();
   await LocalStorage.init();
-  
-  // 加载配置
-  await AppConfig.instance.load();
   
   // 初始化服务
   await _initializeServices();
   
   // 初始化Firebase
   try {
-    await Firebase.initializeApp();
+    await Firebase.initializeApp(
+      options: AppConfig.instance.firebaseOptions,
+    );
     logger.i('Firebase initialized successfully');
     
     // 设置后台消息处理器
@@ -90,15 +106,18 @@ void main() async {
     logger.w('Failed to initialize Firebase or Notification service: $e');
   }
   
+  // 初始化仓库
+  FriendRepositoryImpl.initialize(ApiService.instance);
+  
   // 运行应用
   runApp(MultiProvider(
     providers: [
       // 服务提供者
-      Provider<ApiService>(create: (_) => ApiService()),
+      Provider<ApiService>(create: (_) => ApiService.instance),
       Provider<WebSocketService>(create: (_) => WebSocketService()),
       Provider<AudioService>(create: (_) => AudioService()),
       Provider<FileService>(create: (_) => FileService()),
-      Provider<NotificationService>(create: (_) => NotificationService()),
+      Provider<NotificationService>(create: (_) => NotificationService.instance),
       
       // Domain ViewModels
       ChangeNotifierProvider(create: (_) => ConversationViewModel()),
@@ -116,10 +135,10 @@ void main() async {
         context.read<WebSocketService>(),
       )),
       ChangeNotifierProvider(create: (_) => presentation.MessageViewModel()),
-      // ChangeNotifierProvider(create: (context) => FriendViewModel(
-      //   friendRepository: FriendRepository.instance,
-      //   notificationService: context.read<NotificationService>(),
-      // )),
+      ChangeNotifierProvider(create: (context) => FriendViewModel(
+        friendRepository: FriendRepositoryImpl.instance,
+        notificationService: context.read<NotificationService>(),
+      )),
       ChangeNotifierProvider(create: (context) => presentation.GroupViewModel()),
       ChangeNotifierProvider(create: (context) => presentation.NotificationViewModel()),
       ChangeNotifierProvider(create: (context) => VoiceMessageViewModel()),
@@ -164,6 +183,7 @@ class MyApp extends StatelessWidget {
        case settings_repository.ThemeMode.dark:
          return ThemeMode.dark;
        case settings_repository.ThemeMode.system:
+       // ignore: unreachable_switch_default
        default:
          return ThemeMode.system;
      }

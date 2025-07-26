@@ -43,7 +43,7 @@ class MessageRepository {
       }
       
       final response = await _apiService.get<List<dynamic>>(
-        '/messages/direct/$userId',
+        '/api/v1/messages/direct/$userId',
         queryParameters: queryParams,
       );
       
@@ -94,7 +94,7 @@ class MessageRepository {
       }
       
       final response = await _apiService.get<List<dynamic>>(
-        '/messages/group/$groupId',
+        '/api/v1/messages/group/$groupId',
         queryParameters: queryParams,
       );
       
@@ -180,7 +180,7 @@ class MessageRepository {
       
       // WebSocket未连接，使用HTTP API发送
       final response = await _apiService.post<Map<String, dynamic>>(
-        '/messages/direct',
+        '/api/v1/messages/direct',
         data: data,
       );
       
@@ -260,7 +260,7 @@ class MessageRepository {
       
       // WebSocket未连接，使用HTTP API发送
       final response = await _apiService.post<Map<String, dynamic>>(
-        '/messages/group',
+        '/api/v1/messages/group',
         data: data,
       );
       
@@ -340,7 +340,7 @@ class MessageRepository {
       
       // 上传文件
       final response = await _apiService.uploadFile<Map<String, dynamic>>(
-        '/messages/direct/media',
+        '/api/v1/messages/direct/media',
         file,
         extraData: extraData,
       );
@@ -421,7 +421,7 @@ class MessageRepository {
       
       // 上传文件
       final response = await _apiService.uploadFile<Map<String, dynamic>>(
-        '/messages/group/media',
+        '/api/v1/messages/group/media',
         file,
         extraData: extraData,
       );
@@ -456,7 +456,7 @@ class MessageRepository {
   Future<ApiResponse<bool>> markDirectMessagesAsRead(String userId) async {
     try {
       final response = await _apiService.post<Map<String, dynamic>>(
-        '/messages/direct/$userId/read',
+        '/api/v1/messages/direct/$userId/read',
       );
       
       return ApiResponse<bool>.success(response.success);
@@ -470,7 +470,7 @@ class MessageRepository {
   Future<ApiResponse<bool>> markGroupMessagesAsRead(String groupId) async {
     try {
       final response = await _apiService.post<Map<String, dynamic>>(
-        '/messages/group/$groupId/read',
+        '/api/v1/messages/group/$groupId/read',
       );
       
       return ApiResponse<bool>.success(response.success);
@@ -484,7 +484,7 @@ class MessageRepository {
   Future<ApiResponse<bool>> deleteDirectMessage(String messageId) async {
     try {
       final response = await _apiService.delete<Map<String, dynamic>>(
-        '/messages/direct/$messageId',
+        '/api/v1/messages/direct/$messageId',
       );
       
       if (response.success) {
@@ -515,7 +515,7 @@ class MessageRepository {
   Future<ApiResponse<bool>> deleteGroupMessage(String messageId) async {
     try {
       final response = await _apiService.delete<Map<String, dynamic>>(
-        '/messages/group/$messageId',
+        '/api/v1/messages/group/$messageId',
       );
       
       if (response.success) {

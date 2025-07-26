@@ -377,6 +377,7 @@ class MessageBubble extends StatelessWidget {
         icon = Icons.error_outline;
         color = Colors.red;
         break;
+      // ignore: unreachable_switch_default
       default:
         return const SizedBox.shrink();
     }

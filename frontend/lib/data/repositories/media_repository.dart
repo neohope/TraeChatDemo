@@ -25,7 +25,7 @@ class MediaRepository {
   Future<ApiResponse<String>> uploadImage(File imageFile, {ProgressCallback? onProgress}) async {
     try {
       final response = await _apiService.uploadFile<Map<String, dynamic>>(
-        '/upload/image',
+        '/api/v1/media/upload/image',
         imageFile,
         onSendProgress: onProgress,
       );
@@ -46,7 +46,7 @@ class MediaRepository {
   Future<ApiResponse<Map<String, dynamic>>> uploadVoice(File voiceFile, {ProgressCallback? onProgress}) async {
     try {
       final response = await _apiService.uploadFile<Map<String, dynamic>>(
-        '/upload/voice',
+        '/api/v1/media/upload/voice',
         voiceFile,
         onSendProgress: onProgress,
       );
@@ -66,7 +66,7 @@ class MediaRepository {
   Future<ApiResponse<Map<String, dynamic>>> uploadVideo(File videoFile, {ProgressCallback? onProgress}) async {
     try {
       final response = await _apiService.uploadFile<Map<String, dynamic>>(
-        '/upload/video',
+        '/api/v1/media/upload/video',
         videoFile,
         onSendProgress: onProgress,
       );
@@ -86,7 +86,7 @@ class MediaRepository {
   Future<ApiResponse<Map<String, dynamic>>> uploadFile(File file, {ProgressCallback? onProgress}) async {
     try {
       final response = await _apiService.uploadFile<Map<String, dynamic>>(
-        '/upload/file',
+        '/api/v1/media/upload/file',
         file,
         onSendProgress: onProgress,
       );
@@ -126,7 +126,7 @@ class MediaRepository {
   Future<ApiResponse<String>> getThumbnail(String mediaUrl) async {
     try {
       final response = await _apiService.get<Map<String, dynamic>>(
-        '/media/thumbnail',
+        '/api/v1/media/thumbnail',
         queryParameters: {'url': mediaUrl},
       );
       
@@ -146,7 +146,7 @@ class MediaRepository {
   Future<ApiResponse<Map<String, dynamic>>> getMediaMetadata(String mediaUrl) async {
     try {
       final response = await _apiService.get<Map<String, dynamic>>(
-        '/media/metadata',
+        '/api/v1/media/metadata',
         queryParameters: {'url': mediaUrl},
       );
       

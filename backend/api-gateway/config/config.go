@@ -67,7 +67,7 @@ func LoadConfig() (*Config, error) {
 		CORS: CORSConfig{
 			AllowedOrigins: []string{"*"},
 			AllowedMethods: []string{"GET", "POST", "PUT", "DELETE", "OPTIONS"},
-			AllowedHeaders: []string{"*"},
+			AllowedHeaders: []string{"Content-Type", "Authorization", "X-Requested-With"},
 		},
 	}, nil
 }

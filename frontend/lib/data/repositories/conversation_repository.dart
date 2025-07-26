@@ -23,7 +23,7 @@ class ConversationRepository {
   /// 获取会话列表
   Future<ApiResponse<List<Conversation>>> getConversations() async {
     try {
-      final response = await _apiService.get<List<dynamic>>('/conversations');
+      final response = await _apiService.get<List<dynamic>>('/api/v1/conversations');
       
       if (response.success && response.data != null) {
         final conversations = response.data!.map((json) => Conversation.fromJson(json)).toList();
@@ -56,7 +56,7 @@ class ConversationRepository {
   /// 获取单个会话
   Future<ApiResponse<Conversation>> getConversation(String conversationId) async {
     try {
-      final response = await _apiService.get<Map<String, dynamic>>('/conversations/$conversationId');
+      final response = await _apiService.get<Map<String, dynamic>>('/api/v1/conversations/$conversationId');
       
       if (response.success && response.data != null) {
         final conversation = Conversation.fromJson(response.data!);
@@ -88,7 +88,7 @@ class ConversationRepository {
   Future<ApiResponse<Conversation>> createOrGetDirectConversation(String userId) async {
     try {
       final response = await _apiService.post<Map<String, dynamic>>(
-        '/conversations/direct',
+        '/api/v1/conversations/direct',
         data: {'user_id': userId},
       );
       
@@ -110,7 +110,7 @@ class ConversationRepository {
   Future<ApiResponse<Conversation>> createOrGetGroupConversation(String groupId) async {
     try {
       final response = await _apiService.post<Map<String, dynamic>>(
-        '/conversations/group',
+        '/api/v1/conversations/group',
         data: {'group_id': groupId},
       );
       
@@ -143,7 +143,7 @@ class ConversationRepository {
       if (isArchived != null) data['is_archived'] = isArchived;
       
       final response = await _apiService.put<Map<String, dynamic>>(
-        '/conversations/$conversationId',
+        '/api/v1/conversations/$conversationId',
         data: data,
       );
       
@@ -165,7 +165,7 @@ class ConversationRepository {
   Future<ApiResponse<bool>> deleteConversation(String conversationId) async {
     try {
       final response = await _apiService.delete<Map<String, dynamic>>(
-        '/conversations/$conversationId',
+        '/api/v1/conversations/$conversationId',
       );
       
       if (response.success) {
@@ -184,7 +184,7 @@ class ConversationRepository {
   Future<ApiResponse<bool>> clearUnreadCount(String conversationId) async {
     try {
       final response = await _apiService.post<Map<String, dynamic>>(
-        '/conversations/$conversationId/read',
+        '/api/v1/conversations/$conversationId/read',
       );
       
       if (response.success) {

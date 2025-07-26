@@ -8,7 +8,9 @@ class AuthViewModel extends ChangeNotifier {
   final ApiService _apiService;
   final AppLogger _logger = AppLogger.instance;
 
-  AuthViewModel(this._apiService);
+  AuthViewModel(this._apiService) {
+    initializeAuth();
+  }
 
   UserModel? _currentUser;
   bool _isLoading = false;
@@ -40,29 +42,38 @@ class AuthViewModel extends ChangeNotifier {
 
   /// 初始化认证状态
   Future<void> initializeAuth() async {
+    _logger.logger.i('开始初始化认证状态...');
     try {
       _setLoading(true);
       
       // 检查本地存储的token
       final token = await LocalStorage.getAuthToken();
+      _logger.logger.i('从本地存储获取的Token: ${token != null && token.isNotEmpty ? '存在' : '不存在'}');
+
       if (token != null && token.isNotEmpty) {
         // 验证token有效性
         final isValid = await _validateToken(token);
+        _logger.logger.i('Token验证结果: ${isValid ? '有效' : '无效'}');
+
         if (isValid) {
           // 获取当前用户信息
           await _loadCurrentUser();
           _isAuthenticated = true;
-          _logger.logger.i('用户已登录');
+          _logger.logger.i('用户已通过Token认证并登录');
         } else {
           // token无效，清除本地数据
+          _logger.logger.w('Token无效或已过期，清除认证数据');
           await _clearAuthData();
         }
+      } else {
+        _logger.logger.i('没有可用的Token，用户需要登录');
       }
     } catch (e) {
-      _logger.logger.e('初始化认证状态失败: $e');
+      _logger.logger.e('初始化认证状态时发生错误: $e');
       await _clearAuthData();
     } finally {
       _setLoading(false);
+      _logger.logger.i('认证状态初始化完成');
     }
   }
 
@@ -75,18 +86,24 @@ class AuthViewModel extends ChangeNotifier {
     try {
       _setLoading(true);
       _setError(null);
+      
+      _logger.logger.i('开始登录请求: email=$username, rememberMe=$rememberMe');
 
-      final response = await _apiService.post('/auth/login', data: {
-        'username': username,
+      final response = await _apiService.post('/api/v1/users/login', data: {
+        'email': username,
         'password': password,
         'rememberMe': rememberMe,
       });
+      
+      _logger.logger.i('登录API响应: $response');
 
-      if (response['success'] == true) {
-        final data = response['data'];
-        final token = data['token'];
-        final refreshToken = data['refreshToken'];
-        final user = UserModel.fromJson(data['user']);
+      // 检查响应格式 - 后端直接返回 {token, user} 格式
+      if (response != null && response['token'] != null && response['user'] != null) {
+        final token = response['token'];
+        final refreshToken = response['refreshToken']; // 可能为null
+        final user = UserModel.fromJson(response['user']);
+        
+        _logger.logger.i('解析登录响应成功: token=${token != null && token.length > 20 ? token.substring(0, 20) + '...' : token}, user=${user.name}');
 
         // 保存认证信息
         await LocalStorage.saveAuthToken(token);
@@ -98,18 +115,22 @@ class AuthViewModel extends ChangeNotifier {
         _currentUser = user;
         _isAuthenticated = true;
         
-        _logger.logger.i('登录成功: ${user.name}');
+        _logger.logger.i('登录成功并保存认证信息: ${user.name}');
         return true;
       } else {
-        _setError(response['message'] ?? '登录失败');
+        // 处理错误响应
+        final errorMessage = response?['error'] ?? response?['message'] ?? '登录失败';
+        _logger.logger.w('登录失败: $errorMessage');
+        _setError(errorMessage);
         return false;
       }
     } catch (e) {
-      _logger.logger.e('登录失败: $e');
+      _logger.logger.e('登录异常: $e');
       _setError('登录失败: $e');
       return false;
     } finally {
       _setLoading(false);
+      _logger.logger.i('登录请求完成');
     }
   }
 
@@ -125,11 +146,11 @@ class AuthViewModel extends ChangeNotifier {
       _setLoading(true);
       _setError(null);
 
-      final response = await _apiService.post('/auth/register', data: {
+      final response = await _apiService.post('/api/v1/users/register', data: {
         'username': username,
         'email': email,
         'password': password,
-        'nickname': nickname,
+        'full_name': nickname ?? username,
         'phone': phone,
       });
 
@@ -156,7 +177,7 @@ class AuthViewModel extends ChangeNotifier {
       
       // 调用登出API
       try {
-        await _apiService.post('/auth/logout', data: {});
+        await _apiService.post('/api/v1/users/logout', data: {});
       } catch (e) {
         _logger.logger.w('登出API调用失败: $e');
       }
@@ -180,7 +201,7 @@ class AuthViewModel extends ChangeNotifier {
         return false;
       }
 
-      final response = await _apiService.post('/auth/refresh', data: {
+      final response = await _apiService.post('/api/v1/auth/refresh', data: {
         'refreshToken': refreshToken,
       });
 
@@ -227,7 +248,7 @@ class AuthViewModel extends ChangeNotifier {
       if (email != null) updateData['email'] = email;
       if (phone != null) updateData['phone'] = phone;
 
-      final response = await _apiService.put('/user/profile', data: updateData);
+      final response = await _apiService.put('/api/v1/users/me', data: updateData);
 
       if (response['success'] == true) {
         final updatedUser = UserModel.fromJson(response['data']);
@@ -258,7 +279,7 @@ class AuthViewModel extends ChangeNotifier {
       _setLoading(true);
       _setError(null);
 
-      final response = await _apiService.put('/user/password', data: {
+      final response = await _apiService.put('/api/v1/users/me/password', data: {
         'currentPassword': currentPassword,
         'newPassword': newPassword,
       });
@@ -282,7 +303,7 @@ class AuthViewModel extends ChangeNotifier {
   /// 验证token有效性
   Future<bool> _validateToken(String token) async {
     try {
-      final response = await _apiService.get('/auth/validate');
+      final response = await _apiService.get('/api/v1/auth/validate');
       return response['success'] == true;
     } catch (e) {
       _logger.logger.w('Token验证失败: $e');
@@ -301,7 +322,7 @@ class AuthViewModel extends ChangeNotifier {
       }
 
       // 从服务器获取最新信息
-      final response = await _apiService.get('/user/profile');
+      final response = await _apiService.get('/api/v1/users/me');
       if (response['success'] == true) {
         final user = UserModel.fromJson(response['data']);
         _currentUser = user;
@@ -324,7 +345,7 @@ class AuthViewModel extends ChangeNotifier {
   /// 检查用户名是否可用
   Future<bool> checkUsernameAvailability(String username) async {
     try {
-      final response = await _apiService.get('/auth/check-username?username=$username');
+      final response = await _apiService.get('/api/v1/auth/check-username?username=$username');
       return response['available'] == true;
     } catch (e) {
       _logger.logger.e('检查用户名可用性失败: $e');
@@ -335,7 +356,7 @@ class AuthViewModel extends ChangeNotifier {
   /// 检查邮箱是否可用
   Future<bool> checkEmailAvailability(String email) async {
     try {
-      final response = await _apiService.get('/auth/check-email?email=$email');
+      final response = await _apiService.get('/api/v1/auth/check-email?email=$email');
       return response['available'] == true;
     } catch (e) {
       _logger.logger.e('检查邮箱可用性失败: $e');
@@ -347,7 +368,7 @@ class AuthViewModel extends ChangeNotifier {
   Future<bool> sendVerificationCode(String email) async {
     try {
       _setLoading(true);
-      final response = await _apiService.post('/auth/send-code', data: {
+      final response = await _apiService.post('/api/v1/auth/send-code', data: {
         'email': email,
       });
       

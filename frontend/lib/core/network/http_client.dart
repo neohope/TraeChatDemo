@@ -56,10 +56,12 @@ class HttpClient {
     // 添加认证拦截器
     _dio.interceptors.add(InterceptorsWrapper(
       onRequest: (options, handler) async {
-        // 添加认证令牌
-        final token = await LocalStorage.getAuthToken();
-        if (token != null && token.isNotEmpty) {
-          options.headers['Authorization'] = 'Bearer $token';
+        // 不为登录和注册请求添加认证令牌
+        if (!options.path.contains('/login') && !options.path.contains('/register')) {
+          final token = await LocalStorage.getAuthToken();
+          if (token != null && token.isNotEmpty) {
+            options.headers['Authorization'] = 'Bearer $token';
+          }
         }
         return handler.next(options);
       },
@@ -95,7 +97,7 @@ class HttpClient {
       ));
       
       final response = await tokenDio.post(
-        '/auth/refresh',
+        '/api/v1/auth/refresh',
         data: jsonEncode({'refresh_token': refreshToken}),
       );
       

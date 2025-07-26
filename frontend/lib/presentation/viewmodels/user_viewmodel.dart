@@ -62,7 +62,7 @@ class UserViewModel extends ChangeNotifier {
     _setError(null);
 
     try {
-      final response = await _apiService.get('/users/search?q=${Uri.encodeComponent(query)}');
+      final response = await _apiService.get('/api/v1/users/search?q=${Uri.encodeComponent(query)}');
       
       if (response['success'] == true) {
         _searchResults = (response['data'] as List)
@@ -85,7 +85,7 @@ class UserViewModel extends ChangeNotifier {
     _setError(null);
 
     try {
-      final response = await _apiService.get('/users/$userId');
+      final response = await _apiService.get('/api/v1/users/$userId');
       
       if (response['success'] == true) {
         final user = UserModel.fromJson(response['data']);
@@ -111,7 +111,7 @@ class UserViewModel extends ChangeNotifier {
     _setError(null);
 
     try {
-      final response = await _apiService.get('/friends');
+      final response = await _apiService.get('/api/v1/friends');
       
       if (response['success'] == true) {
         _friends = (response['data'] as List)
@@ -134,7 +134,7 @@ class UserViewModel extends ChangeNotifier {
     _setError(null);
 
     try {
-      final response = await _apiService.post('/friends/request', data: {
+      final response = await _apiService.post('/api/v1/friends/request', data: {
         'userId': userId,
         'message': message,
       });
@@ -161,7 +161,7 @@ class UserViewModel extends ChangeNotifier {
     _setError(null);
 
     try {
-      final response = await _apiService.post('/friends/accept', data: {
+      final response = await _apiService.post('/api/v1/friends/accept', data: {
         'requestId': requestId,
       });
       
@@ -188,7 +188,7 @@ class UserViewModel extends ChangeNotifier {
     _setError(null);
 
     try {
-      final response = await _apiService.post('/friends/reject', data: {
+      final response = await _apiService.post('/api/v1/friends/reject', data: {
         'requestId': requestId,
       });
       
@@ -214,7 +214,7 @@ class UserViewModel extends ChangeNotifier {
     _setError(null);
 
     try {
-      final response = await _apiService.delete('/friends/$friendId');
+      final response = await _apiService.delete('/api/v1/friends/$friendId');
       
       if (response['success'] == true) {
         _friends.removeWhere((friend) => friend.friendId == friendId);
@@ -240,7 +240,7 @@ class UserViewModel extends ChangeNotifier {
     _setError(null);
 
     try {
-      final response = await _apiService.put('/friends/$friendId/nickname', data: {
+      final response = await _apiService.put('/api/v1/friends/$friendId/nickname', data: {
         'nickname': nickname,
       });
       
@@ -272,7 +272,7 @@ class UserViewModel extends ChangeNotifier {
     _setError(null);
 
     try {
-      final response = await _apiService.post('/friends/$friendId/block', data: {
+      final response = await _apiService.post('/api/v1/friends/$friendId/block', data: {
         'block': block,
       });
       
@@ -351,7 +351,7 @@ class UserViewModel extends ChangeNotifier {
       _setLoading(true);
       _setError(null);
 
-      final response = await _apiService.get('/users/recommended');
+      final response = await _apiService.get('/api/v1/users/recommended');
       if (response['success'] == true) {
         final List<dynamic> usersData = response['data'] ?? [];
         _recommendedUsers = usersData
@@ -376,7 +376,7 @@ class UserViewModel extends ChangeNotifier {
       _setLoading(true);
       _setError(null);
 
-      final response = await _apiService.get('/users/nearby');
+      final response = await _apiService.get('/api/v1/users/nearby');
       if (response['success'] == true) {
         final List<dynamic> usersData = response['data'] ?? [];
         _nearbyUsers = usersData

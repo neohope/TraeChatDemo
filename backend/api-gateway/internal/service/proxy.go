@@ -2,11 +2,9 @@ package service
 
 import (
 	"bytes"
-	"fmt"
 	"io"
 	"net/http"
 	"net/url"
-	"strings"
 	"time"
 
 	"go.uber.org/zap"
@@ -57,12 +55,8 @@ func (p *ProxyService) ProxyRequest(w http.ResponseWriter, r *http.Request, serv
 		return
 	}
 
-	// 移除服务前缀，构建新的路径
-	path := strings.TrimPrefix(r.URL.Path, fmt.Sprintf("/api/v1/%s", serviceName))
-	if path == "" {
-		path = "/"
-	}
-	target.Path = path
+	// 保持完整的API路径
+	target.Path = r.URL.Path
 	target.RawQuery = r.URL.RawQuery
 
 	// 读取请求体
@@ -139,14 +133,37 @@ func (p *ProxyService) ProxyRequest(w http.ResponseWriter, r *http.Request, serv
 func (p *ProxyService) HealthCheck() map[string]bool {
 	result := make(map[string]bool)
 
+	// 定义每个服务的健康检查路径
+	healthPaths := map[string]string{
+		"users":         "/api/v1/users/register", // 用户服务没有健康检查端点，使用注册端点测试
+		"groups":        "/api/v1/health",
+		"messages":      "/health",
+		"media":         "/api/v1/media/health",
+		"notifications": "/health",
+	}
+
 	for serviceName, serviceURL := range p.services {
-		resp, err := p.client.Get(serviceURL + "/health")
+		healthPath, exists := healthPaths[serviceName]
+		if !exists {
+			healthPath = "/health" // 默认路径
+		}
+		
+		var resp *http.Response
+		var err error
+		
+		if serviceName == "users" {
+			// 对于用户服务，使用HEAD请求测试连接性
+			resp, err = p.client.Head(serviceURL + healthPath)
+		} else {
+			resp, err = p.client.Get(serviceURL + healthPath)
+		}
+		
 		if err != nil {
 			result[serviceName] = false
 			continue
 		}
 		resp.Body.Close()
-		result[serviceName] = resp.StatusCode == http.StatusOK
+		result[serviceName] = resp.StatusCode == http.StatusOK || resp.StatusCode == http.StatusMethodNotAllowed
 	}
 
 	return result
