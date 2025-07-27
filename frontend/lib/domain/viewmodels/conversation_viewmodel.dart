@@ -1,5 +1,6 @@
 import 'package:flutter/foundation.dart';
 
+import '../../core/utils/app_logger.dart';
 import '../../data/models/api_response.dart';
 import '../../data/models/conversation.dart';
 import '../../data/models/message.dart';
@@ -8,6 +9,8 @@ import '../models/conversation_model.dart';
 
 /// 会话视图模型，用于管理会话相关的UI状态和业务逻辑
 class ConversationViewModel extends ChangeNotifier {
+  // 日志记录器
+  final _logger = AppLogger.instance;
   // 会话仓库实例
   final _conversationRepository = ConversationRepository.instance;
   
@@ -275,7 +278,7 @@ class ConversationViewModel extends ChangeNotifier {
       }
     } catch (e) {
       // 如果找不到对应的会话，则不执行任何操作
-      print('找不到ID为 ${conversationModel.id} 的会话');
+      _logger.logger.w('找不到ID为 ${conversationModel.id} 的会话');
     }
   }
   
