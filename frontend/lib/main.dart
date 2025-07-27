@@ -14,9 +14,12 @@ import 'core/services/audio_service.dart';
 import 'core/services/file_service.dart';
 import 'core/services/notification_service.dart';
 import 'data/repositories/settings_repository.dart' as settings_repository;
+import 'data/services/auth_service_impl.dart';
 import 'domain/viewmodels/conversation_viewmodel.dart';
 import 'domain/viewmodels/settings_viewmodel.dart';
+import 'domain/viewmodels/user_viewmodel.dart';
 import 'presentation/viewmodels/auth_viewmodel.dart' as presentation;
+import 'presentation/viewmodels/user_search_viewmodel.dart' as presentation;
 import 'presentation/viewmodels/chat_viewmodel.dart';
 import 'presentation/viewmodels/message_viewmodel.dart' as presentation;
 import 'presentation/viewmodels/group_viewmodel.dart' as presentation;
@@ -56,6 +59,10 @@ Future<void> _initializeServices() async {
     // 初始化通知服务
     await NotificationService().initialize();
     logger.i('Notification service initialized');
+    
+    // 初始化认证服务
+    await AuthServiceImpl.instance.initialize();
+    logger.i('Auth service initialized');
     
     logger.i('All services initialized successfully');
   } catch (e) {
@@ -122,14 +129,15 @@ void main() async {
       // Domain ViewModels
       ChangeNotifierProvider(create: (_) => ConversationViewModel()),
       ChangeNotifierProvider(create: (_) => SettingsViewModel()),
+      ChangeNotifierProvider(create: (_) => UserViewModel()),
       
       // Presentation ViewModels
       ChangeNotifierProvider(create: (context) => presentation.AuthViewModel(
         context.read<ApiService>(),
       )),
-      // ChangeNotifierProvider(create: (context) => presentation.UserViewModel(
-      //   context.read<ApiService>(),
-      // )),
+      ChangeNotifierProvider(create: (context) => presentation.UserSearchViewModel(
+        context.read<ApiService>(),
+      )),
       ChangeNotifierProvider(create: (context) => ChatViewModel(
         context.read<ApiService>(),
         context.read<WebSocketService>(),

@@ -63,8 +63,7 @@ func main() {
 	router := mux.NewRouter()
 	handler.RegisterRoutes(router)
 
-	// 添加CORS中间件
-	router.Use(corsMiddleware)
+	// CORS中间件已移除，由API网关统一处理
 
 	// 创建HTTP服务器
 	srv := &http.Server{
@@ -101,18 +100,18 @@ func main() {
 	log.Info("Server exited")
 }
 
-// CORS中间件
-func corsMiddleware(next http.Handler) http.Handler {
-	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-		w.Header().Set("Access-Control-Allow-Origin", "*")
-		w.Header().Set("Access-Control-Allow-Methods", "GET, POST, PUT, DELETE, OPTIONS")
-		w.Header().Set("Access-Control-Allow-Headers", "Content-Type, Authorization, X-User-ID")
-
-		if r.Method == "OPTIONS" {
-			w.WriteHeader(http.StatusOK)
-			return
-		}
-
-		next.ServeHTTP(w, r)
-	})
-}
+// CORS中间件 - 已移除，由API网关统一处理CORS
+// func corsMiddleware(next http.Handler) http.Handler {
+// 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+// 		w.Header().Set("Access-Control-Allow-Origin", "*")
+// 		w.Header().Set("Access-Control-Allow-Methods", "GET, POST, PUT, DELETE, OPTIONS")
+// 		w.Header().Set("Access-Control-Allow-Headers", "Content-Type, Authorization, X-User-ID")
+// 
+// 		if r.Method == "OPTIONS" {
+// 			w.WriteHeader(http.StatusOK)
+// 			return
+// 		}
+// 
+// 		next.ServeHTTP(w, r)
+// 	})
+// }

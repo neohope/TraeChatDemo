@@ -65,7 +65,10 @@ class _MainScreenWidgetState extends State<MainScreenWidget>
       length: _tabs.length,
       vsync: this,
     );
-    _initializeData();
+    // 延迟到build完成后再初始化数据，避免在build期间调用setState
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      _initializeData();
+    });
   }
 
   @override

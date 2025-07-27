@@ -62,30 +62,44 @@ func (s *UserService) Register(ctx context.Context, user *domain.User, password 
 }
 
 // Login 用户登录
-func (s *UserService) Login(ctx context.Context, email, password string) (string, error) {
-	// 查找用户
-	user, err := s.userRepo.GetByEmail(ctx, email)
-	if err != nil {
-		s.logger.Info("User not found", zap.String("email", email), zap.Error(err))
-		return "", errors.New("invalid email or password")
+func (s *UserService) Login(ctx context.Context, identifier, password string) (string, error) {
+	// 判断identifier是邮箱还是用户名
+	var user *domain.User
+	var err error
+	
+	// 简单判断：包含@符号的认为是邮箱，否则认为是用户名
+	if strings.Contains(identifier, "@") {
+		// 通过邮箱查找用户
+		user, err = s.userRepo.GetByEmail(ctx, identifier)
+		if err != nil {
+			s.logger.Info("User not found by email", zap.String("email", identifier), zap.Error(err))
+			return "", errors.New("invalid credentials")
+		}
+	} else {
+		// 通过用户名查找用户
+		user, err = s.userRepo.GetByUsername(ctx, identifier)
+		if err != nil {
+			s.logger.Info("User not found by username", zap.String("username", identifier), zap.Error(err))
+			return "", errors.New("invalid credentials")
+		}
 	}
 
-	s.logger.Info("User found for login", zap.String("email", email), zap.String("userID", user.ID))
+	s.logger.Info("User found for login", zap.String("identifier", identifier), zap.String("userID", user.ID))
 
 	// 检查用户状态
 	if user.Status != domain.UserStatusActive {
-		s.logger.Info("User account is not active", zap.String("email", email), zap.String("status", string(user.Status)))
+		s.logger.Info("User account is not active", zap.String("identifier", identifier), zap.String("status", string(user.Status)))
 		return "", errors.New("account is not active")
 	}
 
 	// 验证密码
-	s.logger.Info("Checking password", zap.String("email", email))
+	s.logger.Info("Checking password", zap.String("identifier", identifier))
 	if checkErr := auth.CheckPassword(password, user.Password); checkErr != nil {
-		s.logger.Info("Invalid password", zap.String("email", email), zap.Error(checkErr))
-		return "", errors.New("invalid email or password")
+		s.logger.Info("Invalid password", zap.String("identifier", identifier), zap.Error(checkErr))
+		return "", errors.New("invalid credentials")
 	}
 
-	s.logger.Info("Password verified successfully", zap.String("email", email))
+	s.logger.Info("Password verified successfully", zap.String("identifier", identifier))
 
 	// 生成JWT令牌
 	token, err := s.jwtManager.GenerateToken(user)

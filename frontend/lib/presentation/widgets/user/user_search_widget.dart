@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
 import '../../../domain/models/user_model.dart';
-import '../../viewmodels/user_viewmodel.dart';
+import '../../viewmodels/user_search_viewmodel.dart';
 import '../../viewmodels/friend_viewmodel.dart';
 import 'user_list_widget.dart';
 import 'user_detail_widget.dart';
@@ -96,7 +96,7 @@ class _UserSearchWidgetState extends State<UserSearchWidget>
   }
 
   Widget _buildRecommendedTab() {
-    return Consumer<UserViewModel>(builder: (context, userViewModel, child) {
+    return Consumer<UserSearchViewModel>(builder: (context, userViewModel, child) {
       final recommendedUsers = userViewModel.recommendedUsers
           .where((user) => !_isUserExcluded(user.id))
           .toList();
@@ -128,7 +128,7 @@ class _UserSearchWidgetState extends State<UserSearchWidget>
   }
 
   Widget _buildNearbyTab() {
-    return Consumer<UserViewModel>(builder: (context, userViewModel, child) {
+    return Consumer<UserSearchViewModel>(builder: (context, userViewModel, child) {
       final nearbyUsers = userViewModel.nearbyUsers
           .where((user) => !_isUserExcluded(user.id))
           .toList();
@@ -215,7 +215,7 @@ class _UserSearchWidgetState extends State<UserSearchWidget>
   }
 
   Widget _buildSearchSuggestions() {
-    return Consumer2<UserViewModel, FriendViewModel>(
+    return Consumer2<UserSearchViewModel, FriendViewModel>(
       builder: (context, userViewModel, friendViewModel, child) {
         final recentSearches = userViewModel.recentSearches
             .where((user) => !_isUserExcluded(user.id))
@@ -489,7 +489,7 @@ class _UserSearchWidgetState extends State<UserSearchWidget>
     });
 
     try {
-      final userViewModel = Provider.of<UserViewModel>(context, listen: false);
+      final userViewModel = Provider.of<UserSearchViewModel>(context, listen: false);
       await userViewModel.searchUsers(query.trim());
       
       setState(() {
@@ -584,7 +584,7 @@ class _UserSearchWidgetState extends State<UserSearchWidget>
 
   Future<void> _loadRecommendedUsers() async {
     try {
-      final userViewModel = Provider.of<UserViewModel>(context, listen: false);
+      final userViewModel = Provider.of<UserSearchViewModel>(context, listen: false);
       await userViewModel.loadRecommendedUsers();
     } catch (e) {
       if (mounted) {
@@ -600,7 +600,7 @@ class _UserSearchWidgetState extends State<UserSearchWidget>
 
   Future<void> _loadNearbyUsers() async {
     try {
-      final userViewModel = Provider.of<UserViewModel>(context, listen: false);
+      final userViewModel = Provider.of<UserSearchViewModel>(context, listen: false);
       await userViewModel.loadNearbyUsers();
     } catch (e) {
       if (mounted) {

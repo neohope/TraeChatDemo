@@ -1,4 +1,7 @@
+import 'package:hive/hive.dart';
 import 'conversation_model.dart'; // 导入 UserStatus 枚举
+
+part 'user_model.g.dart';
 
 /// 解析用户状态
 UserStatus _parseStatus(String? status) {
@@ -22,20 +25,35 @@ UserStatus _parseStatus(String? status) {
 /// 用户模型类
 /// 
 /// 用于表示用户的数据结构，包括基本信息和状态
+@HiveType(typeId: 1)
 class UserModel {
+  @HiveField(0)
   final String id;
+  @HiveField(1)
   final String name;
+  @HiveField(2)
   final String? email;
+  @HiveField(3)
   final String? phone;
+  @HiveField(4)
   final String? avatarUrl;
+  @HiveField(5)
   final String? bio;
+  @HiveField(6)
   final String? nickname;
+  @HiveField(7)
   final UserStatus? status;
+  @HiveField(8)
   final DateTime? lastSeen;
+  @HiveField(9)
   final DateTime? lastSeenAt;
+  @HiveField(10)
   final bool isFavorite;
+  @HiveField(11)
   final bool isBlocked;
+  @HiveField(12)
   final bool isVerified;
+  @HiveField(13)
   final Map<String, dynamic>? metadata;
   
   /// 检查用户是否在线

@@ -5,7 +5,7 @@ import 'package:provider/provider.dart';
 import '../../../domain/models/user_model.dart';
 import '../../../domain/models/friend_request_model.dart';
 import '../../viewmodels/friend_viewmodel.dart';
-import '../../viewmodels/user_viewmodel.dart';
+import '../../viewmodels/user_search_viewmodel.dart' as presentation;
 import '../../viewmodels/chat_viewmodel.dart';
 import '../../../core/utils/app_date_utils.dart';
 import '../user/user_detail_widget.dart';
@@ -43,7 +43,10 @@ class _FriendListWidgetState extends State<FriendListWidget>
   void initState() {
     super.initState();
     _tabController = TabController(length: 3, vsync: this);
-    _loadFriends();
+    // 延迟到build完成后再加载数据，避免在build期间调用setState
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      _loadFriends();
+    });
   }
 
   @override
@@ -119,7 +122,7 @@ class _FriendListWidgetState extends State<FriendListWidget>
       children: [
         if (widget.showSearchBar) _buildSearchBar(),
         Expanded(
-          child: Consumer2<FriendViewModel, UserViewModel>(
+          child: Consumer2<FriendViewModel, presentation.UserSearchViewModel>(
             builder: (context, friendViewModel, userViewModel, child) {
               final friends = _getFilteredFriends(
                 friendViewModel.friends,
@@ -167,7 +170,7 @@ class _FriendListWidgetState extends State<FriendListWidget>
   }
 
   Widget _buildRequestsTab() {
-    return Consumer2<FriendViewModel, UserViewModel>(
+    return Consumer2<FriendViewModel, presentation.UserSearchViewModel>(
       builder: (context, friendViewModel, userViewModel, child) {
         final pendingRequests = friendViewModel.pendingFriendRequests;
         final sentRequests = friendViewModel.sentFriendRequests;
@@ -228,7 +231,7 @@ class _FriendListWidgetState extends State<FriendListWidget>
   }
 
   Widget _buildBlockedTab() {
-    return Consumer2<FriendViewModel, UserViewModel>(
+    return Consumer2<FriendViewModel, presentation.UserSearchViewModel>(
       builder: (context, friendViewModel, userViewModel, child) {
         final blockedUsers = friendViewModel.blockedUsers;
 

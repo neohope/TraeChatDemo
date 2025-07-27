@@ -15,6 +15,7 @@ class FriendRepositoryImpl implements FriendRepository {
     return _instance!;
   }
   
+  // ignore: unused_field
   final ApiService _apiService;
   final AppLogger _logger = AppLogger.instance;
 
@@ -103,6 +104,7 @@ class FriendRepositoryImpl implements FriendRepository {
   }
   
   @override
+  // ignore: override_on_non_overriding_member
   Future<void> deleteFriend(String userId) async {
     try {
       _logger.logger.i('删除好友: $userId');
@@ -224,6 +226,7 @@ class FriendRepositoryImpl implements FriendRepository {
   }
   
   @override
+  // ignore: override_on_non_overriding_member
   Future<void> setFriendRemark(String userId, String remark) async {
     try {
       _logger.logger.i('设置好友备注: $userId -> $remark');
@@ -235,6 +238,7 @@ class FriendRepositoryImpl implements FriendRepository {
   }
   
   @override
+  // ignore: override_on_non_overriding_member
   Future<String?> getFriendRemark(String userId) async {
     try {
       // 暂时返回 null
@@ -246,6 +250,7 @@ class FriendRepositoryImpl implements FriendRepository {
   }
   
   @override
+  // ignore: override_on_non_overriding_member
   Future<Map<String, String>> getAllFriendRemarks() async {
     try {
       // 暂时返回空 Map

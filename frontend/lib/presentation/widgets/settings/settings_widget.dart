@@ -4,7 +4,7 @@ import 'package:package_info_plus/package_info_plus.dart';
 import 'package:url_launcher/url_launcher.dart';
 
 import '../../viewmodels/auth_viewmodel.dart';
-import '../../viewmodels/user_viewmodel.dart';
+import '../../../domain/viewmodels/user_viewmodel.dart';
 import '../../../core/storage/local_storage.dart';
 import '../../../core/utils/app_logger.dart';
 import '../user/user_detail_widget.dart';
@@ -79,7 +79,7 @@ class _SettingsWidgetState extends State<SettingsWidget> {
               : null,
           child: currentUser.avatarUrl == null
               ? Text(
-                  (currentUser.nickname ?? currentUser.name).substring(0, 1).toUpperCase(),
+                  currentUser.name.substring(0, 1).toUpperCase(),
                   style: const TextStyle(
                     fontSize: 16,
                     fontWeight: FontWeight.bold,
@@ -88,7 +88,7 @@ class _SettingsWidgetState extends State<SettingsWidget> {
               : null,
         ),
         title: Text(
-          currentUser.nickname ?? currentUser.name,
+          currentUser.name,
           style: const TextStyle(
             fontSize: 18,
             fontWeight: FontWeight.w600,

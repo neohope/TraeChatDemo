@@ -47,6 +47,13 @@ func (h *UserHandler) RegisterRoutes(router *mux.Router) {
 	authRouter.HandleFunc("/users/{id}", h.DeleteUser).Methods("DELETE")
 	authRouter.HandleFunc("/users", h.ListUsers).Methods("GET")
 	authRouter.HandleFunc("/users/change-password", h.ChangePassword).Methods("POST")
+	// 联系人相关路由
+	authRouter.HandleFunc("/users/contacts", h.GetContacts).Methods("GET")
+	authRouter.HandleFunc("/users/contacts", h.AddContact).Methods("POST")
+	authRouter.HandleFunc("/users/contacts/{contactId}", h.RemoveContact).Methods("DELETE")
+	authRouter.HandleFunc("/users/contacts/{contactId}/favorite", h.ToggleFavoriteContact).Methods("POST")
+	authRouter.HandleFunc("/users/search", h.SearchUsers).Methods("GET")
+	authRouter.HandleFunc("/users/recommended", h.GetRecommendedUsers).Methods("GET")
 }
 
 // Register 处理用户注册
@@ -95,15 +102,15 @@ func (h *UserHandler) Login(w http.ResponseWriter, r *http.Request) {
 	}
 
 	// 验证请求
-	if req.Email == "" || req.Password == "" {
-		h.respondError(w, http.StatusBadRequest, "Email and password are required")
+	if req.Identifier == "" || req.Password == "" {
+		h.respondError(w, http.StatusBadRequest, "Username/email and password are required")
 		return
 	}
 
 	// 登录
-	token, err := h.userService.Login(r.Context(), req.Email, req.Password)
+	token, err := h.userService.Login(r.Context(), req.Identifier, req.Password)
 	if err != nil {
-		h.logger.Info("Login failed", zap.String("email", req.Email), zap.Error(err))
+		h.logger.Info("Login failed", zap.String("identifier", req.Identifier), zap.Error(err))
 		h.respondError(w, http.StatusUnauthorized, "Invalid credentials")
 		return
 	}
@@ -353,6 +360,77 @@ func (h *UserHandler) respondJSON(w http.ResponseWriter, status int, data interf
 // respondError 发送错误响应
 func (h *UserHandler) respondError(w http.ResponseWriter, status int, message string) {
 	h.respondJSON(w, status, map[string]string{"error": message})
+}
+
+// GetContacts 获取联系人列表
+func (h *UserHandler) GetContacts(w http.ResponseWriter, r *http.Request) {
+	// 暂时返回空列表，因为联系人功能还未完全实现
+	h.respondJSON(w, http.StatusOK, []interface{}{})
+}
+
+// AddContact 添加联系人
+func (h *UserHandler) AddContact(w http.ResponseWriter, r *http.Request) {
+	// 暂时返回成功响应
+	h.respondJSON(w, http.StatusOK, map[string]string{"message": "Contact added successfully"})
+}
+
+// RemoveContact 删除联系人
+func (h *UserHandler) RemoveContact(w http.ResponseWriter, r *http.Request) {
+	// 暂时返回成功响应
+	h.respondJSON(w, http.StatusOK, map[string]string{"message": "Contact removed successfully"})
+}
+
+// ToggleFavoriteContact 切换联系人收藏状态
+func (h *UserHandler) ToggleFavoriteContact(w http.ResponseWriter, r *http.Request) {
+	// 暂时返回成功响应
+	h.respondJSON(w, http.StatusOK, map[string]string{"message": "Contact favorite status toggled"})
+}
+
+// SearchUsers 搜索用户
+func (h *UserHandler) SearchUsers(w http.ResponseWriter, r *http.Request) {
+	// 获取查询参数
+	query := r.URL.Query().Get("q")
+	keyword := r.URL.Query().Get("keyword")
+	
+	// 支持两种查询参数格式
+	searchTerm := query
+	if searchTerm == "" {
+		searchTerm = keyword
+	}
+	
+	if searchTerm == "" {
+		h.respondError(w, http.StatusBadRequest, "Search term is required")
+		return
+	}
+	
+	// 暂时返回空搜索结果
+	h.respondJSON(w, http.StatusOK, []interface{}{})
+}
+
+// GetRecommendedUsers 获取推荐用户
+func (h *UserHandler) GetRecommendedUsers(w http.ResponseWriter, r *http.Request) {
+	// 获取查询参数
+	limit, _ := strconv.Atoi(r.URL.Query().Get("limit"))
+	offset, _ := strconv.Atoi(r.URL.Query().Get("offset"))
+	
+	// 设置默认值
+	if limit <= 0 {
+		limit = 10
+	}
+	if offset < 0 {
+		offset = 0
+	}
+	
+	// 暂时返回空推荐用户列表
+	// 在实际实现中，这里应该包含推荐算法逻辑
+	recommendedUsers := []interface{}{}
+	
+	// 返回推荐用户列表
+	h.respondJSON(w, http.StatusOK, map[string]interface{}{
+		"success": true,
+		"data":    recommendedUsers,
+		"message": "推荐用户获取成功",
+	})
 }
 
 // validateRegisterRequest 验证注册请求

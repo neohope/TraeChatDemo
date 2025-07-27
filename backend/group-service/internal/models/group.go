@@ -111,8 +111,16 @@ type InviteRequest struct {
 
 // GroupWithMemberCount 带成员数量的群组
 type GroupWithMemberCount struct {
-	Group       `json:",inline"`
-	MemberCount int `json:"member_count"`
+	ID          uuid.UUID `json:"id" db:"id"`
+	Name        string    `json:"name" db:"name"`
+	Description string    `json:"description" db:"description"`
+	AvatarURL   string    `json:"avatar_url" db:"avatar_url"`
+	OwnerID     uuid.UUID `json:"owner_id" db:"owner_id"`
+	MaxMembers  int       `json:"max_members" db:"max_members"`
+	IsPrivate   bool      `json:"is_private" db:"is_private"`
+	CreatedAt   time.Time `json:"created_at" db:"created_at"`
+	UpdatedAt   time.Time `json:"updated_at" db:"updated_at"`
+	MemberCount int       `json:"member_count" db:"member_count"`
 }
 
 // GroupMemberWithUser 带用户信息的群组成员

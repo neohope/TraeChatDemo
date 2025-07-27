@@ -94,6 +94,7 @@ services:
     environment:
       DB_HOST: postgres
       USER_SVC_HOST: user-service
+      JWT_SECRET_KEY: chatapp-secret-key-2025
     ports:
       - "8083:8083"
     networks:

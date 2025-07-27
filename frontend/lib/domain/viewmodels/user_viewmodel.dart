@@ -5,6 +5,7 @@ import 'package:flutter/foundation.dart';
 import '../../data/models/api_response.dart';
 import '../../data/models/user.dart';
 import '../../data/repositories/user_repository.dart';
+import '../../data/services/auth_service_impl.dart';
 import '../models/conversation_model.dart'; // 导入 UserStatus 枚举
 import '../models/user_model.dart';
 
@@ -45,9 +46,36 @@ class UserViewModel extends ChangeNotifier {
   
   /// 构造函数
   UserViewModel() {
-    // 初始化时加载当前用户和联系人列表
-    loadCurrentUser();
+    // 初始化时从AuthService获取当前用户，然后加载联系人列表
+    _initializeCurrentUser();
     loadContacts();
+  }
+  
+  /// 从AuthService初始化当前用户
+  void _initializeCurrentUser() {
+    final authUser = AuthServiceImpl.instance.currentUser;
+    if (authUser != null) {
+      // 将UserModel转换为User
+       _currentUser = User(
+         id: authUser.id,
+         username: authUser.name,
+         displayName: authUser.nickname ?? authUser.name,
+         email: authUser.email ?? '',
+         avatarUrl: authUser.avatarUrl,
+         status: authUser.status ?? UserStatus.online, // 使用AuthUser的状态或默认在线
+         bio: authUser.bio,
+         phoneNumber: authUser.phone,
+         isVerified: authUser.isVerified,
+         createdAt: DateTime.now(), // 使用当前时间作为默认值
+         lastActive: authUser.lastSeen ?? DateTime.now(),
+         isFavorite: authUser.isFavorite,
+         isBlocked: authUser.isBlocked,
+       );
+      notifyListeners();
+    } else {
+      // 如果AuthService中没有用户，尝试从API加载
+      loadCurrentUser();
+    }
   }
   
   /// 加载当前用户

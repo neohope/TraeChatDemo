@@ -36,9 +36,24 @@ func (h *Handler) RegisterRoutes(router *mux.Router, corsConfig struct {
 	AllowedMethods []string
 	AllowedHeaders []string
 }) {
-	// 应用全局中间件
-	router.Use(h.middleware.Logging())
+	// 首先添加全局OPTIONS处理器 - 必须在所有其他路由和中间件之前
+	router.PathPrefix("/").Methods("OPTIONS").HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		// 手动设置CORS头部
+		origin := r.Header.Get("Origin")
+		if origin == "http://localhost:3000" {
+			w.Header().Set("Access-Control-Allow-Origin", "http://localhost:3000")
+		} else {
+			w.Header().Set("Access-Control-Allow-Origin", "*")
+		}
+		w.Header().Set("Access-Control-Allow-Methods", "GET, POST, PUT, DELETE, OPTIONS, PATCH")
+		w.Header().Set("Access-Control-Allow-Headers", "Content-Type, Authorization, X-Requested-With, Accept, Origin, X-User-ID")
+		w.Header().Set("Access-Control-Max-Age", "86400")
+		w.WriteHeader(http.StatusOK)
+	})
+
+	// 应用全局中间件 - CORS必须在最前面
 	router.Use(h.middleware.CORS(corsConfig.AllowedOrigins, corsConfig.AllowedMethods, corsConfig.AllowedHeaders))
+	router.Use(h.middleware.Logging())
 	router.Use(h.middleware.RateLimit())
 
 	// 健康检查端点（无需认证）
@@ -47,15 +62,32 @@ func (h *Handler) RegisterRoutes(router *mux.Router, corsConfig struct {
 	// API路由
 	api := router.PathPrefix("/api/v1").Subrouter()
 
+	// 认证相关路由
+	authRoutes := api.PathPrefix("/auth").Subrouter()
+	// Token验证端点（需要认证）
+	authRoutes.HandleFunc("/validate", h.middleware.JWTAuth()(http.HandlerFunc(h.validateToken)).ServeHTTP).Methods("GET")
+
 	// 用户服务路由（部分需要认证）
 	userRoutes := api.PathPrefix("/users").Subrouter()
 	// 登录和注册不需要认证
 	userRoutes.HandleFunc("/register", h.proxyToUserService).Methods("POST")
 	userRoutes.HandleFunc("/login", h.proxyToUserService).Methods("POST")
-	// 其他用户相关操作需要认证
+	// 专门的OPTIONS处理器
+	userRoutes.HandleFunc("/register", h.handleOptions).Methods("OPTIONS")
+	userRoutes.HandleFunc("/login", h.handleOptions).Methods("OPTIONS")
+	// 用户群组相关路由（需要认证）- 代理到群组服务
+	userRoutes.HandleFunc("/{userId}/groups", h.middleware.JWTAuth()(http.HandlerFunc(h.proxyToGroupService)).ServeHTTP).Methods("GET")
+	// 其他用户相关操作需要认证 - 使用更具体的路径模式
 	userAuthRoutes := userRoutes.PathPrefix("/").Subrouter()
 	userAuthRoutes.Use(h.middleware.JWTAuth())
-	userAuthRoutes.PathPrefix("/").HandlerFunc(h.proxyToUserService)
+	// 避免与 /{userId}/groups 冲突，使用更具体的路径
+	userAuthRoutes.HandleFunc("/{userId}", h.proxyToUserService).Methods("GET", "PUT", "DELETE")
+	userAuthRoutes.HandleFunc("/{userId}/profile", h.proxyToUserService).Methods("GET", "PUT")
+	userAuthRoutes.HandleFunc("/{userId}/settings", h.proxyToUserService).Methods("GET", "PUT")
+
+	// 我的群组邀请路由（需要认证）- 代理到群组服务
+	// 注意：必须在 /groups PathPrefix 之前注册，避免路由冲突
+	api.HandleFunc("/my-group-invitations", h.middleware.JWTAuth()(http.HandlerFunc(h.proxyToGroupService)).ServeHTTP).Methods("GET")
 
 	// 群组服务路由（需要认证）
 	groupRoutes := api.PathPrefix("/groups").Subrouter()
@@ -113,6 +145,35 @@ func (h *Handler) HealthCheck(w http.ResponseWriter, r *http.Request) {
 	if err := json.NewEncoder(w).Encode(response); err != nil {
 		h.logger.Error("Failed to encode health response", zap.Error(err))
 	}
+}
+
+func (h *Handler) validateToken(w http.ResponseWriter, r *http.Request) {
+	// 如果到达这里，说明JWT中间件已经验证了token
+	w.Header().Set("Content-Type", "application/json")
+	w.WriteHeader(http.StatusOK)
+	
+	response := map[string]interface{}{
+		"success": true,
+		"message": "Token is valid",
+	}
+	
+	if err := json.NewEncoder(w).Encode(response); err != nil {
+		h.logger.Error("Failed to encode token validation response", zap.Error(err))
+	}
+}
+
+func (h *Handler) handleOptions(w http.ResponseWriter, r *http.Request) {
+	// 手动设置CORS头部
+	origin := r.Header.Get("Origin")
+	if origin == "http://localhost:3000" {
+		w.Header().Set("Access-Control-Allow-Origin", "http://localhost:3000")
+	} else {
+		w.Header().Set("Access-Control-Allow-Origin", "*")
+	}
+	w.Header().Set("Access-Control-Allow-Methods", "GET, POST, PUT, DELETE, OPTIONS, PATCH")
+	w.Header().Set("Access-Control-Allow-Headers", "Content-Type, Authorization, X-Requested-With, Accept, Origin, X-User-ID")
+	w.Header().Set("Access-Control-Max-Age", "86400")
+	w.WriteHeader(http.StatusOK)
 }
 
 func (h *Handler) proxyToUserService(w http.ResponseWriter, r *http.Request) {

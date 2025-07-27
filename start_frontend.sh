@@ -24,4 +24,4 @@ fi
 # 但应用本身会在浏览器中正常运行
 echo "在Chrome上启动Flutter应用..."
 echo "注意：Flutter调试端口会自动分配，但应用功能完全正常"
-flutter run -d chrome
+flutter run -d chrome  --web-port=5000

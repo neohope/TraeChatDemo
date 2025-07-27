@@ -52,6 +52,8 @@ func (h *GroupHandler) RegisterRoutes(router *mux.Router) {
 	router.HandleFunc("/invitations/{invitationId}/accept", h.authMiddleware(h.AcceptInvitation)).Methods("POST")
 	router.HandleFunc("/invitations/{invitationId}/reject", h.authMiddleware(h.RejectInvitation)).Methods("POST")
 	router.HandleFunc("/users/{userId}/invitations", h.authMiddleware(h.GetPendingInvitations)).Methods("GET")
+	// 添加前端期望的路由
+	router.HandleFunc("/my-group-invitations", h.authMiddleware(h.GetMyInvitations)).Methods("GET")
 
 	// 健康检查
 	router.HandleFunc("/health", h.HealthCheck).Methods("GET")
@@ -431,6 +433,20 @@ func (h *GroupHandler) GetPendingInvitations(w http.ResponseWriter, r *http.Requ
 	invitations, err := h.groupService.GetPendingInvitations(r.Context(), userID)
 	if err != nil {
 		h.logger.Error("Failed to get pending invitations", zap.Error(err), zap.String("user_id", userID.String()))
+		h.writeErrorResponse(w, http.StatusInternalServerError, err.Error())
+		return
+	}
+
+	h.writeJSONResponse(w, http.StatusOK, invitations)
+}
+
+// GetMyInvitations 获取我的群组邀请（前端专用路由）
+func (h *GroupHandler) GetMyInvitations(w http.ResponseWriter, r *http.Request) {
+	userID := h.getUserIDFromContext(r)
+
+	invitations, err := h.groupService.GetPendingInvitations(r.Context(), userID)
+	if err != nil {
+		h.logger.Error("Failed to get my invitations", zap.Error(err), zap.String("user_id", userID.String()))
 		h.writeErrorResponse(w, http.StatusInternalServerError, err.Error())
 		return
 	}

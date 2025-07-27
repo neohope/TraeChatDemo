@@ -4,6 +4,7 @@ import 'dart:convert';
 import 'package:dio/dio.dart';
 
 import '../../domain/models/group_model.dart';
+import '../../domain/services/auth_service.dart';
 import '../../core/utils/app_logger.dart';
 import 'websocket_service.dart';
 import 'local_storage.dart';
@@ -13,6 +14,7 @@ class GroupService {
   final Dio _dio;
   final WebSocketService _webSocketService;
   final AppLogger _logger;
+  final AuthService _authService;
 
   // 群组数据缓存
   final Map<String, Group> _groupsCache = {};
@@ -30,9 +32,19 @@ class GroupService {
     WebSocketService? webSocketService,
     LocalStorage? localStorage,
     AppLogger? logger,
-  })  : _dio = dio ?? Dio(),
+    required AuthService authService,
+  })  : _dio = dio ?? Dio(BaseOptions(
+          baseUrl: 'http://localhost:8080',
+          connectTimeout: const Duration(milliseconds: 30000),
+          receiveTimeout: const Duration(milliseconds: 30000),
+          headers: {
+            'Content-Type': 'application/json',
+            'Accept': 'application/json',
+          },
+        )),
         _webSocketService = webSocketService ?? WebSocketService.instance,
-        _logger = logger ?? AppLogger.instance {
+        _logger = logger ?? AppLogger.instance,
+        _authService = authService {
     _setupWebSocketListeners();
   }
 
@@ -60,7 +72,7 @@ class GroupService {
     List<String>? initialMembers,
   }) async {
     try {
-      final response = await _dio.post('/api/groups', data: {
+      final response = await _dio.post('/api/v1/groups', data: {
         'name': name,
         'description': description,
         'avatar': avatar,
@@ -89,16 +101,69 @@ class GroupService {
     GroupStatus? status,
   }) async {
     try {
-      final response = await _dio.get('/api/groups', queryParameters: {
+      final userId = _authService.currentUser?.id;
+      if (userId == null) {
+        throw Exception('User not logged in');
+      }
+
+      print('🔍 GroupService.getGroups - 开始请求API，参数: page=$page, limit=$limit, type=$type, status=$status');
+      
+      final response = await _dio.get('/api/v1/users/$userId/groups', queryParameters: {
         'page': page,
         'limit': limit,
         if (type != null) 'type': type.name,
         if (status != null) 'status': status.name,
       });
 
-      final groups = (response.data['groups'] as List)
-          .map((json) => Group.fromJson(json))
-          .toList();
+      print('🔍 GroupService.getGroups - API响应状态码: ${response.statusCode}');
+      print('🔍 GroupService.getGroups - 响应数据类型: ${response.data.runtimeType}');
+      print('🔍 GroupService.getGroups - 响应数据内容: ${response.data}');
+
+      // 处理不同的响应格式
+      List<dynamic> groupsData;
+      dynamic responseData = response.data;
+      if (responseData is String) {
+        responseData = jsonDecode(responseData);
+      }
+
+      if (responseData is List) {
+        // 后端直接返回数组
+        print('🔍 GroupService.getGroups - 响应格式: 直接数组');
+        // ignore: unnecessary_cast
+        groupsData = responseData as List<dynamic>;
+      } else if (responseData is Map && responseData['groups'] != null) {
+        // 后端返回包装在对象中的数组
+        print('🔍 GroupService.getGroups - 响应格式: 包装对象(groups字段)');
+        groupsData = responseData['groups'] as List<dynamic>;
+      } else if (responseData is Map && responseData['data'] != null) {
+        // 其他格式，尝试获取data字段
+        print('🔍 GroupService.getGroups - 响应格式: 其他格式，尝试data字段');
+        final dataField = responseData['data'];
+        print('🔍 GroupService.getGroups - data字段内容: $dataField (${dataField.runtimeType})');
+        groupsData = dataField ?? [];
+      } else {
+        groupsData = [];
+      }
+
+      print('🔍 GroupService.getGroups - 提取的groupsData: $groupsData');
+      print('🔍 GroupService.getGroups - 开始解析${groupsData.length}个群组');
+
+      final groups = <Group>[];
+      for (int i = 0; i < groupsData.length; i++) {
+        try {
+          print('🔍 GroupService.getGroups - 解析第${i + 1}个群组: ${groupsData[i]}');
+          final group = Group.fromJson(groupsData[i]);
+          groups.add(group);
+          print('🔍 GroupService.getGroups - 第${i + 1}个群组解析成功: ${group.name}');
+        } catch (e, stackTrace) {
+          print('❌ GroupService.getGroups - 第${i + 1}个群组解析失败: $e');
+          print('❌ 错误堆栈: $stackTrace');
+          print('❌ 群组数据: ${groupsData[i]}');
+          rethrow;
+        }
+      }
+
+      print('🔍 GroupService.getGroups - 所有群组解析完成，总数: ${groups.length}');
 
       // 更新缓存
       for (final group in groups) {
@@ -107,7 +172,9 @@ class GroupService {
 
       _logger.info('获取群组列表成功: ${groups.length}个群组');
       return groups;
-    } catch (e) {
+    } catch (e, stackTrace) {
+      print('❌ GroupService.getGroups - 异常: $e');
+      print('❌ 错误堆栈: $stackTrace');
       _logger.error('获取群组列表失败: $e');
       rethrow;
     }
@@ -121,7 +188,7 @@ class GroupService {
         return _groupsCache[groupId]!;
       }
 
-      final response = await _dio.get('/api/groups/$groupId');
+      final response = await _dio.get('/api/v1/groups/$groupId');
       final group = Group.fromJson(response.data['group']);
       
       _groupsCache[groupId] = group;
@@ -148,7 +215,7 @@ class GroupService {
       if (avatar != null) data['avatar'] = avatar;
       if (settings != null) data['settings'] = settings.toJson();
 
-      final response = await _dio.put('/api/groups/$groupId', data: data);
+      final response = await _dio.put('/api/v1/groups/$groupId', data: data);
       final group = Group.fromJson(response.data['group']);
       
       _groupsCache[groupId] = group;
@@ -165,7 +232,7 @@ class GroupService {
   /// 解散群组
   Future<void> dissolveGroup(String groupId) async {
     try {
-      await _dio.delete('/api/groups/$groupId');
+      await _dio.delete('/api/v1/groups/$groupId');
       
       _groupsCache.remove(groupId);
       _membersCache.remove(groupId);
@@ -182,7 +249,7 @@ class GroupService {
   /// 退出群组
   Future<void> leaveGroup(String groupId) async {
     try {
-      await _dio.post('/api/groups/$groupId/leave');
+      await _dio.post('/api/v1/groups/$groupId/leave');
       
       _groupsCache.remove(groupId);
       _membersCache.remove(groupId);
@@ -204,14 +271,27 @@ class GroupService {
     GroupMemberStatus? status,
   }) async {
     try {
-      final response = await _dio.get('/api/groups/$groupId/members', queryParameters: {
+      final response = await _dio.get('/api/v1/groups/$groupId/members', queryParameters: {
         'page': page,
         'limit': limit,
         if (role != null) 'role': role.name,
         if (status != null) 'status': status.name,
       });
 
-      final members = (response.data['members'] as List)
+      // 处理不同的响应格式
+      List<dynamic> membersData;
+      if (response.data is List) {
+        // 后端直接返回数组
+        membersData = response.data as List<dynamic>;
+      } else if (response.data is Map && response.data['members'] != null) {
+        // 后端返回包装在对象中的数组
+        membersData = response.data['members'] as List<dynamic>;
+      } else {
+        // 其他格式，尝试获取data字段
+        membersData = response.data['data'] ?? [];
+      }
+
+      final members = membersData
           .map((json) => GroupMember.fromJson(json))
           .toList();
 
@@ -233,7 +313,7 @@ class GroupService {
     String? message,
   }) async {
     try {
-      final response = await _dio.post('/api/groups/$groupId/invite', data: {
+      final response = await _dio.post('/api/v1/groups/$groupId/invite', data: {
         'user_id': userId,
         'message': message,
       });
@@ -276,7 +356,7 @@ class GroupService {
   /// 移除群组成员
   Future<void> removeMember(String groupId, String userId) async {
     try {
-      await _dio.delete('/api/groups/$groupId/members/$userId');
+      await _dio.delete('/api/v1/groups/$groupId/members/$userId');
       
       // 更新缓存
       if (_membersCache.containsKey(groupId)) {
@@ -297,7 +377,7 @@ class GroupService {
     GroupMemberRole role,
   ) async {
     try {
-      final response = await _dio.put('/api/groups/$groupId/members/$userId/role', data: {
+      final response = await _dio.put('/api/v1/groups/$groupId/members/$userId/role', data: {
         'role': role.name,
       });
 
@@ -327,7 +407,7 @@ class GroupService {
     Duration? duration,
   }) async {
     try {
-      final response = await _dio.post('/api/groups/$groupId/members/$userId/mute', data: {
+      final response = await _dio.post('/api/v1/groups/$groupId/members/$userId/mute', data: {
         if (duration != null) 'duration_seconds': duration.inSeconds,
       });
 
@@ -353,7 +433,7 @@ class GroupService {
   /// 解除禁言
   Future<GroupMember> unmuteMember(String groupId, String userId) async {
     try {
-      final response = await _dio.post('/api/groups/$groupId/members/$userId/unmute');
+      final response = await _dio.post('/api/v1/groups/$groupId/members/$userId/unmute');
 
       final member = GroupMember.fromJson(response.data['member']);
       
@@ -377,7 +457,7 @@ class GroupService {
   /// 转让群主
   Future<void> transferOwnership(String groupId, String newOwnerId) async {
     try {
-      await _dio.post('/api/groups/$groupId/transfer-ownership', data: {
+      await _dio.post('/api/v1/groups/$groupId/transfer-ownership', data: {
         'new_owner_id': newOwnerId,
       });
       
@@ -400,14 +480,27 @@ class GroupService {
     GroupType? type,
   }) async {
     try {
-      final response = await _dio.get('/api/groups/search', queryParameters: {
+      final response = await _dio.get('/api/v1/groups/search', queryParameters: {
         'q': query,
         'page': page,
         'limit': limit,
         if (type != null) 'type': type.name,
       });
 
-      final groups = (response.data['groups'] as List)
+      // 处理不同的响应格式
+      List<dynamic> groupsData;
+      if (response.data is List) {
+        // 后端直接返回数组
+        groupsData = response.data as List<dynamic>;
+      } else if (response.data is Map && response.data['groups'] != null) {
+        // 后端返回包装在对象中的数组
+        groupsData = response.data['groups'] as List<dynamic>;
+      } else {
+        // 其他格式，尝试获取data字段
+        groupsData = response.data['data'] ?? [];
+      }
+
+      final groups = groupsData
           .map((json) => Group.fromJson(json))
           .toList();
 
@@ -427,7 +520,7 @@ class GroupService {
     GroupInvitationStatus? status,
   }) async {
     try {
-      final response = await _dio.get('/api/groups/$groupId/invitations', queryParameters: {
+      final response = await _dio.get('/api/v1/groups/$groupId/invitations', queryParameters: {
         'page': page,
         'limit': limit,
         if (status != null) 'status': status.name,
@@ -455,7 +548,7 @@ class GroupService {
     GroupInvitationStatus? status,
   }) async {
     try {
-      final response = await _dio.get('/api/my-group-invitations', queryParameters: {
+      final response = await _dio.get('/api/v1/my-group-invitations', queryParameters: {
         'page': page,
         'limit': limit,
         if (status != null) 'status': status.name,
@@ -506,7 +599,7 @@ class GroupService {
     GroupInvitationStatus? status,
   }) async {
     try {
-      final response = await _dio.get('/api/groups/$groupId/invitations/sent', queryParameters: {
+      final response = await _dio.get('/api/v1/groups/$groupId/invitations/sent', queryParameters: {
         'page': page,
         'limit': limit,
         if (status != null) 'status': status.name,

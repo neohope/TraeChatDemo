@@ -65,9 +65,9 @@ func LoadConfig() (*Config, error) {
 			RPS:     rps,
 		},
 		CORS: CORSConfig{
-			AllowedOrigins: []string{"*"},
-			AllowedMethods: []string{"GET", "POST", "PUT", "DELETE", "OPTIONS"},
-			AllowedHeaders: []string{"Content-Type", "Authorization", "X-Requested-With"},
+			AllowedOrigins: []string{"http://localhost:3000", "*"},
+			AllowedMethods: []string{"GET", "POST", "PUT", "DELETE", "OPTIONS", "PATCH"},
+			AllowedHeaders: []string{"Content-Type", "Authorization", "X-Requested-With", "Accept", "Origin", "X-User-ID"},
 		},
 	}, nil
 }

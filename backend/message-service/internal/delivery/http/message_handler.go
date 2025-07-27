@@ -316,10 +316,19 @@ func (h *MessageHandler) GetConversation(w http.ResponseWriter, r *http.Request)
 	respondJSON(w, http.StatusOK, conversation)
 }
 
-// AuthMiddleware 认证中间件
+// AuthMiddleware 认证中间件 - 信任API网关的认证结果
 func (h *MessageHandler) AuthMiddleware(next http.Handler) http.Handler {
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-		// 从请求头获取令牌
+		// 优先从API网关传递的头部获取用户ID
+		userID := r.Header.Get("X-User-ID")
+		if userID != "" {
+			// 信任API网关的认证结果
+			ctx := context.WithValue(r.Context(), "user_id", userID)
+			next.ServeHTTP(w, r.WithContext(ctx))
+			return
+		}
+		
+		// 如果没有X-User-ID头部，则进行JWT验证（向后兼容）
 		tokenString := r.Header.Get("Authorization")
 		if tokenString == "" {
 			respondError(w, http.StatusUnauthorized, "missing authorization header")

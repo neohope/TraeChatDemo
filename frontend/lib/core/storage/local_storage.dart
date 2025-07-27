@@ -1,6 +1,8 @@
 import 'package:hive_flutter/hive_flutter.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import '../utils/app_logger.dart';
+import '../../domain/models/user_model.dart';
+import '../../domain/models/conversation_model.dart';
 
 /// 本地存储工具类，用于管理应用的本地数据存储
 class LocalStorage {
@@ -32,6 +34,14 @@ class LocalStorage {
     try {
       // 初始化Hive
       await Hive.initFlutter();
+      
+      // 注册适配器
+      if (!Hive.isAdapterRegistered(1)) {
+        Hive.registerAdapter(UserModelAdapter());
+      }
+      if (!Hive.isAdapterRegistered(2)) {
+        Hive.registerAdapter(UserStatusAdapter());
+      }
       
       // 获取加密密钥或生成新密钥
       final encryptionKey = await _getEncryptionKey();

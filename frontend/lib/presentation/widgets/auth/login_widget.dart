@@ -262,7 +262,7 @@ class _LoginWidgetState extends State<LoginWidget> {
     
     try {
       final success = await authViewModel.login(
-        username: _usernameController.text.trim(),
+        identifier: _usernameController.text.trim(),
         password: _passwordController.text,
         rememberMe: _rememberMe,
       );

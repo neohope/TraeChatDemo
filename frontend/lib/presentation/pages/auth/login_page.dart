@@ -18,7 +18,7 @@ class LoginPage extends StatefulWidget {
 
 class _LoginPageState extends State<LoginPage> {
   final _formKey = GlobalKey<FormState>();
-  final _emailController = TextEditingController();
+  final _identifierController = TextEditingController(); // 用户名或邮箱
   final _passwordController = TextEditingController();
   bool _isPasswordVisible = false;
   bool _rememberMe = false;
@@ -31,7 +31,7 @@ class _LoginPageState extends State<LoginPage> {
 
   @override
   void dispose() {
-    _emailController.dispose();
+    _identifierController.dispose();
     _passwordController.dispose();
     super.dispose();
   }
@@ -45,14 +45,14 @@ class _LoginPageState extends State<LoginPage> {
       return;
     }
     
-    final email = _emailController.text.trim();
+    final identifier = _identifierController.text.trim();
     final password = _passwordController.text.trim();
     
-    print('开始登录: email=$email, password长度=${password.length}');
+    print('开始登录: identifier=$identifier, password长度=${password.length}');
     
     // 获取AuthViewModel并调用登录方法
     final authViewModel = Provider.of<AuthViewModel>(context, listen: false);
-    final response = await authViewModel.login(email, password);
+    final response = await authViewModel.login(identifier, password);
 
     if (!mounted) return;
     
@@ -119,19 +119,16 @@ class _LoginPageState extends State<LoginPage> {
                     ),
                     const SizedBox(height: AppTheme.spacingLarge),
                     
-                    // 邮箱输入框
+                    // 用户名/邮箱输入框
                     CustomTextField(
-                      controller: _emailController,
-                      labelText: '邮箱',
-                      hintText: '请输入您的邮箱',
-                      prefixIcon: Icons.email_outlined,
-                      keyboardType: TextInputType.emailAddress,
+                      controller: _identifierController,
+                      labelText: '用户名/邮箱',
+                      hintText: '请输入用户名或邮箱',
+                      prefixIcon: Icons.person_outline,
+                      keyboardType: TextInputType.text,
                       validator: (value) {
                         if (value == null || value.isEmpty) {
-                          return '请输入邮箱';
-                        }
-                        if (!RegExp(r'^[\w-\.]+@([\w-]+\.)+[\w-]{2,4}$').hasMatch(value)) {
-                          return '请输入有效的邮箱地址';
+                          return '请输入用户名或邮箱';
                         }
                         return null;
                       },

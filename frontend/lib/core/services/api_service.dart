@@ -1,6 +1,7 @@
 import 'dart:async';
 import 'dart:convert';
 import 'package:dio/dio.dart';
+import 'package:flutter/foundation.dart';
 import '../storage/local_storage.dart';
 import '../utils/app_logger.dart';
 
@@ -21,16 +22,23 @@ class ApiService {
     required int receiveTimeout,
     required int sendTimeout,
   }) {
-    _dio = Dio(BaseOptions(
+    final baseOptions = BaseOptions(
       baseUrl: baseUrl,
       connectTimeout: Duration(milliseconds: connectTimeout),
       receiveTimeout: Duration(milliseconds: receiveTimeout),
-      sendTimeout: Duration(milliseconds: sendTimeout),
       headers: {
         'Content-Type': 'application/json',
         'Accept': 'application/json',
       },
-    ));
+    );
+    
+    // Only set sendTimeout for non-Web platforms
+    // Web platform doesn't support sendTimeout without request body
+    if (!kIsWeb) {
+      baseOptions.sendTimeout = Duration(milliseconds: sendTimeout);
+    }
+    
+    _dio = Dio(baseOptions);
 
     // 添加拦截器
     _dio.interceptors.add(_createAuthInterceptor());

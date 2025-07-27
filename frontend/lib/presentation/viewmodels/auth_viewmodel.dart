@@ -79,7 +79,7 @@ class AuthViewModel extends ChangeNotifier {
 
   /// 用户登录
   Future<bool> login({
-    required String username,
+    required String identifier,
     required String password,
     bool rememberMe = false,
   }) async {
@@ -87,10 +87,10 @@ class AuthViewModel extends ChangeNotifier {
       _setLoading(true);
       _setError(null);
       
-      _logger.logger.i('开始登录请求: email=$username, rememberMe=$rememberMe');
+      _logger.logger.i('开始登录请求: identifier=$identifier, rememberMe=$rememberMe');
 
       final response = await _apiService.post('/api/v1/users/login', data: {
-        'email': username,
+        'identifier': identifier,
         'password': password,
         'rememberMe': rememberMe,
       });
@@ -98,7 +98,7 @@ class AuthViewModel extends ChangeNotifier {
       _logger.logger.i('登录API响应: $response');
 
       // 检查响应格式 - 后端直接返回 {token, user} 格式
-      if (response != null && response['token'] != null && response['user'] != null) {
+      if (response['token'] != null && response['user'] != null) {
         final token = response['token'];
         final refreshToken = response['refreshToken']; // 可能为null
         final user = UserModel.fromJson(response['user']);
@@ -119,7 +119,7 @@ class AuthViewModel extends ChangeNotifier {
         return true;
       } else {
         // 处理错误响应
-        final errorMessage = response?['error'] ?? response?['message'] ?? '登录失败';
+        final errorMessage = response['error'] ?? response['message'] ?? '登录失败';
         _logger.logger.w('登录失败: $errorMessage');
         _setError(errorMessage);
         return false;

@@ -437,7 +437,8 @@ class _NotificationWidgetState extends State<NotificationWidget>
   }
 
   List<NotificationModel> _getFilteredNotifications(List<NotificationModel> notifications) {
-    var filtered = notifications;
+    // 创建可变副本以避免sort操作错误
+    var filtered = List<NotificationModel>.from(notifications);
 
     // 按类型过滤
     if (_selectedType != null) {

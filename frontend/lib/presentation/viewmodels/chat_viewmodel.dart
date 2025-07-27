@@ -91,14 +91,22 @@ class ChatViewModel extends ChangeNotifier {
       final response = await _apiService.get('/api/v1/conversations');
       
       if (response['success'] == true) {
-        final List<dynamic> conversationList = response['data'] as List<dynamic>;
-        _conversations = conversationList
-            .map((json) => ConversationModel.fromJson(json as Map<String, dynamic>))
-            .toList();
-        
-        // 保存到本地存储
-        await LocalStorage.saveConversations(_conversations);
-        notifyListeners();
+        final dynamic data = response['data'];
+        if (data != null && data is List) {
+          final List<dynamic> conversationList = data;
+          _conversations = conversationList
+              .map((json) => ConversationModel.fromJson(json as Map<String, dynamic>))
+              .toList();
+          
+          // 保存到本地存储
+          await LocalStorage.saveConversations(_conversations);
+          notifyListeners();
+        } else {
+          // 数据为空或格式不正确，初始化为空列表
+          _conversations = [];
+          notifyListeners();
+          _logger.logger.w('API返回的对话列表数据为空或格式不正确');
+        }
       } else {
         _setError(response['message'] ?? '获取对话列表失败');
       }
@@ -152,14 +160,22 @@ class ChatViewModel extends ChangeNotifier {
       final response = await _apiService.get('/api/v1/conversations/$conversationId/messages');
       
       if (response['success'] == true) {
-        final List<dynamic> messageList = response['data'] as List<dynamic>;
-        _currentMessages = messageList
-            .map((json) => MessageModel.fromJson(json as Map<String, dynamic>))
-            .toList();
-        
-        // 保存到本地存储
-        await LocalStorage.saveConversations(_currentMessages.map((msg) => msg.toJson()).toList());
-        notifyListeners();
+        final dynamic data = response['data'];
+        if (data != null && data is List) {
+          final List<dynamic> messageList = data;
+          _currentMessages = messageList
+              .map((json) => MessageModel.fromJson(json as Map<String, dynamic>))
+              .toList();
+          
+          // 保存到本地存储
+          await LocalStorage.saveConversations(_currentMessages.map((msg) => msg.toJson()).toList());
+          notifyListeners();
+        } else {
+          // 数据为空或格式不正确，初始化为空列表
+          _currentMessages = [];
+          notifyListeners();
+          _logger.logger.w('API返回的消息列表数据为空或格式不正确');
+        }
       }
     } catch (e) {
       _logger.error('加载消息失败: $e');

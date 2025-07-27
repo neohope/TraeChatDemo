@@ -77,6 +77,17 @@ func (m *Middleware) CORS(allowedOrigins, allowedMethods, allowedHeaders []strin
 
 			// 处理预检请求
 			if r.Method == "OPTIONS" {
+				// 确保设置了正确的CORS头
+				if origin != "" {
+					// 检查特定来源
+					for _, allowedOrigin := range allowedOrigins {
+						if allowedOrigin == origin || allowedOrigin == "*" {
+							w.Header().Set("Access-Control-Allow-Origin", origin)
+							w.Header().Set("Access-Control-Allow-Credentials", "true")
+							break
+						}
+					}
+				}
 				w.WriteHeader(http.StatusOK)
 				return
 			}

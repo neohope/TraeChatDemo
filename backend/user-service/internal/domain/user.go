@@ -41,7 +41,7 @@ type UserRepository interface {
 // UserService 用户服务接口
 type UserService interface {
 	Register(ctx context.Context, user *User, password string) error
-	Login(ctx context.Context, email, password string) (string, error) // 返回JWT令牌
+	Login(ctx context.Context, identifier, password string) (string, error) // 返回JWT令牌，identifier可以是邮箱或用户名
 	GetUserByID(ctx context.Context, id string) (*User, error)
 	UpdateUser(ctx context.Context, user *User) error
 	DeleteUser(ctx context.Context, id string) error
@@ -59,8 +59,8 @@ type RegisterRequest struct {
 
 // LoginRequest 登录请求
 type LoginRequest struct {
-	Email    string `json:"email" validate:"required,email"`
-	Password string `json:"password" validate:"required"`
+	Identifier string `json:"identifier" validate:"required"` // 可以是邮箱或用户名
+	Password   string `json:"password" validate:"required"`
 }
 
 // LoginResponse 登录响应

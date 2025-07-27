@@ -85,7 +85,7 @@ func main() {
 	router := mux.NewRouter()
 
 	// 添加中间件
-	router.Use(auth.CORSMiddleware)
+	// CORS中间件已移除，由API网关统一处理
 	router.Use(auth.LoggingMiddleware(logger))
 
 	// 注册路由

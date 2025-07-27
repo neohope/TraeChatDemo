@@ -160,9 +160,6 @@ func setupRoutes(router *mux.Router, groupHandler *handler.GroupHandler) {
 	// API版本前缀
 	api := router.PathPrefix("/api/v1").Subrouter()
 
-	// 添加CORS中间件
-	api.Use(corsMiddleware)
-
 	// 添加日志中间件
 	api.Use(loggingMiddleware)
 
@@ -175,21 +172,21 @@ func setupRoutes(router *mux.Router, groupHandler *handler.GroupHandler) {
 	})
 }
 
-// corsMiddleware CORS中间件
-func corsMiddleware(next http.Handler) http.Handler {
-	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-		w.Header().Set("Access-Control-Allow-Origin", "*")
-		w.Header().Set("Access-Control-Allow-Methods", "GET, POST, PUT, DELETE, OPTIONS")
-		w.Header().Set("Access-Control-Allow-Headers", "Content-Type, Authorization")
-
-		if r.Method == "OPTIONS" {
-			w.WriteHeader(http.StatusOK)
-			return
-		}
-
-		next.ServeHTTP(w, r)
-	})
-}
+// corsMiddleware CORS中间件 - 已移除，由API网关统一处理CORS
+// func corsMiddleware(next http.Handler) http.Handler {
+// 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+// 		w.Header().Set("Access-Control-Allow-Origin", "*")
+// 		w.Header().Set("Access-Control-Allow-Methods", "GET, POST, PUT, DELETE, OPTIONS")
+// 		w.Header().Set("Access-Control-Allow-Headers", "Content-Type, Authorization")
+// 
+// 		if r.Method == "OPTIONS" {
+// 			w.WriteHeader(http.StatusOK)
+// 			return
+// 		}
+// 
+// 		next.ServeHTTP(w, r)
+// 	})
+// }
 
 // loggingMiddleware 日志中间件
 func loggingMiddleware(next http.Handler) http.Handler {

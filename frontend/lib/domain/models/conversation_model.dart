@@ -1,4 +1,7 @@
 import 'package:flutter/foundation.dart';
+import 'package:hive/hive.dart';
+
+part 'conversation_model.g.dart';
 
 /// 会话模型类
 /// 
@@ -252,10 +255,15 @@ enum MessageType {
 }
 
 /// 用户状态枚举
+@HiveType(typeId: 2)
 enum UserStatus {
+  @HiveField(0)
   online,
+  @HiveField(1)
   offline,
+  @HiveField(2)
   away,
+  @HiveField(3)
   busy,
 }
 
