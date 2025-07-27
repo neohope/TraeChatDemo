@@ -42,7 +42,7 @@ class _ChatScreenWidgetState extends State<ChatScreenWidget>
   
   bool _showScrollToBottom = false;
   bool _isSelectionMode = false;
-  Set<String> _selectedMessageIds = {};
+  final Set<String> _selectedMessageIds = {};
   MessageModel? _replyToMessage;
   MessageModel? _editingMessage;
   List<MessageModel> _searchResults = [];

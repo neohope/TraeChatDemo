@@ -83,7 +83,7 @@ class VoiceMessageViewModel extends ChangeNotifier {
       }
 
       final success = await _audioService.startRecording();
-      if (success == true) {
+      if (success) {
         _isRecording = true;
         _isRecordingPaused = false;
         _recordingDuration = Duration.zero;
@@ -141,7 +141,7 @@ class VoiceMessageViewModel extends ChangeNotifier {
     try {
       if (!_isRecording) return null;
 
-      final success = await _audioService.stopRecording();
+      final audioInfo = await _audioService.stopRecording();
       _stopRecordingTimer();
       
       _isRecording = false;
@@ -153,11 +153,11 @@ class VoiceMessageViewModel extends ChangeNotifier {
       
       notifyListeners();
       
-      if (success == true && recordingPath != null) {
+      if (audioInfo != null && recordingPath != null) {
         // 缓存录制的语音文件信息
-        await _cacheVoiceMessage(recordingPath, duration);
-        _logger.info('录制完成: $recordingPath, 时长: ${duration.inSeconds}秒');
-        return recordingPath;
+        await _cacheVoiceMessage(audioInfo.path, audioInfo.duration);
+        _logger.info('录制完成: ${audioInfo.path}, 时长: ${audioInfo.duration.inSeconds}秒');
+        return audioInfo.path;
       }
     } catch (e) {
       _logger.error('停止录制失败: $e');
