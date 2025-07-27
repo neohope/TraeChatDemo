@@ -402,7 +402,7 @@ class _MainScreenWidgetState extends State<MainScreenWidget>
     Navigator.push(
       context,
       MaterialPageRoute(
-        builder: (context) => PublicChannelsWidget(),
+        builder: (context) => const PublicChannelsWidget(),
       ),
     );
   }

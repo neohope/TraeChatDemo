@@ -724,7 +724,7 @@ class _GroupMemberWidgetState extends State<GroupMemberWidget> {
       context: context,
       builder: (context) => AlertDialog(
         title: const Text('筛选成员'),
-        content: Column(
+        content: const Column(
           mainAxisSize: MainAxisSize.min,
           children: [
             // 实现筛选选项

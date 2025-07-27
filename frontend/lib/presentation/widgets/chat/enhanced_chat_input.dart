@@ -432,9 +432,9 @@ class _EnhancedChatInputState extends State<EnhancedChatInput> {
     }
     
     ScaffoldMessenger.of(context).showSnackBar(
-      SnackBar(
+      const SnackBar(
         content: Text('位置已分享: $mockAddress'),
-        duration: const Duration(seconds: 2),
+        duration: Duration(seconds: 2),
       ),
     );
   }

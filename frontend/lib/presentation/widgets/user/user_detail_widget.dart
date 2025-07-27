@@ -620,9 +620,11 @@ class _UserDetailWidgetState extends State<UserDetailWidget> {
           await _uploadProfileImage();
           // avatarUrl = await ImageUtils.uploadImage(_selectedImage!);
         } catch (e) {
-          ScaffoldMessenger.of(context).showSnackBar(
-            SnackBar(content: Text('上传失败: $e')),
-          );
+          if (mounted) {
+            ScaffoldMessenger.of(context).showSnackBar(
+              SnackBar(content: Text('上传失败: $e')),
+            );
+          }
           return;
         }
       }

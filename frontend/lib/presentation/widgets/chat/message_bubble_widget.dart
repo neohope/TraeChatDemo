@@ -223,9 +223,9 @@ class _MessageBubbleWidgetState extends State<MessageBubbleWidget>
             ),
           ),
           const SizedBox(height: 2),
-          Text(
+          const Text(
              'Reply message content not available',
-              style: const TextStyle(
+              style: TextStyle(
               fontSize: 12,
               color: Colors.grey,
             ),
@@ -910,9 +910,9 @@ class _VoicePlayerWidgetState extends State<VoicePlayerWidget>
   Widget build(BuildContext context) {
     return Consumer<VoiceMessageViewModel>(builder: (context, viewModel, child) {
       final isPlaying = viewModel.isPlaying;
-      final isPaused = false; // Simplified for now
-      final progress = 0.0; // Simplified for now
-      final currentPosition = 0; // Simplified for now
+      const isPaused = false; // Simplified for now
+      const progress = 0.0; // Simplified for now
+      const currentPosition = 0; // Simplified for now
 
       if (isPlaying && !_isCurrentlyPlaying) {
         _isCurrentlyPlaying = true;
