@@ -601,9 +601,9 @@ class _GroupInvitationWidgetState extends State<GroupInvitationWidget>
                 ),
               ),
               const SizedBox(height: 16),
-              CircleAvatar(
+              const CircleAvatar(
                 radius: 40,
-                child: const Icon(Icons.person, size: 40),
+                child: Icon(Icons.person, size: 40),
               ),
               const SizedBox(height: 16),
               Text(

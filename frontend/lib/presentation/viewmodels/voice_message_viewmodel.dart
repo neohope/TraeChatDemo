@@ -411,7 +411,7 @@ class VoiceMessageViewModel extends ChangeNotifier {
   /// 设置音频监听器
   void _setupAudioListeners() {
     // 实现音频监听器 - 需要根据实际AudioService接口调整
-    print('音频监听器设置完成');
+    _logger.logger.d('音频监听器设置完成');
     // 播放状态监听
     // _audioService.onPlayerStateChanged.listen((state) {
     //   _isPlaying = state == PlayerState.playing;
@@ -431,7 +431,7 @@ class VoiceMessageViewModel extends ChangeNotifier {
     // });
     
     // 模拟监听器设置完成
-    print('音频监听器已设置');
+    _logger.logger.d('音频监听器已设置');
   }
 
   /// 缓存语音消息信息

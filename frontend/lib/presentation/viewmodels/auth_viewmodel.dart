@@ -387,9 +387,4 @@ class AuthViewModel extends ChangeNotifier {
       _setLoading(false);
     }
   }
-
-  @override
-  void dispose() {
-    super.dispose();
-  }
 }
