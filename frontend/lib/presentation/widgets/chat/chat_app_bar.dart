@@ -457,6 +457,7 @@ class ChatAppBar extends StatelessWidget implements PreferredSizeWidget {
       // 调用消息服务搜索聊天记录
       final results = await _searchMessages(query);
       
+      // ignore: use_build_context_synchronously
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
           content: Text('搜索 "$query" 的结果: 找到 ${results.length} 条消息'),
@@ -470,6 +471,7 @@ class ChatAppBar extends StatelessWidget implements PreferredSizeWidget {
         ),
       );
     } catch (e) {
+      // ignore: use_build_context_synchronously
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
           content: Text('搜索失败: $e'),

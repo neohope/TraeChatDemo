@@ -431,6 +431,7 @@ class _GroupListWidgetState extends State<GroupListWidget> {
               Navigator.pop(context);
               final success = await context.read<GroupViewModel>().leaveGroup(group.id);
               if (success && mounted) {
+                // ignore: use_build_context_synchronously
                 ScaffoldMessenger.of(context).showSnackBar(
                   const SnackBar(content: Text('已退出群组')),
                 );
@@ -460,6 +461,7 @@ class _GroupListWidgetState extends State<GroupListWidget> {
               Navigator.pop(context);
               final success = await context.read<GroupViewModel>().dissolveGroup(group.id);
               if (success && mounted) {
+                // ignore: use_build_context_synchronously
                 ScaffoldMessenger.of(context).showSnackBar(
                   const SnackBar(content: Text('群组已解散')),
                 );

@@ -235,6 +235,7 @@ class _ChatInputState extends State<ChatInput> {
         widget.onSendImage(pickedFile.path);
       }
     } catch (e) {
+      // ignore: use_build_context_synchronously
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(content: Text('选择图片失败：$e')),
       );

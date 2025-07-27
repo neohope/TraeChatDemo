@@ -275,10 +275,12 @@ class _ContactsTabState extends State<ContactsTab> {
                   userViewModel.addContact(username).then((response) {
                     if (mounted) {
                       if (response.success && response.data == true) {
+                        // ignore: use_build_context_synchronously
                         ScaffoldMessenger.of(context).showSnackBar(
                           const SnackBar(content: Text('联系人添加成功')),
                         );
                       } else {
+                        // ignore: use_build_context_synchronously
                         ScaffoldMessenger.of(context).showSnackBar(
                           SnackBar(content: Text(response.message ?? '联系人添加失败，请检查用户名或邮箱是否正确')),
                         );
@@ -383,6 +385,7 @@ class _ContactsTabState extends State<ContactsTab> {
                 final userViewModel = Provider.of<UserViewModel>(context, listen: false);
                 userViewModel.blockContact(contact.id).then((_) {
                   if (mounted) {
+                    // ignore: use_build_context_synchronously
                     ScaffoldMessenger.of(context).showSnackBar(
                       SnackBar(content: Text('已将 ${contact.name} 拉黑')),
                     );
@@ -417,6 +420,7 @@ class _ContactsTabState extends State<ContactsTab> {
                 final userViewModel = Provider.of<UserViewModel>(context, listen: false);
                 userViewModel.deleteContact(contact.id).then((_) {
                   if (mounted) {
+                    // ignore: use_build_context_synchronously
                     ScaffoldMessenger.of(context).showSnackBar(
                       SnackBar(content: Text('已删除联系人 ${contact.name}')),
                     );

@@ -316,6 +316,7 @@ class _EnhancedChatInputState extends State<EnhancedChatInput> {
     // 检查录音权限
     final permission = await Permission.microphone.request();
     if (!permission.isGranted) {
+      // ignore: use_build_context_synchronously
       ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(content: Text('需要麦克风权限才能录制语音')),
       );
@@ -327,6 +328,7 @@ class _EnhancedChatInputState extends State<EnhancedChatInput> {
     });
     
     // 模拟录音开始
+    // ignore: use_build_context_synchronously
     ScaffoldMessenger.of(context).showSnackBar(
       const SnackBar(
         content: Text('开始录音...'),
@@ -364,6 +366,7 @@ class _EnhancedChatInputState extends State<EnhancedChatInput> {
       }
     } catch (e) {
       // 处理错误
+      // ignore: use_build_context_synchronously
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(content: Text('选择图片失败: $e')),
       );
@@ -431,6 +434,7 @@ class _EnhancedChatInputState extends State<EnhancedChatInput> {
       });
     }
     
+    // ignore: use_build_context_synchronously
     ScaffoldMessenger.of(context).showSnackBar(
       const SnackBar(
         content: Text('位置已分享: $mockAddress'),

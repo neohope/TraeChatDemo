@@ -679,8 +679,10 @@ class _GroupDetailWidgetState extends State<GroupDetailWidget>
               Navigator.pop(context);
               final success = await viewModel.leaveGroup(group.id);
               if (success && mounted) {
+                // ignore: use_build_context_synchronously
                 if (mounted) Navigator.pop(context);
                 if (mounted) {
+                  // ignore: use_build_context_synchronously
                   ScaffoldMessenger.of(context).showSnackBar(
                     const SnackBar(content: Text('已退出群组')),
                   );
@@ -711,8 +713,10 @@ class _GroupDetailWidgetState extends State<GroupDetailWidget>
               Navigator.pop(context);
               final success = await viewModel.dissolveGroup(group.id);
               if (success && mounted) {
+                // ignore: use_build_context_synchronously
                 if (mounted) Navigator.pop(context);
                 if (mounted) {
+                  // ignore: use_build_context_synchronously
                   ScaffoldMessenger.of(context).showSnackBar(
                     const SnackBar(content: Text('群组已解散')),
                   );
@@ -750,6 +754,7 @@ class _GroupDetailWidgetState extends State<GroupDetailWidget>
               Navigator.pop(context);
               await viewModel.muteMember(member.groupId, member.userId);
               if (mounted) {
+                // ignore: use_build_context_synchronously
                 ScaffoldMessenger.of(context).showSnackBar(
                   const SnackBar(content: Text('成员已禁言')),
                 );
@@ -811,6 +816,7 @@ class _GroupDetailWidgetState extends State<GroupDetailWidget>
               Navigator.pop(context);
               await viewModel.removeMember(member.groupId, member.userId);
               if (mounted) {
+                // ignore: use_build_context_synchronously
                 ScaffoldMessenger.of(context).showSnackBar(
                   const SnackBar(content: Text('成员已移除')),
                 );

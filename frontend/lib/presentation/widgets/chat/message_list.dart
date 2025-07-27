@@ -244,10 +244,12 @@ class _MessageListState extends State<MessageList> {
      if (message.type == MessageType.text && message.text != null) {
        try {
          await Clipboard.setData(ClipboardData(text: message.text!));
+         // ignore: use_build_context_synchronously
          ScaffoldMessenger.of(context).showSnackBar(
            const SnackBar(content: Text('消息已复制到剪贴板')),
          );
        } catch (e) {
+         // ignore: use_build_context_synchronously
          ScaffoldMessenger.of(context).showSnackBar(
            SnackBar(content: Text('复制失败: $e')),
          );

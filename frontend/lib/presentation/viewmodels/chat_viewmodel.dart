@@ -179,7 +179,7 @@ class ChatViewModel extends ChangeNotifier {
       }
     } catch (e) {
       _logger.error('加载消息失败: $e');
-      throw e;
+      rethrow;
     }
   }
 

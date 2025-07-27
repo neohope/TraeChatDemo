@@ -394,9 +394,4 @@ class UserSearchViewModel extends ChangeNotifier {
       _setLoading(false);
     }
   }
-
-  @override
-  void dispose() {
-    super.dispose();
-  }
 }

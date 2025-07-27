@@ -351,7 +351,7 @@ class _VoiceMessageWidgetState extends State<VoiceMessageWidget>
   Widget _buildWaveform() {
     return GestureDetector(
       onTapDown: (details) => _seekToPosition(details),
-      child: Container(
+      child: SizedBox(
         height: 30,
         child: CustomPaint(
           painter: WaveformPainter(
