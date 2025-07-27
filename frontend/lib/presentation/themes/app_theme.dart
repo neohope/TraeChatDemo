@@ -68,7 +68,7 @@ class AppTheme {
     brightness: Brightness.light,
     primaryColor: primaryColor,
     primaryColorDark: primaryDarkColor,
-    colorScheme: ColorScheme.light(
+    colorScheme: const ColorScheme.light(
       primary: primaryColor,
       secondary: accentColor,
       surface: lightBackgroundColor,
@@ -124,7 +124,7 @@ class AppTheme {
     brightness: Brightness.dark,
     primaryColor: primaryColor,
     primaryColorDark: primaryDarkColor,
-    colorScheme: ColorScheme.dark(
+    colorScheme: const ColorScheme.dark(
       primary: primaryColor,
       secondary: accentColor,
       surface: darkBackgroundColor,

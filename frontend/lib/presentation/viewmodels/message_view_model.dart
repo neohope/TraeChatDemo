@@ -1,6 +1,7 @@
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 
+import '../../core/utils/app_logger.dart';
 import '../../domain/models/conversation_model.dart';
 import '../../domain/models/message_model.dart';
 import '../../domain/repositories/message_repository.dart';
@@ -15,6 +16,7 @@ class MessageViewModel extends ChangeNotifier {
   final MessageRepository _messageRepository;
   final AuthService _authService;
   final StorageService _storageService;
+  final AppLogger _logger = AppLogger.instance;
   
   String? _currentConversationId;
   String? get currentConversationId => _currentConversationId;
@@ -611,9 +613,9 @@ class MessageViewModel extends ChangeNotifier {
        // 调用仓库层编辑消息API
         try {
           // await _messageRepository.editMessage(messageId, newText);
-          print('消息编辑请求已发送: $messageId -> $newText');
+          _logger.logger.d('消息编辑请求已发送: $messageId -> $newText');
         } catch (e) {
-          print('编辑消息失败: $e');
+          _logger.logger.e('编辑消息失败: $e');
           // 如果编辑失败，恢复原始内容
           // ignore: unused_local_variable
           final originalMessage = _messages.firstWhere((m) => m.id == messageId);
