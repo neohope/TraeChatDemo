@@ -139,9 +139,9 @@ class _GroupChatPageState extends State<GroupChatPage> {
             // 群组头像和名称
             Row(
               children: [
-                CircleAvatar(
+                const CircleAvatar(
                   radius: 30,
-                  child: const Icon(Icons.group, size: 30),
+                  child: Icon(Icons.group, size: 30),
                 ),
                 const SizedBox(width: 16),
                 Expanded(

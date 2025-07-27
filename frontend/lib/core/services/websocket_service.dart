@@ -261,7 +261,7 @@ class WebSocketService {
   void _startHeartbeat() {
     _stopHeartbeat();
     _heartbeatTimer = Timer.periodic(
-      Duration(milliseconds: _heartbeatInterval),
+      const Duration(milliseconds: _heartbeatInterval),
       (timer) {
         if (_isConnected) {
           sendMessage({'type': 'ping'});

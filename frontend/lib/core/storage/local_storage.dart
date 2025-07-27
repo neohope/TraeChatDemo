@@ -24,7 +24,7 @@ class LocalStorage {
   static late Box _cacheBox;
   
   // 安全存储实例
-  static final _secureStorage = FlutterSecureStorage();
+  static const _secureStorage = FlutterSecureStorage();
   
   // 日志实例
   static final _logger = AppLogger.instance.logger;

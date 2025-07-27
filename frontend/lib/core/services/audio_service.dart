@@ -340,7 +340,7 @@ class AudioService {
       // 模拟获取音频文件信息
       return AudioFileInfo(
         filePath: filePath,
-        duration: Duration(seconds: 30),
+        duration: const Duration(seconds: 30),
         size: 1024 * 1024, // 1MB
         format: 'aac',
         sampleRate: _sampleRate,
@@ -354,7 +354,7 @@ class AudioService {
   
   /// 开始录音计时器
   void _startRecordingTimer() {
-    _recordingTimer = Timer.periodic(Duration(milliseconds: 100), (timer) {
+    _recordingTimer = Timer.periodic(const Duration(milliseconds: 100), (timer) {
       _recordingDuration = Duration(milliseconds: _recordingDuration.inMilliseconds + 100);
       _recordingDurationController.add(_recordingDuration);
     });
@@ -368,7 +368,7 @@ class AudioService {
   
   /// 开始播放计时器
   void _startPlaybackTimer() {
-    _playbackTimer = Timer.periodic(Duration(milliseconds: 100), (timer) {
+    _playbackTimer = Timer.periodic(const Duration(milliseconds: 100), (timer) {
       _playbackPosition = Duration(milliseconds: _playbackPosition.inMilliseconds + 100);
       _playbackPositionController.add(_playbackPosition);
       

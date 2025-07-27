@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
+import '../../../core/utils/app_logger.dart';
 import '../../../domain/viewmodels/auth_viewmodel.dart';
 import '../../routes/app_router.dart';
 import '../../themes/app_theme.dart';
@@ -22,6 +23,7 @@ class _LoginPageState extends State<LoginPage> {
   final _passwordController = TextEditingController();
   bool _isPasswordVisible = false;
   bool _rememberMe = false;
+  final _logger = AppLogger.instance;
   
   @override
   void initState() {
@@ -48,7 +50,7 @@ class _LoginPageState extends State<LoginPage> {
     final identifier = _identifierController.text.trim();
     final password = _passwordController.text.trim();
     
-    print('开始登录: identifier=$identifier, password长度=${password.length}');
+    _logger.logger.d('开始登录: identifier=$identifier, password长度=${password.length}');
     
     // 获取AuthViewModel并调用登录方法
     final authViewModel = Provider.of<AuthViewModel>(context, listen: false);
@@ -56,23 +58,23 @@ class _LoginPageState extends State<LoginPage> {
 
     if (!mounted) return;
     
-    print('登录结果: success=${response.success}, isAuthenticated=${authViewModel.isAuthenticated}');
-    print('错误信息: ${authViewModel.errorMessage}');
+    _logger.logger.d('登录结果: success=${response.success}, isAuthenticated=${authViewModel.isAuthenticated}');
+    _logger.logger.d('错误信息: ${authViewModel.errorMessage}');
 
     if (response.success) {
       // 登录成功，等待状态更新后导航到首页
-      print('登录成功，准备跳转到首页');
+      _logger.logger.d('登录成功，准备跳转到首页');
       await Future.delayed(const Duration(milliseconds: 200));
       if (mounted && authViewModel.isAuthenticated) {
-        print('执行页面跳转到首页');
+        _logger.logger.d('执行页面跳转到首页');
         AppRouter.router.go(AppRouter.home);
       } else {
-        print('认证状态异常，无法跳转: isAuthenticated=${authViewModel.isAuthenticated}');
+        _logger.logger.d('认证状态异常，无法跳转: isAuthenticated=${authViewModel.isAuthenticated}');
       }
     } else {
       // 登录失败，显示错误信息
       final errorMessage = authViewModel.errorMessage ?? response.message ?? '登录失败，请重试';
-      print('登录失败，显示错误: $errorMessage');
+      _logger.logger.d('登录失败，显示错误: $errorMessage');
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
           content: Text(errorMessage),

@@ -235,9 +235,11 @@ class FriendRequest {
     if (hours <= 0) {
       return '已过期';
     } else if (hours < 24) {
+      // ignore: unnecessary_brace_in_string_interps
       return '${hours}小时后过期';
     } else {
       final days = (hours / 24).floor();
+      // ignore: unnecessary_brace_in_string_interps
       return '${days}天后过期';
     }
   }
