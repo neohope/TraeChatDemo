@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:provider/provider.dart';
 
+import '../../../core/utils/app_logger.dart';
 import '../../../domain/models/chat_model.dart';
 import '../../../data/models/message_model.dart';
 import '../../../domain/models/user_model.dart';
@@ -35,6 +36,7 @@ class _ChatScreenWidgetState extends State<ChatScreenWidget>
     with TickerProviderStateMixin {
   final ScrollController _scrollController = ScrollController();
   final GlobalKey<ScaffoldState> _scaffoldKey = GlobalKey<ScaffoldState>();
+  final _logger = AppLogger.instance.logger;
   
   late AnimationController _messageAnimationController;
   
@@ -817,7 +819,7 @@ class _ChatScreenWidgetState extends State<ChatScreenWidget>
 
   void _showChatInfo() {
      // 显示聊天信息页面
-     print('显示聊天信息页面');
+     _logger.d('显示聊天信息页面');
      ScaffoldMessenger.of(context).showSnackBar(
        const SnackBar(content: Text('聊天信息页面已打开')),
      );
@@ -825,7 +827,7 @@ class _ChatScreenWidgetState extends State<ChatScreenWidget>
 
   void _startVideoCall() {
      // 启动视频通话
-     print('启动视频通话');
+     _logger.d('启动视频通话');
      ScaffoldMessenger.of(context).showSnackBar(
        const SnackBar(content: Text('视频通话已启动')),
      );
@@ -833,7 +835,7 @@ class _ChatScreenWidgetState extends State<ChatScreenWidget>
 
   void _startVoiceCall() {
      // 启动语音通话
-     print('启动语音通话');
+     _logger.d('启动语音通话');
      ScaffoldMessenger.of(context).showSnackBar(
        const SnackBar(content: Text('语音通话已启动')),
      );
@@ -905,7 +907,7 @@ class _ChatScreenWidgetState extends State<ChatScreenWidget>
                       onTap: () {
                         Navigator.pop(context);
                         // 滚动到对应消息位置
-                       print('滚动到消息位置: ${message.id}');
+                       _logger.d('滚动到消息位置: ${message.id}');
                       },
                     );
                   },
@@ -1046,7 +1048,7 @@ class _ChatScreenWidgetState extends State<ChatScreenWidget>
   void _forwardMessagesToChat(List<MessageModel> messages, String targetChatId) async {
     try {
       // 实现实际的转发逻辑
-    print('转发消息到聊天: $targetChatId');
+    _logger.d('转发消息到聊天: $targetChatId');
     ScaffoldMessenger.of(context).showSnackBar(
       const SnackBar(content: Text('消息转发成功')),
     );
@@ -1125,7 +1127,7 @@ class _ChatScreenWidgetState extends State<ChatScreenWidget>
     
     try {
       // 调用消息服务搜索消息
-       print('搜索消息: $query');
+       _logger.d('搜索消息: $query');
        // final results = await context.read<MessageViewModel>().searchMessages(widget.chat.id, query);
       
       // 模拟搜索结果

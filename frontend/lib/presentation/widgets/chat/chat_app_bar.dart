@@ -4,6 +4,7 @@ import 'package:provider/provider.dart';
 import '../../../domain/models/conversation_model.dart';
 import '../../../domain/viewmodels/user_viewmodel.dart';
 import '../../themes/app_theme.dart';
+import '../../../core/utils/app_logger.dart';
 
 /// 聊天页面的应用栏
 /// 
@@ -292,7 +293,7 @@ class ChatAppBar extends StatelessWidget implements PreferredSizeWidget {
   void _clearChatHistory(BuildContext context) async {
     try {
       // 调用消息服务清空聊天记录
-       print('清空聊天记录请求已发送');
+       AppLogger.instance.logger.d('清空聊天记录请求已发送');
        ScaffoldMessenger.of(context).showSnackBar(
          const SnackBar(content: Text('聊天记录已清空')),
        );
@@ -331,7 +332,7 @@ class ChatAppBar extends StatelessWidget implements PreferredSizeWidget {
               onPressed: () async {
                  Navigator.pop(context);
                  // 实现屏蔽用户功能
-                 print('屏蔽用户请求已发送');
+                 AppLogger.instance.logger.d('屏蔽用户请求已发送');
                  ScaffoldMessenger.of(context).showSnackBar(
                    const SnackBar(content: Text('用户已屏蔽')),
                  );
@@ -375,7 +376,7 @@ class ChatAppBar extends StatelessWidget implements PreferredSizeWidget {
     try {
       // 调用通话服务启动通话
        final callType = isVideo ? '视频通话' : '语音通话';
-       print('启动$callType');
+       AppLogger.instance.logger.d('启动$callType');
        ScaffoldMessenger.of(context).showSnackBar(
          SnackBar(content: Text('$callType已启动')),
        );
@@ -482,7 +483,7 @@ class ChatAppBar extends StatelessWidget implements PreferredSizeWidget {
   void _toggleMute(BuildContext context) async {
     try {
       // 调用通知服务设置静音状态
-       print('切换静音状态');
+       AppLogger.instance.logger.d('切换静音状态');
        ScaffoldMessenger.of(context).showSnackBar(
          const SnackBar(content: Text('静音状态已更新')),
        );
@@ -538,7 +539,7 @@ class ChatAppBar extends StatelessWidget implements PreferredSizeWidget {
   void _blockUser(BuildContext context) async {
     try {
       // 调用用户服务屏蔽用户
-    print('屏蔽用户请求已发送');
+    AppLogger.instance.logger.d('屏蔽用户请求已发送');
     ScaffoldMessenger.of(context).showSnackBar(
       const SnackBar(content: Text('用户已屏蔽')),
     );

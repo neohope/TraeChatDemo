@@ -1,5 +1,6 @@
 import 'package:flutter/foundation.dart';
 
+import '../../core/utils/app_logger.dart';
 import '../../data/models/api_response.dart';
 import '../../data/models/notification_settings.dart';
 import '../../data/repositories/notification_repository.dart';
@@ -8,6 +9,7 @@ import '../../data/repositories/notification_repository.dart';
 class NotificationViewModel extends ChangeNotifier {
   // 通知仓库实例
   final _notificationRepository = NotificationRepository.instance;
+  final _logger = AppLogger.instance.logger;
   
   // 通知列表
   List<Notification> _notifications = [];
@@ -76,7 +78,7 @@ class NotificationViewModel extends ChangeNotifier {
       }
     } catch (e) {
       // 获取未读数量失败不显示错误，静默处理
-      print('获取未读通知数量失败: $e');
+      _logger.w('获取未读通知数量失败: $e');
     }
   }
   
@@ -199,7 +201,7 @@ class NotificationViewModel extends ChangeNotifier {
         notifyListeners();
       }
     } catch (e) {
-      print('获取通知设置失败: $e');
+      _logger.e('获取通知设置失败: $e');
     }
   }
   

@@ -143,45 +143,45 @@ class GroupViewModel extends ChangeNotifier {
     if (_isLoading && !refresh) return;
     
     try {
-      print('🔍 GroupViewModel.loadGroups - 开始加载群组列表，refresh: $refresh, page: $page');
+      _logger.logger.d('🔍 GroupViewModel.loadGroups - 开始加载群组列表，refresh: $refresh, page: $page');
       _setLoading(true);
       _clearError();
       
       final targetPage = page ?? (refresh ? 1 : _currentPage);
-      print('🔍 GroupViewModel.loadGroups - 目标页码: $targetPage');
+      _logger.logger.d('🔍 GroupViewModel.loadGroups - 目标页码: $targetPage');
       
-      print('🔍 GroupViewModel.loadGroups - 调用GroupService.getGroups');
+      _logger.logger.d('🔍 GroupViewModel.loadGroups - 调用GroupService.getGroups');
       final groups = await _groupService.getGroups(
         page: targetPage,
         type: _filterType,
         status: _filterStatus,
       );
       
-      print('🔍 GroupViewModel.loadGroups - GroupService返回${groups.length}个群组');
+      _logger.logger.d('🔍 GroupViewModel.loadGroups - GroupService返回${groups.length}个群组');
       
       if (refresh || targetPage == 1) {
         _groups = groups;
         _currentPage = 1;
-        print('🔍 GroupViewModel.loadGroups - 刷新模式，重置群组列表');
+        _logger.logger.d('🔍 GroupViewModel.loadGroups - 刷新模式，重置群组列表');
       } else {
         _groups.addAll(groups);
-        print('🔍 GroupViewModel.loadGroups - 追加模式，当前总数: ${_groups.length}');
+        _logger.logger.d('🔍 GroupViewModel.loadGroups - 追加模式，当前总数: ${_groups.length}');
       }
       
       _hasMoreData = groups.length >= 20; // 假设每页20条
       _currentPage = targetPage;
       
-      print('🔍 GroupViewModel.loadGroups - 更新分页信息，当前页: $_currentPage，是否有更多: $_hasMoreData');
+      _logger.logger.d('🔍 GroupViewModel.loadGroups - 更新分页信息，当前页: $_currentPage，是否有更多: $_hasMoreData');
       notifyListeners();
       _logger.info('加载群组列表成功: ${groups.length}个群组');
     } catch (e, stackTrace) {
-      print('❌ GroupViewModel.loadGroups - 异常: $e');
-      print('❌ 错误堆栈: $stackTrace');
+      _logger.logger.e('❌ GroupViewModel.loadGroups - 异常: $e');
+      _logger.logger.e('❌ 错误堆栈: $stackTrace');
       _logger.error('加载群组列表失败: $e');
       _setError('加载群组列表失败: $e');
     } finally {
       _setLoading(false);
-      print('🔍 GroupViewModel.loadGroups - 加载完成，通知监听器');
+      _logger.logger.d('🔍 GroupViewModel.loadGroups - 加载完成，通知监听器');
     }
   }
 

@@ -106,7 +106,7 @@ class GroupService {
         throw Exception('User not logged in');
       }
 
-      print('🔍 GroupService.getGroups - 开始请求API，参数: page=$page, limit=$limit, type=$type, status=$status');
+      _logger.logger.d('🔍 GroupService.getGroups - 开始请求API，参数: page=$page, limit=$limit, type=$type, status=$status');
       
       final response = await _dio.get('/api/v1/users/$userId/groups', queryParameters: {
         'page': page,
@@ -115,9 +115,9 @@ class GroupService {
         if (status != null) 'status': status.name,
       });
 
-      print('🔍 GroupService.getGroups - API响应状态码: ${response.statusCode}');
-      print('🔍 GroupService.getGroups - 响应数据类型: ${response.data.runtimeType}');
-      print('🔍 GroupService.getGroups - 响应数据内容: ${response.data}');
+      _logger.logger.d('🔍 GroupService.getGroups - API响应状态码: ${response.statusCode}');
+      _logger.logger.d('🔍 GroupService.getGroups - 响应数据类型: ${response.data.runtimeType}');
+      _logger.logger.d('🔍 GroupService.getGroups - 响应数据内容: ${response.data}');
 
       // 处理不同的响应格式
       List<dynamic> groupsData;
@@ -128,42 +128,42 @@ class GroupService {
 
       if (responseData is List) {
         // 后端直接返回数组
-        print('🔍 GroupService.getGroups - 响应格式: 直接数组');
+        _logger.logger.d('🔍 GroupService.getGroups - 响应格式: 直接数组');
         // ignore: unnecessary_cast
         groupsData = responseData as List<dynamic>;
       } else if (responseData is Map && responseData['groups'] != null) {
         // 后端返回包装在对象中的数组
-        print('🔍 GroupService.getGroups - 响应格式: 包装对象(groups字段)');
+        _logger.logger.d('🔍 GroupService.getGroups - 响应格式: 包装对象(groups字段)');
         groupsData = responseData['groups'] as List<dynamic>;
       } else if (responseData is Map && responseData['data'] != null) {
         // 其他格式，尝试获取data字段
-        print('🔍 GroupService.getGroups - 响应格式: 其他格式，尝试data字段');
+        _logger.logger.d('🔍 GroupService.getGroups - 响应格式: 其他格式，尝试data字段');
         final dataField = responseData['data'];
-        print('🔍 GroupService.getGroups - data字段内容: $dataField (${dataField.runtimeType})');
+        _logger.logger.d('🔍 GroupService.getGroups - data字段内容: $dataField (${dataField.runtimeType})');
         groupsData = dataField ?? [];
       } else {
         groupsData = [];
       }
 
-      print('🔍 GroupService.getGroups - 提取的groupsData: $groupsData');
-      print('🔍 GroupService.getGroups - 开始解析${groupsData.length}个群组');
+      _logger.logger.d('🔍 GroupService.getGroups - 提取的groupsData: $groupsData');
+      _logger.logger.d('🔍 GroupService.getGroups - 开始解析${groupsData.length}个群组');
 
       final groups = <Group>[];
       for (int i = 0; i < groupsData.length; i++) {
         try {
-          print('🔍 GroupService.getGroups - 解析第${i + 1}个群组: ${groupsData[i]}');
+          _logger.logger.d('🔍 GroupService.getGroups - 解析第${i + 1}个群组: ${groupsData[i]}');
           final group = Group.fromJson(groupsData[i]);
           groups.add(group);
-          print('🔍 GroupService.getGroups - 第${i + 1}个群组解析成功: ${group.name}');
+          _logger.logger.d('🔍 GroupService.getGroups - 第${i + 1}个群组解析成功: ${group.name}');
         } catch (e, stackTrace) {
-          print('❌ GroupService.getGroups - 第${i + 1}个群组解析失败: $e');
-          print('❌ 错误堆栈: $stackTrace');
-          print('❌ 群组数据: ${groupsData[i]}');
+          _logger.logger.e('❌ GroupService.getGroups - 第${i + 1}个群组解析失败: $e');
+          _logger.logger.e('❌ 错误堆栈: $stackTrace');
+          _logger.logger.e('❌ 群组数据: ${groupsData[i]}');
           rethrow;
         }
       }
 
-      print('🔍 GroupService.getGroups - 所有群组解析完成，总数: ${groups.length}');
+      _logger.logger.d('🔍 GroupService.getGroups - 所有群组解析完成，总数: ${groups.length}');
 
       // 更新缓存
       for (final group in groups) {
@@ -173,8 +173,8 @@ class GroupService {
       _logger.info('获取群组列表成功: ${groups.length}个群组');
       return groups;
     } catch (e, stackTrace) {
-      print('❌ GroupService.getGroups - 异常: $e');
-      print('❌ 错误堆栈: $stackTrace');
+      _logger.logger.e('❌ GroupService.getGroups - 异常: $e');
+      _logger.logger.e('❌ 错误堆栈: $stackTrace');
       _logger.error('获取群组列表失败: $e');
       rethrow;
     }

@@ -828,11 +828,11 @@ class _SettingsWidgetState extends State<SettingsWidget> {
       final userViewModel = Provider.of<UserViewModel>(context, listen: false);
       
       // 删除用户数据
-       print('删除用户数据请求已发送');
+       AppLogger.instance.logger.d('删除用户数据请求已发送');
        // await userViewModel.deleteCurrentUser();
        
        // 清除本地存储
-       print('本地存储清除完成');
+       AppLogger.instance.logger.d('本地存储清除完成');
        // final localStorage = LocalStorage();
        // await localStorage.clear();
       

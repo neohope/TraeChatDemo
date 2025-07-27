@@ -31,47 +31,47 @@ class GroupRepository {
       
       final response = await _apiService.get('/api/v1/users/$userId/groups');
       
-      print('🔍 GroupRepository.getUserGroups - API响应: ${response.success}');
-      print('🔍 GroupRepository.getUserGroups - 响应数据类型: ${response.data.runtimeType}');
-      print('🔍 GroupRepository.getUserGroups - 响应数据内容: ${response.data}');
+      _logger.d('🔍 GroupRepository.getUserGroups - API响应: ${response.success}');
+      _logger.d('🔍 GroupRepository.getUserGroups - 响应数据类型: ${response.data.runtimeType}');
+      _logger.d('🔍 GroupRepository.getUserGroups - 响应数据内容: ${response.data}');
       
       if (response.success && response.data != null) {
         // 处理不同的响应格式
         List<dynamic> groupsData;
         if (response.data is List) {
           // 后端直接返回数组
-          print('🔍 GroupRepository.getUserGroups - 响应格式: 直接数组');
+          _logger.d('🔍 GroupRepository.getUserGroups - 响应格式: 直接数组');
           groupsData = response.data as List<dynamic>;
         } else if (response.data is Map<String, dynamic>) {
           // 后端返回包装在对象中的数组
-          print('🔍 GroupRepository.getUserGroups - 响应格式: 包装对象');
+          _logger.d('🔍 GroupRepository.getUserGroups - 响应格式: 包装对象');
           final dataMap = response.data as Map<String, dynamic>;
-          print('🔍 GroupRepository.getUserGroups - dataMap内容: $dataMap');
+          _logger.d('🔍 GroupRepository.getUserGroups - dataMap内容: $dataMap');
           groupsData = dataMap['groups'] ?? dataMap['data'] ?? [];
-          print('🔍 GroupRepository.getUserGroups - 提取的groupsData: $groupsData');
+          _logger.d('🔍 GroupRepository.getUserGroups - 提取的groupsData: $groupsData');
         } else {
           // 其他格式，默认为空数组
-          print('🔍 GroupRepository.getUserGroups - 响应格式: 其他格式，使用空数组');
+          _logger.d('🔍 GroupRepository.getUserGroups - 响应格式: 其他格式，使用空数组');
           groupsData = [];
         }
         
-        print('🔍 GroupRepository.getUserGroups - 开始解析${groupsData.length}个群组');
+        _logger.d('🔍 GroupRepository.getUserGroups - 开始解析${groupsData.length}个群组');
         final groups = <Group>[];
         for (int i = 0; i < groupsData.length; i++) {
           try {
-            print('🔍 GroupRepository.getUserGroups - 解析第${i + 1}个群组: ${groupsData[i]}');
+            _logger.d('🔍 GroupRepository.getUserGroups - 解析第${i + 1}个群组: ${groupsData[i]}');
             final group = Group.fromJson(groupsData[i]);
             groups.add(group);
-            print('🔍 GroupRepository.getUserGroups - 第${i + 1}个群组解析成功');
+            _logger.d('🔍 GroupRepository.getUserGroups - 第${i + 1}个群组解析成功');
           } catch (e, stackTrace) {
-            print('❌ GroupRepository.getUserGroups - 第${i + 1}个群组解析失败: $e');
-            print('❌ 错误堆栈: $stackTrace');
-            print('❌ 群组数据: ${groupsData[i]}');
+            _logger.e('❌ GroupRepository.getUserGroups - 第${i + 1}个群组解析失败: $e');
+            _logger.e('❌ 错误堆栈: $stackTrace');
+            _logger.e('❌ 群组数据: ${groupsData[i]}');
             rethrow;
           }
         }
         
-        print('🔍 GroupRepository.getUserGroups - 所有群组解析完成，总数: ${groups.length}');
+        _logger.d('🔍 GroupRepository.getUserGroups - 所有群组解析完成，总数: ${groups.length}');
         // 保存到本地存储
         await _saveGroupsToLocal(groups);
         return ApiResponse<List<Group>>.success(groups);

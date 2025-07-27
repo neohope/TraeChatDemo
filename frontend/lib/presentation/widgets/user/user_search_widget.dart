@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
+import '../../../core/utils/app_logger.dart';
 import '../../../domain/models/user_model.dart';
 import '../../viewmodels/user_search_viewmodel.dart';
 import '../../viewmodels/friend_viewmodel.dart';
@@ -30,6 +31,7 @@ class _UserSearchWidgetState extends State<UserSearchWidget>
     with TickerProviderStateMixin {
   final TextEditingController _searchController = TextEditingController();
   late TabController _tabController;
+  final _logger = AppLogger.instance.logger;
   String _searchQuery = '';
   bool _isSearching = false;
   List<UserModel> _searchResults = [];
@@ -234,7 +236,7 @@ class _UserSearchWidgetState extends State<UserSearchWidget>
                    '最近搜索',
                    onClear: () {
                      // 添加清除最近搜索方法到UserViewModel
-                     print('清除最近搜索记录');
+                     _logger.d('清除最近搜索记录');
                      // userViewModel.clearRecentSearches();
                     ScaffoldMessenger.of(context).showSnackBar(
                       const SnackBar(content: Text('清除最近搜索功能待实现')),

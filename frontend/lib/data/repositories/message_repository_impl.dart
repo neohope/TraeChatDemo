@@ -2,6 +2,7 @@ import 'dart:io';
 
 import 'package:shared_preferences/shared_preferences.dart';
 
+import '../../core/utils/app_logger.dart';
 import '../../domain/models/conversation_model.dart';
 import '../../domain/models/message_model.dart';
 import '../../domain/repositories/message_repository.dart';
@@ -17,6 +18,7 @@ class MessageRepositoryImpl implements MessageRepository {
   final MessageRemoteDataSource _remoteDataSource;
   final MessageLocalDataSource _localDataSource;
   final List<String> _pendingRecalls = [];
+  final _logger = AppLogger.instance.logger;
   
   MessageRepositoryImpl({
     required MessageRemoteDataSource remoteDataSource,
@@ -330,7 +332,7 @@ class MessageRepositoryImpl implements MessageRepository {
         await prefs.setStringList('pending_recalls', pendingRecalls);
       }
     } catch (e) {
-      print('保存待同步撤回消息失败: $e');
+      _logger.e('保存待同步撤回消息失败: $e');
     }
   }
   
@@ -341,7 +343,7 @@ class MessageRepositoryImpl implements MessageRepository {
       final pendingRecalls = prefs.getStringList('pending_recalls') ?? [];
       _pendingRecalls.addAll(pendingRecalls);
     } catch (e) {
-      print('加载待同步撤回消息失败: $e');
+      _logger.e('加载待同步撤回消息失败: $e');
     }
   }
   
@@ -354,7 +356,7 @@ class MessageRepositoryImpl implements MessageRepository {
       await prefs.setStringList('pending_recalls', pendingRecalls);
       _pendingRecalls.remove(messageId);
     } catch (e) {
-      print('移除待同步撤回消息失败: $e');
+      _logger.e('移除待同步撤回消息失败: $e');
     }
   }
 
@@ -378,7 +380,7 @@ class MessageRepositoryImpl implements MessageRepository {
       }
     } catch (e) {
       // 同步失败，稍后重试
-      print('Failed to sync pending messages: $e');
+      _logger.e('Failed to sync pending messages: $e');
     }
   }
   
@@ -402,7 +404,7 @@ class MessageRepositoryImpl implements MessageRepository {
       }
     } catch (e) {
       // 同步失败，稍后重试
-      print('Failed to sync pending deletions: $e');
+      _logger.e('Failed to sync pending deletions: $e');
     }
   }
   
@@ -426,7 +428,7 @@ class MessageRepositoryImpl implements MessageRepository {
       }
     } catch (e) {
       // 同步失败，稍后重试
-      print('Failed to sync pending read status: $e');
+      _logger.e('Failed to sync pending read status: $e');
     }
   }
 }

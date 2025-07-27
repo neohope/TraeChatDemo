@@ -1,6 +1,7 @@
 import 'dart:convert';
 
 import 'user.dart';
+import '../../core/utils/app_logger.dart';
 
 /// 群组类型枚举
 enum GroupType {
@@ -76,89 +77,90 @@ class Group {
   
   /// 从JSON映射创建实例
   factory Group.fromJson(Map<String, dynamic> json) {
+    final logger = AppLogger.instance.logger;
     try {
-      print('🔍 Group.fromJson - 开始解析JSON: $json');
+      logger.d('🔍 Group.fromJson - 开始解析JSON: $json');
       
       // 解析ID
       final id = json['id']?.toString() ?? '';
-      print('🔍 Group.fromJson - ID解析完成: $id');
+      logger.d('🔍 Group.fromJson - ID解析完成: $id');
       
       // 解析名称
       final name = json['name']?.toString() ?? '';
-      print('🔍 Group.fromJson - 名称解析完成: $name');
+      logger.d('🔍 Group.fromJson - 名称解析完成: $name');
       
       // 解析描述
       final description = json['description']?.toString();
-      print('🔍 Group.fromJson - 描述解析完成: $description');
+      logger.d('🔍 Group.fromJson - 描述解析完成: $description');
       
       // 解析头像URL
       final avatarUrl = json['avatar_url']?.toString() ?? json['avatarUrl']?.toString();
-      print('🔍 Group.fromJson - 头像URL解析完成: $avatarUrl');
+      logger.d('🔍 Group.fromJson - 头像URL解析完成: $avatarUrl');
       
       // 解析创建者ID
       final creatorId = json['owner_id']?.toString() ?? json['creator_id']?.toString() ?? json['creatorId']?.toString() ?? '';
-      print('🔍 Group.fromJson - 创建者ID解析完成: $creatorId');
+      logger.d('🔍 Group.fromJson - 创建者ID解析完成: $creatorId');
       
       // 解析群组类型
       final isPrivate = json['is_private'];
-      print('🔍 Group.fromJson - is_private原始值: $isPrivate (${isPrivate.runtimeType})');
+      logger.d('🔍 Group.fromJson - is_private原始值: $isPrivate (${isPrivate.runtimeType})');
       final type = _parseGroupType(isPrivate == true ? 'private' : 'public');
-      print('🔍 Group.fromJson - 群组类型解析完成: $type');
+      logger.d('🔍 Group.fromJson - 群组类型解析完成: $type');
       
       // 解析成员数量
       final memberCountRaw = json['member_count'] ?? json['memberCount'];
-      print('🔍 Group.fromJson - member_count原始值: $memberCountRaw (${memberCountRaw.runtimeType})');
+      logger.d('🔍 Group.fromJson - member_count原始值: $memberCountRaw (${memberCountRaw.runtimeType})');
       final memberCount = _parseInt(memberCountRaw) ?? 0;
-      print('🔍 Group.fromJson - 成员数量解析完成: $memberCount');
+      logger.d('🔍 Group.fromJson - 成员数量解析完成: $memberCount');
       
       // 解析最大成员数量
       final maxMemberCountRaw = json['max_members'] ?? json['max_member_count'] ?? json['maxMemberCount'];
-      print('🔍 Group.fromJson - max_member_count原始值: $maxMemberCountRaw (${maxMemberCountRaw.runtimeType})');
+      logger.d('🔍 Group.fromJson - max_member_count原始值: $maxMemberCountRaw (${maxMemberCountRaw.runtimeType})');
       final maxMemberCount = _parseInt(maxMemberCountRaw) ?? 200;
-      print('🔍 Group.fromJson - 最大成员数量解析完成: $maxMemberCount');
+      logger.d('🔍 Group.fromJson - 最大成员数量解析完成: $maxMemberCount');
       
       // 解析创建时间
       final createdAtRaw = json['created_at'] ?? json['createdAt'];
-      print('🔍 Group.fromJson - created_at原始值: $createdAtRaw (${createdAtRaw.runtimeType})');
+      logger.d('🔍 Group.fromJson - created_at原始值: $createdAtRaw (${createdAtRaw.runtimeType})');
       final createdAt = createdAtRaw != null
           ? DateTime.parse(createdAtRaw)
           : DateTime.now();
-      print('🔍 Group.fromJson - 创建时间解析完成: $createdAt');
+      logger.d('🔍 Group.fromJson - 创建时间解析完成: $createdAt');
       
       // 解析更新时间
       final updatedAtRaw = json['updated_at'] ?? json['updatedAt'];
-      print('🔍 Group.fromJson - updated_at原始值: $updatedAtRaw (${updatedAtRaw.runtimeType})');
+      logger.d('🔍 Group.fromJson - updated_at原始值: $updatedAtRaw (${updatedAtRaw.runtimeType})');
       final updatedAt = updatedAtRaw != null ? DateTime.parse(updatedAtRaw) : null;
-      print('🔍 Group.fromJson - 更新时间解析完成: $updatedAt');
+      logger.d('🔍 Group.fromJson - 更新时间解析完成: $updatedAt');
       
       // 解析是否解散
       final isDissolvedRaw = json['is_dissolved'] ?? json['isDissolved'];
-      print('🔍 Group.fromJson - is_dissolved原始值: $isDissolvedRaw (${isDissolvedRaw.runtimeType})');
+      logger.d('🔍 Group.fromJson - is_dissolved原始值: $isDissolvedRaw (${isDissolvedRaw.runtimeType})');
       final isDissolved = _parseBool(isDissolvedRaw) ?? false;
-      print('🔍 Group.fromJson - 是否解散解析完成: $isDissolved');
+      logger.d('🔍 Group.fromJson - 是否解散解析完成: $isDissolved');
       
       // 解析成员列表
       final membersRaw = json['members'];
-      print('🔍 Group.fromJson - members原始值: $membersRaw (${membersRaw.runtimeType})');
+      logger.d('🔍 Group.fromJson - members原始值: $membersRaw (${membersRaw.runtimeType})');
       List<GroupMember>? members;
       if (membersRaw != null && membersRaw is List) {
-        print('🔍 Group.fromJson - 开始解析成员列表，数量: ${membersRaw.length}');
+        logger.d('🔍 Group.fromJson - 开始解析成员列表，数量: ${membersRaw.length}');
         members = membersRaw.map((m) {
-          print('🔍 Group.fromJson - 解析单个成员: $m');
+          logger.d('🔍 Group.fromJson - 解析单个成员: $m');
           return GroupMember.fromJson(m);
         }).toList();
-        print('🔍 Group.fromJson - 成员列表解析完成，数量: ${members.length}');
+        logger.d('🔍 Group.fromJson - 成员列表解析完成，数量: ${members.length}');
       } else {
-        print('🔍 Group.fromJson - 成员列表为空或非List类型');
+        logger.d('🔍 Group.fromJson - 成员列表为空或非List类型');
       }
       
       // 解析自定义数据
       final customDataRaw = json['custom_data'] ?? json['customData'];
-      print('🔍 Group.fromJson - custom_data原始值: $customDataRaw (${customDataRaw.runtimeType})');
+      logger.d('🔍 Group.fromJson - custom_data原始值: $customDataRaw (${customDataRaw.runtimeType})');
       final customData = _parseCustomData(customDataRaw);
-      print('🔍 Group.fromJson - 自定义数据解析完成: $customData');
+      logger.d('🔍 Group.fromJson - 自定义数据解析完成: $customData');
       
-      print('🔍 Group.fromJson - 开始创建Group对象');
+      logger.d('🔍 Group.fromJson - 开始创建Group对象');
       final group = Group(
         id: id,
         name: name,
@@ -174,12 +176,12 @@ class Group {
         members: members,
         customData: customData,
       );
-      print('🔍 Group.fromJson - Group对象创建成功: ${group.toString()}');
+      logger.d('🔍 Group.fromJson - Group对象创建成功: ${group.toString()}');
       return group;
     } catch (e, stackTrace) {
-      print('❌ Group.fromJson解析失败: $e');
-      print('❌ 错误堆栈: $stackTrace');
-      print('❌ JSON数据: $json');
+      logger.e('❌ Group.fromJson解析失败: $e');
+      logger.e('❌ 错误堆栈: $stackTrace');
+      logger.e('❌ JSON数据: $json');
       rethrow;
     }
   }
@@ -362,51 +364,52 @@ class GroupMember {
   
   /// 从JSON映射创建实例
   factory GroupMember.fromJson(Map<String, dynamic> json) {
+    final logger = AppLogger.instance.logger;
     try {
-      print('🔍 GroupMember.fromJson - 开始解析JSON: $json');
+      logger.d('🔍 GroupMember.fromJson - 开始解析JSON: $json');
       
       // 解析用户ID
       final userId = json['user_id'] ?? json['userId'];
-      print('🔍 GroupMember.fromJson - 用户ID解析完成: $userId');
+      logger.d('🔍 GroupMember.fromJson - 用户ID解析完成: $userId');
       
       // 解析用户信息
       final userRaw = json['user'];
-      print('🔍 GroupMember.fromJson - user原始值: $userRaw (${userRaw.runtimeType})');
+      logger.d('🔍 GroupMember.fromJson - user原始值: $userRaw (${userRaw.runtimeType})');
       User? user;
       if (userRaw != null) {
         user = User.fromJson(userRaw);
-        print('🔍 GroupMember.fromJson - 用户信息解析完成: ${user.toString()}');
+        logger.d('🔍 GroupMember.fromJson - 用户信息解析完成: ${user.toString()}');
       } else {
-        print('🔍 GroupMember.fromJson - 用户信息为空');
+        logger.d('🔍 GroupMember.fromJson - 用户信息为空');
       }
       
       // 解析群组ID
       final groupId = json['group_id'] ?? json['groupId'];
-      print('🔍 GroupMember.fromJson - 群组ID解析完成: $groupId');
+      logger.d('🔍 GroupMember.fromJson - 群组ID解析完成: $groupId');
       
       // 解析角色
       final roleRaw = json['role'];
-      print('🔍 GroupMember.fromJson - role原始值: $roleRaw (${roleRaw.runtimeType})');
+      logger.d('🔍 GroupMember.fromJson - role原始值: $roleRaw (${roleRaw.runtimeType})');
       final role = _parseGroupMemberRole(roleRaw);
-      print('🔍 GroupMember.fromJson - 角色解析完成: $role');
+      logger.d('🔍 GroupMember.fromJson - 角色解析完成: $role');
       
       // 解析加入时间
       final joinedAtRaw = json['joined_at'] ?? json['joinedAt'];
-      print('🔍 GroupMember.fromJson - joined_at原始值: $joinedAtRaw (${joinedAtRaw.runtimeType})');
+      logger.d('🔍 GroupMember.fromJson - joined_at原始值: $joinedAtRaw (${joinedAtRaw.runtimeType})');
       final joinedAt = joinedAtRaw != null
           ? DateTime.parse(joinedAtRaw)
           : DateTime.now();
-      print('🔍 GroupMember.fromJson - 加入时间解析完成: $joinedAt');
+      logger.d('🔍 GroupMember.fromJson - 加入时间解析完成: $joinedAt');
       
       // 解析邀请者
       final invitedBy = json['invited_by'] ?? json['invitedBy'];
-      print('🔍 GroupMember.fromJson - 邀请者解析完成: $invitedBy');
+      logger.d('🔍 GroupMember.fromJson - 邀请者解析完成: $invitedBy');
       
       // 解析昵称
       final nickname = json['nickname'];
-      print('🔍 GroupMember.fromJson - 昵称解析完成: $nickname');
+      logger.d('🔍 GroupMember.fromJson - 昵称解析完成: $nickname');
       
-      print('🔍 GroupMember.fromJson - 开始创建GroupMember对象');
+      logger.d('🔍 GroupMember.fromJson - 开始创建GroupMember对象');
       final member = GroupMember(
         userId: userId,
         user: user,
@@ -416,12 +419,12 @@ class GroupMember {
         invitedBy: invitedBy,
         nickname: nickname,
       );
-      print('🔍 GroupMember.fromJson - GroupMember对象创建成功: ${member.toString()}');
+      logger.d('🔍 GroupMember.fromJson - GroupMember对象创建成功: ${member.toString()}');
       return member;
     } catch (e, stackTrace) {
-      print('❌ GroupMember.fromJson解析失败: $e');
-      print('❌ 错误堆栈: $stackTrace');
-      print('❌ JSON数据: $json');
+      logger.e('❌ GroupMember.fromJson解析失败: $e');
+      logger.e('❌ 错误堆栈: $stackTrace');
+      logger.e('❌ JSON数据: $json');
       rethrow;
     }
   }
