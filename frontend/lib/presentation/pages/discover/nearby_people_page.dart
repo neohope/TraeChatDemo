@@ -350,8 +350,8 @@ class _NearbyPeoplePageState extends State<NearbyPeoplePage> {
             children: [
               Text('你确定要添加 ${user.name} 为好友吗？'),
               const SizedBox(height: AppTheme.spacingNormal),
-              TextField(
-                decoration: const InputDecoration(
+              const TextField(
+                decoration: InputDecoration(
                   hintText: '验证消息',
                   border: OutlineInputBorder(),
                 ),

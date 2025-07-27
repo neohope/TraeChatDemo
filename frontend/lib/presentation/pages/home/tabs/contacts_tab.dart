@@ -273,14 +273,16 @@ class _ContactsTabState extends State<ContactsTab> {
                   // 添加联系人
                   final userViewModel = Provider.of<UserViewModel>(context, listen: false);
                   userViewModel.addContact(username).then((response) {
-                    if (response.success && response.data == true) {
-                      ScaffoldMessenger.of(context).showSnackBar(
-                        const SnackBar(content: Text('联系人添加成功')),
-                      );
-                    } else {
-                      ScaffoldMessenger.of(context).showSnackBar(
-                        SnackBar(content: Text(response.message ?? '联系人添加失败，请检查用户名或邮箱是否正确')),
-                      );
+                    if (mounted) {
+                      if (response.success && response.data == true) {
+                        ScaffoldMessenger.of(context).showSnackBar(
+                          const SnackBar(content: Text('联系人添加成功')),
+                        );
+                      } else {
+                        ScaffoldMessenger.of(context).showSnackBar(
+                          SnackBar(content: Text(response.message ?? '联系人添加失败，请检查用户名或邮箱是否正确')),
+                        );
+                      }
                     }
                   });
                 }
@@ -380,9 +382,11 @@ class _ContactsTabState extends State<ContactsTab> {
                 // 拉黑联系人
                 final userViewModel = Provider.of<UserViewModel>(context, listen: false);
                 userViewModel.blockContact(contact.id).then((_) {
-                  ScaffoldMessenger.of(context).showSnackBar(
-                    SnackBar(content: Text('已将 ${contact.name} 拉黑')),
-                  );
+                  if (mounted) {
+                    ScaffoldMessenger.of(context).showSnackBar(
+                      SnackBar(content: Text('已将 ${contact.name} 拉黑')),
+                    );
+                  }
                 });
               },
               child: const Text('确定', style: TextStyle(color: Colors.orange)),
@@ -412,9 +416,11 @@ class _ContactsTabState extends State<ContactsTab> {
                 // 删除联系人
                 final userViewModel = Provider.of<UserViewModel>(context, listen: false);
                 userViewModel.deleteContact(contact.id).then((_) {
-                  ScaffoldMessenger.of(context).showSnackBar(
-                    SnackBar(content: Text('已删除联系人 ${contact.name}')),
-                  );
+                  if (mounted) {
+                    ScaffoldMessenger.of(context).showSnackBar(
+                      SnackBar(content: Text('已删除联系人 ${contact.name}')),
+                    );
+                  }
                 });
               },
               child: const Text('删除', style: TextStyle(color: Colors.red)),

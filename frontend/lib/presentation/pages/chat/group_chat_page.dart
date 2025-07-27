@@ -248,11 +248,11 @@ class _GroupChatPageState extends State<GroupChatPage> {
               }
             },
             itemBuilder: (context) => [
-              PopupMenuItem(
+              const PopupMenuItem(
                 value: 'info',
                 child: ListTile(
-                  leading: const Icon(Icons.info),
-                  title: const Text('群组信息'),
+                  leading: Icon(Icons.info),
+                  title: Text('群组信息'),
                   contentPadding: EdgeInsets.zero,
                 ),
               ),

@@ -203,9 +203,9 @@ class AppTheme {
         borderRadius: BorderRadius.circular(borderRadiusNormal),
       ),
     ),
-    bottomSheetTheme: BottomSheetThemeData(
+    bottomSheetTheme: const BottomSheetThemeData(
       backgroundColor: Colors.white,
-      shape: const RoundedRectangleBorder(
+      shape: RoundedRectangleBorder(
         borderRadius: BorderRadius.only(
           topLeft: Radius.circular(borderRadiusLarge),
           topRight: Radius.circular(borderRadiusLarge),
