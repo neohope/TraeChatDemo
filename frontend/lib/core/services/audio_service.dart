@@ -243,7 +243,7 @@ class AudioService {
     try {
       _isPlaying = true;
       _playbackPosition = Duration.zero;
-      _totalDuration = Duration(seconds: 30); // 模拟时长
+      _totalDuration = const Duration(seconds: 30); // 模拟时长
       _playbackStateController.add(AudioPlaybackState.playing);
       
       _startPlaybackTimer();

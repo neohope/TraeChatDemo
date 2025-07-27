@@ -334,7 +334,7 @@ class _MainScreenWidgetState extends State<MainScreenWidget>
       ]);
       
       // 数据加载完成
-      print('主屏幕数据初始化完成');
+      AppLogger.instance.logger.d('主屏幕数据初始化完成');
     } catch (e) {
       AppLogger.instance.error('Failed to initialize main screen data: $e');
       
