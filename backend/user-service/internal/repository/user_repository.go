@@ -177,3 +177,36 @@ func (r *UserRepository) List(ctx context.Context, limit, offset int) ([]*domain
 
 	return users, nil
 }
+
+// SearchUsers 搜索用户
+func (r *UserRepository) SearchUsers(ctx context.Context, query string, limit, offset int) ([]*domain.User, error) {
+	var users []*domain.User
+
+	// 构建搜索查询，支持按用户名、全名和邮箱搜索
+	sqlQuery := `
+	SELECT id, username, email, password, full_name, avatar_url, status, created_at, updated_at
+	FROM users
+	WHERE (username ILIKE $1 OR full_name ILIKE $1 OR email ILIKE $1)
+	  AND status = 'active'
+	ORDER BY 
+	  CASE 
+	    WHEN username ILIKE $2 THEN 1
+	    WHEN full_name ILIKE $2 THEN 2
+	    WHEN email ILIKE $2 THEN 3
+	    ELSE 4
+	  END,
+	  created_at DESC
+	LIMIT $3 OFFSET $4
+	`
+
+	// 构建搜索模式
+	searchPattern := "%" + query + "%"
+	exactPattern := query + "%"
+
+	err := r.db.SelectContext(ctx, &users, sqlQuery, searchPattern, exactPattern, limit, offset)
+	if err != nil {
+		return nil, err
+	}
+
+	return users, nil
+}

@@ -36,6 +36,7 @@ type UserRepository interface {
 	Update(ctx context.Context, user *User) error
 	Delete(ctx context.Context, id string) error
 	List(ctx context.Context, limit, offset int) ([]*User, error)
+	SearchUsers(ctx context.Context, query string, limit, offset int) ([]*User, error)
 }
 
 // UserService 用户服务接口
@@ -47,6 +48,7 @@ type UserService interface {
 	DeleteUser(ctx context.Context, id string) error
 	ListUsers(ctx context.Context, limit, offset int) ([]*User, error)
 	ChangePassword(ctx context.Context, userID, oldPassword, newPassword string) error
+	SearchUsers(ctx context.Context, query string, limit, offset int) ([]*User, error)
 }
 
 // RegisterRequest 注册请求

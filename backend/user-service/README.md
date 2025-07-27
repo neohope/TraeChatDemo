@@ -6,6 +6,7 @@
 
 - 用户注册和登录
 - 用户资料管理
+- 用户搜索和好友查找
 - JWT认证
 - 密码管理
 
@@ -93,7 +94,32 @@ docker run -p 8081:8081 --name user-service chatapp/user-service
 - `PUT /api/v1/users/{id}` - 更新用户信息
 - `DELETE /api/v1/users/{id}` - 删除用户
 - `GET /api/v1/users` - 获取用户列表
+- `GET /api/v1/users/search` - 搜索用户（支持按用户名、全名、邮箱搜索）
+- `GET /api/v1/users/recommended` - 获取推荐用户
 - `POST /api/v1/users/change-password` - 修改密码
+
+#### 用户搜索API详情
+
+**搜索用户**
+- **端点**: `GET /api/v1/users/search`
+- **查询参数**:
+  - `q` 或 `keyword`: 搜索关键词（必需）
+  - `limit`: 返回结果数量限制（可选，默认10，最大100）
+  - `offset`: 分页偏移量（可选，默认0）
+- **功能特性**:
+  - 支持按用户名、全名、邮箱进行模糊搜索
+  - 精确匹配优先排序
+  - 只返回活跃用户
+  - 自动过滤敏感信息（如密码）
+  - 支持分页查询
+- **示例**:
+  ```bash
+  # 搜索包含"john"的用户
+  GET /api/v1/users/search?q=john
+  
+  # 分页搜索
+  GET /api/v1/users/search?keyword=user&limit=5&offset=10
+  ```
 
 ## 认证
 

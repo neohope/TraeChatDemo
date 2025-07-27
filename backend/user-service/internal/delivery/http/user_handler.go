@@ -15,6 +15,15 @@ import (
 	"github.com/neohope/chatapp/user-service/pkg/auth"
 )
 
+// Context key types to avoid collisions
+type contextKey string
+
+const (
+	userIDKey    contextKey = "user_id"
+	usernameKey  contextKey = "username"
+	emailKey     contextKey = "email"
+)
+
 // UserHandler 处理用户相关的HTTP请求
 type UserHandler struct {
 	userService domain.UserService
@@ -144,7 +153,7 @@ func (h *UserHandler) Login(w http.ResponseWriter, r *http.Request) {
 // GetCurrentUser 获取当前登录用户信息
 func (h *UserHandler) GetCurrentUser(w http.ResponseWriter, r *http.Request) {
 	// 从上下文中获取用户ID
-	userID := r.Context().Value("user_id").(string)
+	userID := r.Context().Value(userIDKey).(string)
 
 	// 获取用户信息
 	user, err := h.userService.GetUserByID(r.Context(), userID)
@@ -183,7 +192,7 @@ func (h *UserHandler) UpdateUser(w http.ResponseWriter, r *http.Request) {
 	userID := vars["id"]
 
 	// 从上下文中获取当前用户ID
-	currentUserID := r.Context().Value("user_id").(string)
+	currentUserID := r.Context().Value(userIDKey).(string)
 
 	// 验证权限（只能更新自己的信息）
 	if userID != currentUserID {
@@ -232,7 +241,7 @@ func (h *UserHandler) DeleteUser(w http.ResponseWriter, r *http.Request) {
 	userID := vars["id"]
 
 	// 从上下文中获取当前用户ID
-	currentUserID := r.Context().Value("user_id").(string)
+	currentUserID := r.Context().Value(userIDKey).(string)
 
 	// 验证权限（只能删除自己的账户）
 	if userID != currentUserID {
@@ -280,7 +289,7 @@ func (h *UserHandler) ListUsers(w http.ResponseWriter, r *http.Request) {
 // ChangePassword 修改密码
 func (h *UserHandler) ChangePassword(w http.ResponseWriter, r *http.Request) {
 	// 从上下文中获取用户ID
-	userID := r.Context().Value("user_id").(string)
+	userID := r.Context().Value(userIDKey).(string)
 
 	// 解析请求
 	var req domain.ChangePasswordRequest
@@ -340,9 +349,9 @@ func (h *UserHandler) AuthMiddleware(next http.Handler) http.Handler {
 		}
 
 		// 将用户信息添加到请求上下文
-		ctx := context.WithValue(r.Context(), "user_id", claims.UserID)
-		ctx = context.WithValue(ctx, "username", claims.Username)
-		ctx = context.WithValue(ctx, "email", claims.Email)
+		ctx := context.WithValue(r.Context(), userIDKey, claims.UserID)
+		ctx = context.WithValue(ctx, usernameKey, claims.Username)
+		ctx = context.WithValue(ctx, emailKey, claims.Email)
 
 		// 继续处理请求
 		next.ServeHTTP(w, r.WithContext(ctx))
@@ -395,6 +404,8 @@ func (h *UserHandler) SearchUsers(w http.ResponseWriter, r *http.Request) {
 	// 获取查询参数
 	query := r.URL.Query().Get("q")
 	keyword := r.URL.Query().Get("keyword")
+	limitStr := r.URL.Query().Get("limit")
+	offsetStr := r.URL.Query().Get("offset")
 	
 	// 支持两种查询参数格式
 	searchTerm := query
@@ -407,8 +418,28 @@ func (h *UserHandler) SearchUsers(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 	
-	// 暂时返回空搜索结果
-	h.respondJSON(w, http.StatusOK, []interface{}{})
+	// 解析分页参数
+	limit, _ := strconv.Atoi(limitStr)
+	offset, _ := strconv.Atoi(offsetStr)
+	
+	// 设置默认值
+	if limit <= 0 {
+		limit = 10
+	}
+	if offset < 0 {
+		offset = 0
+	}
+	
+	// 调用服务层搜索用户
+	users, err := h.userService.SearchUsers(r.Context(), searchTerm, limit, offset)
+	if err != nil {
+		h.logger.Error("Failed to search users", zap.String("query", searchTerm), zap.Error(err))
+		h.respondError(w, http.StatusInternalServerError, "Failed to search users")
+		return
+	}
+	
+	// 返回搜索结果
+	h.respondJSON(w, http.StatusOK, users)
 }
 
 // GetRecommendedUsers 获取推荐用户

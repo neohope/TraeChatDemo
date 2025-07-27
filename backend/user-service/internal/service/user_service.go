@@ -61,6 +61,36 @@ func (s *UserService) Register(ctx context.Context, user *domain.User, password 
 	return nil
 }
 
+// SearchUsers 搜索用户
+func (s *UserService) SearchUsers(ctx context.Context, query string, limit, offset int) ([]*domain.User, error) {
+	// 验证查询参数
+	if strings.TrimSpace(query) == "" {
+		return []*domain.User{}, nil
+	}
+
+	// 设置默认值
+	if limit <= 0 {
+		limit = 10
+	}
+	if offset < 0 {
+		offset = 0
+	}
+
+	// 调用仓库层搜索用户
+	users, err := s.userRepo.SearchUsers(ctx, query, limit, offset)
+	if err != nil {
+		s.logger.Error("Failed to search users", zap.String("query", query), zap.Error(err))
+		return nil, errors.New("failed to search users")
+	}
+
+	// 清除敏感信息
+	for _, user := range users {
+		user.Password = ""
+	}
+
+	return users, nil
+}
+
 // Login 用户登录
 func (s *UserService) Login(ctx context.Context, identifier, password string) (string, error) {
 	// 判断identifier是邮箱还是用户名

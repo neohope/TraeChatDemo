@@ -42,7 +42,7 @@ class _ChatScreenWidgetState extends State<ChatScreenWidget>
   
   bool _showScrollToBottom = false;
   bool _isSelectionMode = false;
-  Set<String> _selectedMessageIds = {};
+  final Set<String> _selectedMessageIds = {};
   MessageModel? _replyToMessage;
   MessageModel? _editingMessage;
   List<MessageModel> _searchResults = [];
@@ -470,7 +470,7 @@ class _ChatScreenWidgetState extends State<ChatScreenWidget>
       decoration: BoxDecoration(
         color: Colors.orange[50],
         borderRadius: const BorderRadius.vertical(top: Radius.circular(12)),
-        border: Border(
+        border: const Border(
           left: BorderSide(
             color: Colors.orange,
             width: 3,
@@ -976,6 +976,7 @@ class _ChatScreenWidgetState extends State<ChatScreenWidget>
      await _blockUser(user);
      // context.read<UserViewModel>().blockUser(user.id);
      
+     // ignore: use_build_context_synchronously
      ScaffoldMessenger.of(context).showSnackBar(
        SnackBar(
          content: Text('已屏蔽 ${user.name}'),
@@ -984,6 +985,7 @@ class _ChatScreenWidgetState extends State<ChatScreenWidget>
      );
      
      // 返回上一页
+     // ignore: use_build_context_synchronously
      Navigator.pop(context);
    }
    
