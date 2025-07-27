@@ -81,12 +81,15 @@ class AppDateUtils {
       return '${difference.inDays}天前';
     } else if (difference.inDays < 30) {
       final weeks = (difference.inDays / 7).floor();
+      // ignore: unnecessary_brace_in_string_interps
       return '${weeks}周前';
     } else if (difference.inDays < 365) {
       final months = (difference.inDays / 30).floor();
+      // ignore: unnecessary_brace_in_string_interps
       return '${months}个月前';
     } else {
       final years = (difference.inDays / 365).floor();
+      // ignore: unnecessary_brace_in_string_interps
       return '${years}年前';
     }
   }

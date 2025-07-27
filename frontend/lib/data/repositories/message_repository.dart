@@ -23,6 +23,7 @@ class MessageRepository {
   // 日志实例
   final _logger = AppLogger.instance.logger;
   // UUID生成器
+  // ignore: prefer_const_constructors
   final _uuid = Uuid();
   
   // 私有构造函数

@@ -7,6 +7,7 @@ import '../../../domain/models/user_model.dart';
 import '../../viewmodels/user_viewmodel.dart';
 import '../../viewmodels/friend_viewmodel.dart';
 import '../../viewmodels/chat_viewmodel.dart';
+import '../../../core/utils/app_logger.dart';
 // 需要时导入这些包
 // import '../../../core/utils/date_utils.dart';
 // import '../../../core/utils/image_utils.dart';
@@ -43,6 +44,7 @@ class _UserDetailWidgetState extends State<UserDetailWidget> {
   final _phoneController = TextEditingController();
   File? _selectedImage;
   final ImagePicker _imagePicker = ImagePicker();
+  final AppLogger _logger = AppLogger.instance;
 
   @override
   void dispose() {
@@ -630,7 +632,7 @@ class _UserDetailWidgetState extends State<UserDetailWidget> {
       }
 
       // 实现更新个人资料方法
-      print('更新个人资料: ${_nicknameController.text}');
+      _logger.logger.d('更新个人资料: ${_nicknameController.text}');
       // 实现UserViewModel中的updateProfile方法
       // await userViewModel.updateProfile(
       //   nickname: _nicknameController.text.trim(),
