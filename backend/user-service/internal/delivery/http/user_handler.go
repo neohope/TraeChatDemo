@@ -41,10 +41,10 @@ func (h *UserHandler) RegisterRoutes(router *mux.Router) {
 	authRouter := router.PathPrefix("/api/v1").Subrouter()
 	authRouter.Use(h.AuthMiddleware)
 
+	// 特定路由必须在通用路由之前注册以避免路由冲突
 	authRouter.HandleFunc("/users/me", h.GetCurrentUser).Methods("GET")
-	authRouter.HandleFunc("/users/{id}", h.GetUser).Methods("GET")
-	authRouter.HandleFunc("/users/{id}", h.UpdateUser).Methods("PUT")
-	authRouter.HandleFunc("/users/{id}", h.DeleteUser).Methods("DELETE")
+	authRouter.HandleFunc("/users/search", h.SearchUsers).Methods("GET")
+	authRouter.HandleFunc("/users/recommended", h.GetRecommendedUsers).Methods("GET")
 	authRouter.HandleFunc("/users", h.ListUsers).Methods("GET")
 	authRouter.HandleFunc("/users/change-password", h.ChangePassword).Methods("POST")
 	// 联系人相关路由
@@ -52,8 +52,12 @@ func (h *UserHandler) RegisterRoutes(router *mux.Router) {
 	authRouter.HandleFunc("/users/contacts", h.AddContact).Methods("POST")
 	authRouter.HandleFunc("/users/contacts/{contactId}", h.RemoveContact).Methods("DELETE")
 	authRouter.HandleFunc("/users/contacts/{contactId}/favorite", h.ToggleFavoriteContact).Methods("POST")
-	authRouter.HandleFunc("/users/search", h.SearchUsers).Methods("GET")
-	authRouter.HandleFunc("/users/recommended", h.GetRecommendedUsers).Methods("GET")
+	// 通用路由必须在最后注册
+	authRouter.HandleFunc("/users/{id}", h.GetUser).Methods("GET")
+	authRouter.HandleFunc("/users/{id}", h.UpdateUser).Methods("PUT")
+	authRouter.HandleFunc("/users/{id}", h.DeleteUser).Methods("DELETE")
+
+
 }
 
 // Register 处理用户注册

@@ -80,6 +80,14 @@ func (h *Handler) RegisterRoutes(router *mux.Router, corsConfig struct {
 	// 其他用户相关操作需要认证 - 使用更具体的路径模式
 	userAuthRoutes := userRoutes.PathPrefix("/").Subrouter()
 	userAuthRoutes.Use(h.middleware.JWTAuth())
+	// 搜索和推荐用户路由（必须在 /{userId} 之前注册以避免路由冲突）
+	userAuthRoutes.HandleFunc("/search", h.proxyToUserService).Methods("GET")
+	userAuthRoutes.HandleFunc("/recommended", h.proxyToUserService).Methods("GET")
+	userAuthRoutes.HandleFunc("/me", h.proxyToUserService).Methods("GET")
+	userAuthRoutes.HandleFunc("/contacts", h.proxyToUserService).Methods("GET", "POST")
+	userAuthRoutes.HandleFunc("/contacts/{contactId}", h.proxyToUserService).Methods("DELETE")
+	userAuthRoutes.HandleFunc("/contacts/{contactId}/favorite", h.proxyToUserService).Methods("POST")
+	userAuthRoutes.HandleFunc("/change-password", h.proxyToUserService).Methods("POST")
 	// 避免与 /{userId}/groups 冲突，使用更具体的路径
 	userAuthRoutes.HandleFunc("/{userId}", h.proxyToUserService).Methods("GET", "PUT", "DELETE")
 	userAuthRoutes.HandleFunc("/{userId}/profile", h.proxyToUserService).Methods("GET", "PUT")

@@ -10,7 +10,7 @@ import '../../viewmodels/group_viewmodel.dart';
 import '../../viewmodels/notification_viewmodel.dart';
 import '../chat/chat_list_widget.dart';
 // import '../user/user_list_widget.dart'; // Unused import
-import '../friend/friend_list_widget.dart';
+// import '../friend/friend_list_widget.dart'; // Unused import
 import '../friend/friends_only_tab_widget.dart';
 import '../friend/requests_only_tab_widget.dart';
 import '../friend/blocked_only_tab_widget.dart';
@@ -105,7 +105,13 @@ class _MainScreenWidgetState extends State<MainScreenWidget>
   }
 
   Widget _buildChatPage() {
-    return const ChatListWidget();
+    return Scaffold(
+      appBar: AppBar(
+        title: const Text('聊天'),
+        automaticallyImplyLeading: false,
+      ),
+      body:  const ChatListWidget()
+    );
   }
 
   Widget _buildContactsPage() {
