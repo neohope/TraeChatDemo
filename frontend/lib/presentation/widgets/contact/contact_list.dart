@@ -353,10 +353,10 @@ class _ContactListState extends State<ContactList> {
                     return azItems[index].child;
                   },
                   physics: const AlwaysScrollableScrollPhysics(),
-                  indexBarOptions: IndexBarOptions(
+                  indexBarOptions: const IndexBarOptions(
                     needRebuild: true,
                     indexHintAlignment: Alignment.centerRight,
-                    indexHintOffset: const Offset(-20, 0),
+                    indexHintOffset: Offset(-20, 0),
                   ),
                 ),
               );
