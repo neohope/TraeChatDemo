@@ -3,6 +3,7 @@ import 'package:provider/provider.dart';
 
 import '../../../domain/models/group_model.dart';
 import '../../viewmodels/group_viewmodel.dart';
+import '../../../core/utils/app_logger.dart';
 
 /// 群组邀请管理组件
 class GroupInvitationWidget extends StatefulWidget {
@@ -51,7 +52,7 @@ class _GroupInvitationWidgetState extends State<GroupInvitationWidget>
   void _resendInvitation(String invitationId) async {
     try {
       // 调用群组服务重新发送邀请
-    print('重新发送邀请请求已发送');
+    AppLogger.instance.logger.d('重新发送邀请请求已发送');
       // await context.read<GroupViewModel>().resendInvitation(invitationId);
       
       ScaffoldMessenger.of(context).showSnackBar(
@@ -73,7 +74,7 @@ class _GroupInvitationWidgetState extends State<GroupInvitationWidget>
   void _cancelInvitation(String invitationId) async {
     try {
       // 调用群组服务取消邀请
-    print('取消邀请请求已发送');
+    AppLogger.instance.logger.d('取消邀请请求已发送');
       // await context.read<GroupViewModel>().cancelInvitation(invitationId);
       
       ScaffoldMessenger.of(context).showSnackBar(
@@ -95,7 +96,7 @@ class _GroupInvitationWidgetState extends State<GroupInvitationWidget>
   void _clearProcessedInvitations() async {
     try {
       // 调用群组服务清除已处理的邀请
-    print('清除已处理邀请请求已发送');
+    AppLogger.instance.logger.d('清除已处理邀请请求已发送');
       // await context.read<GroupViewModel>().clearProcessedInvitations();
       
       ScaffoldMessenger.of(context).showSnackBar(
