@@ -40,24 +40,9 @@ class _MainScreenWidgetState extends State<MainScreenWidget>
       activeIcon: Icons.chat_bubble,
     ),
     const MainTab(
-      title: '好友',
+      title: '联系人',
       icon: Icons.people_outline,
       activeIcon: Icons.people,
-    ),
-    const MainTab(
-      title: '请求',
-      icon: Icons.person_add_outlined,
-      activeIcon: Icons.person_add,
-    ),
-    const MainTab(
-      title: '黑名单',
-      icon: Icons.block_outlined,
-      activeIcon: Icons.block,
-    ),
-    const MainTab(
-      title: '群组',
-      icon: Icons.group_outlined,
-      activeIcon: Icons.group,
     ),
     const MainTab(
       title: '发现',
@@ -109,10 +94,7 @@ class _MainScreenWidgetState extends State<MainScreenWidget>
         },
         children: [
           _buildChatPage(),
-          _buildFriendsOnlyWidget(),
-          _buildRequestsOnlyWidget(),
-          _buildBlockedOnlyWidget(),
-          _buildGroupListWidget(),
+          _buildContactsPage(),
           _buildDiscoverPage(),
           _buildNotificationPage(),
           _buildProfilePage(),
@@ -124,6 +106,35 @@ class _MainScreenWidgetState extends State<MainScreenWidget>
 
   Widget _buildChatPage() {
     return const ChatListWidget();
+  }
+
+  Widget _buildContactsPage() {
+    return DefaultTabController(
+      length: 4,
+      child: Scaffold(
+        appBar: AppBar(
+          title: const Text('联系人'),
+          automaticallyImplyLeading: false,
+          bottom: const TabBar(
+            isScrollable: true,
+            tabs: [
+              Tab(text: '好友'),
+              Tab(text: '请求'),
+              Tab(text: '黑名单'),
+              Tab(text: '群组'),
+            ],
+          ),
+        ),
+        body: TabBarView(
+          children: [
+            _buildFriendsOnlyWidget(),
+            _buildRequestsOnlyWidget(),
+            _buildBlockedOnlyWidget(),
+            _buildGroupListWidget(),
+          ],
+        ),
+      ),
+    );
   }
 
 
@@ -187,59 +198,19 @@ class _MainScreenWidgetState extends State<MainScreenWidget>
   }
 
   Widget _buildFriendsOnlyWidget() {
-    return Scaffold(
-      appBar: AppBar(
-        title: const Text('好友'),
-        automaticallyImplyLeading: false,
-        actions: [
-          IconButton(
-            icon: const Icon(Icons.person_add),
-            onPressed: () {
-              // 导航到添加好友页面
-            },
-          ),
-        ],
-      ),
-      body: const FriendsOnlyTabWidget(),
-    );
+    return const FriendsOnlyTabWidget();
   }
 
   Widget _buildRequestsOnlyWidget() {
-    return Scaffold(
-      appBar: AppBar(
-        title: const Text('好友请求'),
-        automaticallyImplyLeading: false,
-      ),
-      body: const RequestsOnlyTabWidget(),
-    );
+    return const RequestsOnlyTabWidget();
   }
 
   Widget _buildBlockedOnlyWidget() {
-    return Scaffold(
-      appBar: AppBar(
-        title: const Text('黑名单'),
-        automaticallyImplyLeading: false,
-      ),
-      body: const BlockedOnlyTabWidget(),
-    );
+    return const BlockedOnlyTabWidget();
   }
 
   Widget _buildGroupListWidget() {
-    return Scaffold(
-      appBar: AppBar(
-        title: const Text('群组'),
-        automaticallyImplyLeading: false,
-        actions: [
-          IconButton(
-            icon: const Icon(Icons.group_add),
-            onPressed: () {
-              // 导航到创建群组页面
-            },
-          ),
-        ],
-      ),
-      body: const GroupListWidget(),
-    );
+    return const GroupListWidget();
   }
 
   Widget _buildBottomNavigationBar() {
@@ -290,7 +261,7 @@ class _MainScreenWidgetState extends State<MainScreenWidget>
                   child: icon,
                 );
               }
-            } else if (index == 6) { // 通知页面
+            } else if (index == 3) { // 通知页面
               final unreadCount = notificationViewModel.unreadCount;
               if (unreadCount > 0) {
                 icon = badges.Badge(
