@@ -35,7 +35,7 @@ class _UserSearchWidgetState extends State<UserSearchWidget>
   String _searchQuery = '';
   bool _isSearching = false;
   List<UserModel> _searchResults = [];
-  List<UserModel> _selectedUsers = [];
+  final List<UserModel> _selectedUsers = [];
   bool _isLoading = false;
 
   @override

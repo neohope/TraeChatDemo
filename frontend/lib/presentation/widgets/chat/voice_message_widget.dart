@@ -146,7 +146,7 @@ class _VoiceMessageWidgetState extends State<VoiceMessageWidget>
           Container(
             width: 40,
             height: 40,
-            decoration: BoxDecoration(
+            decoration: const BoxDecoration(
               color: Colors.red,
               shape: BoxShape.circle,
             ),
@@ -476,8 +476,8 @@ class WaveformPainter extends CustomPainter {
       ..strokeWidth = 2
       ..strokeCap = StrokeCap.round;
 
-    final barWidth = 3.0;
-    final barSpacing = 2.0;
+    const barWidth = 3.0;
+    const barSpacing = 2.0;
     final barCount = (size.width / (barWidth + barSpacing)).floor();
     
     for (int i = 0; i < barCount; i++) {

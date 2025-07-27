@@ -470,7 +470,7 @@ class _ChatScreenWidgetState extends State<ChatScreenWidget>
       decoration: BoxDecoration(
         color: Colors.orange[50],
         borderRadius: const BorderRadius.vertical(top: Radius.circular(12)),
-        border: Border(
+        border: const Border(
           left: BorderSide(
             color: Colors.orange,
             width: 3,

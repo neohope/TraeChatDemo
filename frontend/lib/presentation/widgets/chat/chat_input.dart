@@ -293,7 +293,7 @@ class _ChatInputState extends State<ChatInput> {
     try {
       // 模拟文件选择
       final fileName = 'document_${DateTime.now().millisecondsSinceEpoch}.pdf';
-      final fileSize = 1024 * 1024; // 1MB
+      const fileSize = 1024 * 1024; // 1MB
       
       // 调用发送文件的回调
       if (widget.onSendFile != null) {

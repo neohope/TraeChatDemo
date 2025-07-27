@@ -170,7 +170,7 @@ class _GroupDetailWidgetState extends State<GroupDetailWidget>
                     const SizedBox(height: 8),
                     Row(
                       children: [
-                        Icon(
+                        const Icon(
                           Icons.people,
                           color: Colors.white,
                           size: 16,
@@ -532,7 +532,7 @@ class _GroupDetailWidgetState extends State<GroupDetailWidget>
           children: [
             Text(_getMemberRoleText(member.role)),
             if (member.isMuted)
-              Text(
+              const Text(
                 '已禁言',
                 style: TextStyle(
                   color: Colors.red,

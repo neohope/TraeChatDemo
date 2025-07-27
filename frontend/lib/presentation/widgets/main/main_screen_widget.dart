@@ -31,27 +31,27 @@ class _MainScreenWidgetState extends State<MainScreenWidget>
   final PageController _pageController = PageController();
 
   final List<MainTab> _tabs = [
-    MainTab(
+    const MainTab(
       title: '聊天',
       icon: Icons.chat_bubble_outline,
       activeIcon: Icons.chat_bubble,
     ),
-    MainTab(
+    const MainTab(
       title: '联系人',
       icon: Icons.people_outline,
       activeIcon: Icons.people,
     ),
-    MainTab(
+    const MainTab(
       title: '发现',
       icon: Icons.explore_outlined,
       activeIcon: Icons.explore,
     ),
-    MainTab(
+    const MainTab(
       title: '通知',
       icon: Icons.notifications_outlined,
       activeIcon: Icons.notifications,
     ),
-    MainTab(
+    const MainTab(
       title: '我的',
       icon: Icons.person_outline,
       activeIcon: Icons.person,
@@ -357,7 +357,7 @@ class _MainScreenWidgetState extends State<MainScreenWidget>
     Navigator.push(
       context,
       MaterialPageRoute(
-        builder: (context) => NearbyUsersWidget(),
+        builder: (context) => const NearbyUsersWidget(),
       ),
     );
   }
@@ -366,7 +366,7 @@ class _MainScreenWidgetState extends State<MainScreenWidget>
     Navigator.push(
       context,
       MaterialPageRoute(
-        builder: (context) => CreateGroupWidget(),
+        builder: (context) => const CreateGroupWidget(),
       ),
     );
   }
@@ -375,7 +375,7 @@ class _MainScreenWidgetState extends State<MainScreenWidget>
     Navigator.push(
       context,
       MaterialPageRoute(
-        builder: (context) => QRScannerWidget(),
+        builder: (context) => const QRScannerWidget(),
       ),
     );
   }
@@ -384,7 +384,7 @@ class _MainScreenWidgetState extends State<MainScreenWidget>
     Navigator.push(
       context,
       MaterialPageRoute(
-        builder: (context) => MyQRCodeWidget(),
+        builder: (context) => const MyQRCodeWidget(),
       ),
     );
   }
@@ -393,7 +393,7 @@ class _MainScreenWidgetState extends State<MainScreenWidget>
     Navigator.push(
       context,
       MaterialPageRoute(
-        builder: (context) => TrendingTopicsWidget(),
+        builder: (context) => const TrendingTopicsWidget(),
       ),
     );
   }
@@ -877,7 +877,7 @@ class _CreateGroupWidgetState extends State<CreateGroupWidget> {
       // 创建群组逻辑
       Navigator.pop(context);
       ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(
+        const SnackBar(
           content: Text('群组创建成功'),
           backgroundColor: Colors.green,
         ),
@@ -945,11 +945,11 @@ class _MyQRCodeWidgetState extends State<MyQRCodeWidget> {
             Container(
               width: 200,
               height: 200,
-              decoration: BoxDecoration(
+              decoration: const BoxDecoration(
                 color: Colors.grey,
                 borderRadius: BorderRadius.all(Radius.circular(12)),
               ),
-              child: Center(
+              child: const Center(
                 child: Text(
                   '二维码\n生成中...',
                   textAlign: TextAlign.center,
@@ -960,8 +960,8 @@ class _MyQRCodeWidgetState extends State<MyQRCodeWidget> {
                 ),
               ),
             ),
-            SizedBox(height: 16),
-            Text(
+            const SizedBox(height: 16),
+            const Text(
               '扫描上方二维码，添加我为好友',
               style: TextStyle(
                 fontSize: 14,

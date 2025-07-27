@@ -230,10 +230,10 @@ class ConversationListItem extends StatelessWidget {
         backgroundImage: NetworkImage(avatarUrl),
       );
     } else {
-      return CircleAvatar(
+      return const CircleAvatar(
         radius: 28,
         backgroundColor: Colors.green,
-        child: const Icon(
+        child: Icon(
           Icons.group,
           color: Colors.white,
           size: 28,

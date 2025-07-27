@@ -317,8 +317,8 @@ class _GroupInvitationWidgetState extends State<GroupInvitationWidget>
       child: ListTile(
         leading: Stack(
           children: [
-            CircleAvatar(
-              child: const Icon(Icons.group),
+            const CircleAvatar(
+              child: Icon(Icons.group),
             ),
             if (!invitation.isRead)
               Positioned(
@@ -374,8 +374,8 @@ class _GroupInvitationWidgetState extends State<GroupInvitationWidget>
     return Card(
       margin: const EdgeInsets.only(bottom: 8),
       child: ListTile(
-        leading: CircleAvatar(
-          child: const Icon(Icons.person),
+        leading: const CircleAvatar(
+          child: Icon(Icons.person),
         ),
         title: Text(invitation.inviteeId),
         subtitle: Column(
@@ -509,9 +509,9 @@ class _GroupInvitationWidgetState extends State<GroupInvitationWidget>
                 ),
               ),
               const SizedBox(height: 16),
-              CircleAvatar(
+              const CircleAvatar(
                 radius: 40,
-                child: const Icon(Icons.group, size: 40),
+                child: Icon(Icons.group, size: 40),
               ),
               const SizedBox(height: 16),
               Text(

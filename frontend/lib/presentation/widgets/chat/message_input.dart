@@ -95,7 +95,7 @@ class _MessageInputState extends State<MessageInput> {
       imageQuality: 70,
     );
     
-    if (image != null) {
+    if (image != null && mounted) {
       final messageViewModel = Provider.of<MessageViewModel>(context, listen: false);
       await messageViewModel.sendImageMessage(
         image.path,
@@ -121,7 +121,7 @@ class _MessageInputState extends State<MessageInput> {
       imageQuality: 70,
     );
     
-    if (image != null) {
+    if (image != null && mounted) {
       final messageViewModel = Provider.of<MessageViewModel>(context, listen: false);
       await messageViewModel.sendImageMessage(
         image.path,
@@ -202,12 +202,14 @@ class _MessageInputState extends State<MessageInput> {
           return;
         }
         
-        final messageViewModel = Provider.of<MessageViewModel>(context, listen: false);
-        await messageViewModel.sendVoiceMessage(
-          path,
-          duration.inSeconds,
-          widget.receiverId,
-        );
+        if (mounted) {
+          final messageViewModel = Provider.of<MessageViewModel>(context, listen: false);
+          await messageViewModel.sendVoiceMessage(
+            path,
+            duration.inSeconds,
+            widget.receiverId,
+          );
+        }
       }
     } catch (e) {
       if (mounted) {
@@ -384,19 +386,23 @@ class _MessageInputState extends State<MessageInput> {
         widget.onSendLocation!(locationData);
       }
       
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(
-          content: Text('位置已发送'),
-          backgroundColor: Colors.green,
-        ),
-      );
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(
+            content: Text('位置已发送'),
+            backgroundColor: Colors.green,
+          ),
+        );
+      }
     } catch (e) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(
-          content: Text('发送位置失败: $e'),
-          backgroundColor: Colors.red,
-        ),
-      );
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text('发送位置失败: $e'),
+            backgroundColor: Colors.red,
+          ),
+        );
+      }
     }
   }
   
@@ -418,19 +424,23 @@ class _MessageInputState extends State<MessageInput> {
         widget.onSendFile!(fileData);
       }
       
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(
-          content: Text('文件已发送'),
-          backgroundColor: Colors.green,
-        ),
-      );
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(
+            content: Text('文件已发送'),
+            backgroundColor: Colors.green,
+          ),
+        );
+      }
     } catch (e) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(
-          content: Text('发送文件失败: $e'),
-          backgroundColor: Colors.red,
-        ),
-      );
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text('发送文件失败: $e'),
+            backgroundColor: Colors.red,
+          ),
+        );
+      }
     }
   }
 

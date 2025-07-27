@@ -1047,8 +1047,8 @@ class _VoicePlayerWidgetState extends State<VoicePlayerWidget>
     }
 
     // 动态波形
-    final baseHeight = 4.0;
-    final maxHeight = 16.0;
+    const baseHeight = 4.0;
+    const maxHeight = 16.0;
     final animationOffset = _waveAnimation.value * 2 * 3.14159;
     final waveHeight = baseHeight + (maxHeight - baseHeight) * 
         (0.5 + 0.5 * sin(animationOffset + index * 0.5));

@@ -317,6 +317,7 @@ class _NotificationSettingsWidgetState extends State<NotificationSettingsWidget>
                 items: [3, 5, 10, 15, 30].map((duration) {
                   return DropdownMenuItem(
                     value: duration,
+                    // ignore: unnecessary_brace_in_string_interps
                     child: Text('${duration}秒'),
                   );
                 }).toList(),

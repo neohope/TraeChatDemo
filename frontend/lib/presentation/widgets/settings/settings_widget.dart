@@ -508,7 +508,7 @@ class _SettingsWidgetState extends State<SettingsWidget> {
           ),
           TextButton(
             onPressed: () {
-              this.setState(() {});
+              setState(() {});
               _saveSettings();
               Navigator.pop(context);
             },

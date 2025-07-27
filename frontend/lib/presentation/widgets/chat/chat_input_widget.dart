@@ -659,9 +659,9 @@ class _ChatInputWidgetState extends State<ChatInputWidget>
     const String address = '北京市朝阳区';
     
     ScaffoldMessenger.of(context).showSnackBar(
-      SnackBar(
+      const SnackBar(
         content: Text('位置已发送: $address'),
-        duration: const Duration(seconds: 2),
+        duration: Duration(seconds: 2),
       ),
     );
     
