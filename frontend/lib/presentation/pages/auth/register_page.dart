@@ -239,16 +239,16 @@ class _RegisterPageState extends State<RegisterPage> {
                                 onPressed: () {
                                   // 显示用户协议
                                 },
-                                child: const Text('用户协议'),
                                 style: TextButton.styleFrom(padding: EdgeInsets.zero),
+                                child: const Text('用户协议'),
                               ),
                               const Text('和'),
                               TextButton(
                                 onPressed: () {
                                   // 显示隐私政策
                                 },
-                                child: const Text('隐私政策'),
                                 style: TextButton.styleFrom(padding: EdgeInsets.zero),
+                                child: const Text('隐私政策'),
                               ),
                             ],
                           ),
