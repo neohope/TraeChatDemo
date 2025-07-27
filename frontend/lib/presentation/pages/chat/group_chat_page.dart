@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 
+import '../../../core/utils/app_logger.dart';
+
 /// 群聊页面
 class GroupChatPage extends StatefulWidget {
   final String groupId;
@@ -16,6 +18,7 @@ class GroupChatPage extends StatefulWidget {
 }
 
 class _GroupChatPageState extends State<GroupChatPage> {
+  final AppLogger _logger = AppLogger.instance;
   final TextEditingController _messageController = TextEditingController();
   final List<Map<String, dynamic>> _messages = [];
 
@@ -42,7 +45,7 @@ class _GroupChatPageState extends State<GroupChatPage> {
   void _inviteMembers() async {
     try {
       // 调用群组服务邀请成员
-    print('邀请成员请求已发送');
+    _logger.logger.i('邀请成员请求已发送');
       // await context.read<GroupViewModel>().inviteMembers(widget.groupId, selectedUserIds);
       
       ScaffoldMessenger.of(context).showSnackBar(
@@ -90,7 +93,7 @@ class _GroupChatPageState extends State<GroupChatPage> {
   void _leaveGroup() async {
     try {
       // 调用群组服务退出群组
-    print('退出群组请求已发送');
+    _logger.logger.i('退出群组请求已发送');
       // await context.read<GroupViewModel>().leaveGroup(widget.groupId);
       
       ScaffoldMessenger.of(context).showSnackBar(
