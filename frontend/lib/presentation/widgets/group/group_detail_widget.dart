@@ -679,10 +679,12 @@ class _GroupDetailWidgetState extends State<GroupDetailWidget>
               Navigator.pop(context);
               final success = await viewModel.leaveGroup(group.id);
               if (success && mounted) {
-                Navigator.pop(context);
-                ScaffoldMessenger.of(context).showSnackBar(
-                  const SnackBar(content: Text('已退出群组')),
-                );
+                if (mounted) Navigator.pop(context);
+                if (mounted) {
+                  ScaffoldMessenger.of(context).showSnackBar(
+                    const SnackBar(content: Text('已退出群组')),
+                  );
+                }
               }
             },
             style: ElevatedButton.styleFrom(backgroundColor: Colors.orange),
@@ -709,10 +711,12 @@ class _GroupDetailWidgetState extends State<GroupDetailWidget>
               Navigator.pop(context);
               final success = await viewModel.dissolveGroup(group.id);
               if (success && mounted) {
-                Navigator.pop(context);
-                ScaffoldMessenger.of(context).showSnackBar(
-                  const SnackBar(content: Text('群组已解散')),
-                );
+                if (mounted) Navigator.pop(context);
+                if (mounted) {
+                  ScaffoldMessenger.of(context).showSnackBar(
+                    const SnackBar(content: Text('群组已解散')),
+                  );
+                }
               }
             },
             style: ElevatedButton.styleFrom(backgroundColor: Colors.red),

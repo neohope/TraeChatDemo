@@ -146,6 +146,7 @@ class VoiceMessageViewModel extends ChangeNotifier {
       
       _isRecording = false;
       _isRecordingPaused = false;
+      // ignore: unused_local_variable
       final duration = _recordingDuration;
       final recordingPath = _currentRecordingPath;
       _recordingDuration = Duration.zero;
