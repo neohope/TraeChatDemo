@@ -745,6 +745,11 @@ class _GroupDetailWidgetState extends State<GroupDetailWidget>
             onPressed: () async {
               Navigator.pop(context);
               await viewModel.muteMember(member.groupId, member.userId);
+              if (mounted) {
+                ScaffoldMessenger.of(context).showSnackBar(
+                  const SnackBar(content: Text('成员已禁言')),
+                );
+              }
             },
             style: ElevatedButton.styleFrom(backgroundColor: Colors.orange),
             child: const Text('禁言'),
@@ -801,6 +806,11 @@ class _GroupDetailWidgetState extends State<GroupDetailWidget>
             onPressed: () async {
               Navigator.pop(context);
               await viewModel.removeMember(member.groupId, member.userId);
+              if (mounted) {
+                ScaffoldMessenger.of(context).showSnackBar(
+                  const SnackBar(content: Text('成员已移除')),
+                );
+              }
             },
             style: ElevatedButton.styleFrom(backgroundColor: Colors.red),
             child: const Text('移除'),

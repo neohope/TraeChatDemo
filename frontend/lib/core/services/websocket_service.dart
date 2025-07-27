@@ -250,7 +250,7 @@ class WebSocketService {
     _reconnectAttempts++;
     _logger.logger.i('WebSocket重连尝试 $_reconnectAttempts/$_maxReconnectAttempts');
     
-    Timer(Duration(milliseconds: _reconnectDelay), () {
+    Timer(const Duration(milliseconds: _reconnectDelay), () {
       if (_shouldReconnect && !_isConnected && !_isConnecting) {
         connect();
       }

@@ -25,10 +25,10 @@ class MessageViewModel extends ChangeNotifier {
   bool _hasMoreMessages = true;
   
   // 输入状态
-  Map<String, bool> _typingUsers = {};
+  final Map<String, bool> _typingUsers = {};
   
   // 未读消息
-  Map<String, int> _unreadCounts = {};
+  final Map<String, int> _unreadCounts = {};
   
   // 流订阅
   StreamSubscription? _messageSubscription;
