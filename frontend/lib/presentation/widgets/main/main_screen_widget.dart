@@ -680,7 +680,7 @@ class _CreateGroupWidgetState extends State<CreateGroupWidget> {
   final _descriptionController = TextEditingController();
   bool _isPrivate = false;
   int _maxMembers = 100;
-  List<dynamic> _selectedFriends = [];
+  final List<dynamic> _selectedFriends = [];
 
   @override
   void dispose() {
@@ -831,7 +831,7 @@ class _CreateGroupWidgetState extends State<CreateGroupWidget> {
           ],
         ),
         if (_selectedFriends.isNotEmpty)
-          Container(
+          SizedBox(
             height: 80,
             child: ListView.builder(
               scrollDirection: Axis.horizontal,

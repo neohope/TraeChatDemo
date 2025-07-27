@@ -10,7 +10,7 @@ class UserViewModel extends ChangeNotifier {
 
   UserViewModel(this._apiService);
 
-  List<UserModel> _users = [];
+  final List<UserModel> _users = [];
   List<UserModel> _searchResults = [];
   List<UserModel> _recentSearches = [];
   List<UserModel> _recommendedUsers = [];
@@ -393,10 +393,5 @@ class UserViewModel extends ChangeNotifier {
     } finally {
       _setLoading(false);
     }
-  }
-
-  @override
-  void dispose() {
-    super.dispose();
   }
 }
