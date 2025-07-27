@@ -11,6 +11,9 @@ import '../../viewmodels/notification_viewmodel.dart';
 import '../chat/chat_list_widget.dart';
 // import '../user/user_list_widget.dart'; // Unused import
 import '../friend/friend_list_widget.dart';
+import '../friend/friends_only_tab_widget.dart';
+import '../friend/requests_only_tab_widget.dart';
+import '../friend/blocked_only_tab_widget.dart';
 import '../group/group_list_widget.dart';
 import '../notification/notification_widget.dart';
 import '../settings/settings_widget.dart';
@@ -107,22 +110,27 @@ class _MainScreenWidgetState extends State<MainScreenWidget>
 
   Widget _buildContactsPage() {
     return DefaultTabController(
-      length: 2,
+      length: 4,
       child: Scaffold(
         appBar: AppBar(
           title: const Text('联系人'),
           automaticallyImplyLeading: false,
           bottom: const TabBar(
+            isScrollable: true,
             tabs: [
               Tab(text: '好友'),
+              Tab(text: '请求'),
+              Tab(text: '黑名单'),
               Tab(text: '群组'),
             ],
           ),
         ),
-        body: const TabBarView(
+        body: TabBarView(
           children: [
-            FriendListWidget(),
-            GroupListWidget(),
+            _buildFriendsOnlyWidget(),
+            _buildRequestsOnlyWidget(),
+            _buildBlockedOnlyWidget(),
+            const GroupListWidget(),
           ],
         ),
       ),
@@ -185,6 +193,18 @@ class _MainScreenWidgetState extends State<MainScreenWidget>
 
   Widget _buildProfilePage() {
     return const SettingsWidget();
+  }
+
+  Widget _buildFriendsOnlyWidget() {
+    return const FriendsOnlyTabWidget();
+  }
+
+  Widget _buildRequestsOnlyWidget() {
+    return const RequestsOnlyTabWidget();
+  }
+
+  Widget _buildBlockedOnlyWidget() {
+    return const BlockedOnlyTabWidget();
   }
 
   Widget _buildBottomNavigationBar() {
