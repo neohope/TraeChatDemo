@@ -61,7 +61,7 @@ class NotificationService {
 
   /// 检查浏览器是否支持通知
   bool _isNotificationSupported() {
-    return kIsWeb && js.context.hasProperty('Notification');
+    return kIsWeb && Js.context.hasProperty('Notification');
   }
 
   /// 请求通知权限
@@ -246,7 +246,7 @@ class NotificationService {
 }
 
 // 为了避免js库依赖问题，创建一个简单的js模拟
-class js {
+class Js {
   static final context = _JSContext();
 }
 
