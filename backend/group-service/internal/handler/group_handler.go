@@ -49,11 +49,14 @@ func (h *GroupHandler) RegisterRoutes(router *mux.Router) {
 
 	// 邀请管理
 	router.HandleFunc("/groups/{groupId}/invitations", h.authMiddleware(h.InviteUser)).Methods("POST")
+	router.HandleFunc("/groups/{groupId}/invitations", h.authMiddleware(h.GetGroupInvitations)).Methods("GET")
+	router.HandleFunc("/groups/{groupId}/invitations/sent", h.authMiddleware(h.GetSentInvitations)).Methods("GET")
 	router.HandleFunc("/invitations/{invitationId}/accept", h.authMiddleware(h.AcceptInvitation)).Methods("POST")
 	router.HandleFunc("/invitations/{invitationId}/reject", h.authMiddleware(h.RejectInvitation)).Methods("POST")
 	router.HandleFunc("/users/{userId}/invitations", h.authMiddleware(h.GetPendingInvitations)).Methods("GET")
 	// 添加前端期望的路由
 	router.HandleFunc("/my-group-invitations", h.authMiddleware(h.GetMyInvitations)).Methods("GET")
+	router.HandleFunc("/group-invitations/received", h.authMiddleware(h.GetReceivedInvitations)).Methods("GET")
 
 	// 健康检查
 	router.HandleFunc("/health", h.HealthCheck).Methods("GET")
@@ -451,7 +454,12 @@ func (h *GroupHandler) GetMyInvitations(w http.ResponseWriter, r *http.Request) 
 		return
 	}
 
-	h.writeJSONResponse(w, http.StatusOK, invitations)
+	// 确保返回格式与前端期望一致
+	response := map[string]interface{}{
+		"success": true,
+		"invitations": invitations,
+	}
+	h.writeJSONResponse(w, http.StatusOK, response)
 }
 
 // HealthCheck 健康检查
@@ -538,4 +546,72 @@ func (h *GroupHandler) writeErrorResponse(w http.ResponseWriter, statusCode int,
 	w.Header().Set("Content-Type", "application/json")
 	w.WriteHeader(statusCode)
 	json.NewEncoder(w).Encode(map[string]string{"error": message})
+}
+
+// GetGroupInvitations 获取群组邀请列表
+func (h *GroupHandler) GetGroupInvitations(w http.ResponseWriter, r *http.Request) {
+	groupID, err := h.getGroupIDFromPath(r)
+	if err != nil {
+		h.writeErrorResponse(w, http.StatusBadRequest, "Invalid group ID")
+		return
+	}
+
+	// 检查用户是否有权限查看群组邀请
+	// 这里可以添加权限检查逻辑
+
+	invitations, err := h.groupService.GetGroupInvitations(r.Context(), groupID)
+	if err != nil {
+		h.logger.Error("Failed to get group invitations", zap.Error(err), zap.String("group_id", groupID.String()))
+		h.writeErrorResponse(w, http.StatusInternalServerError, err.Error())
+		return
+	}
+
+	response := map[string]interface{}{
+		"success": true,
+		"invitations": invitations,
+	}
+	h.writeJSONResponse(w, http.StatusOK, response)
+}
+
+// GetSentInvitations 获取发出的邀请
+func (h *GroupHandler) GetSentInvitations(w http.ResponseWriter, r *http.Request) {
+	groupID, err := h.getGroupIDFromPath(r)
+	if err != nil {
+		h.writeErrorResponse(w, http.StatusBadRequest, "Invalid group ID")
+		return
+	}
+
+	// 检查用户是否有权限查看群组邀请
+	// 这里可以添加权限检查逻辑
+
+	invitations, err := h.groupService.GetGroupInvitations(r.Context(), groupID)
+	if err != nil {
+		h.logger.Error("Failed to get sent invitations", zap.Error(err), zap.String("group_id", groupID.String()))
+		h.writeErrorResponse(w, http.StatusInternalServerError, err.Error())
+		return
+	}
+
+	response := map[string]interface{}{
+		"success": true,
+		"invitations": invitations,
+	}
+	h.writeJSONResponse(w, http.StatusOK, response)
+}
+
+// GetReceivedInvitations 获取收到的邀请
+func (h *GroupHandler) GetReceivedInvitations(w http.ResponseWriter, r *http.Request) {
+	userID := h.getUserIDFromContext(r)
+
+	invitations, err := h.groupService.GetPendingInvitations(r.Context(), userID)
+	if err != nil {
+		h.logger.Error("Failed to get received invitations", zap.Error(err), zap.String("user_id", userID.String()))
+		h.writeErrorResponse(w, http.StatusInternalServerError, err.Error())
+		return
+	}
+
+	response := map[string]interface{}{
+		"success": true,
+		"invitations": invitations,
+	}
+	h.writeJSONResponse(w, http.StatusOK, response)
 }

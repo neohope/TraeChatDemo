@@ -67,10 +67,10 @@ class User {
   /// 从JSON映射创建实例
   factory User.fromJson(Map<String, dynamic> json) {
     return User(
-      id: json['id'],
-      username: json['username'],
-      displayName: json['display_name'] ?? json['displayName'] ?? json['full_name'] ?? json['username'],
-      email: json['email'],
+      id: json['id'] ?? '',
+      username: json['username'] ?? '',
+      displayName: json['display_name'] ?? json['displayName'] ?? json['full_name'] ?? json['username'] ?? '',
+      email: json['email'] ?? '',
       avatarUrl: json['avatar_url'] ?? json['avatarUrl'],
       status: _parseUserStatus(json['status']),
       bio: json['bio'],

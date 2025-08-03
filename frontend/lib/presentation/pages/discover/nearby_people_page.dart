@@ -4,8 +4,10 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
 import '../../../domain/viewmodels/user_viewmodel.dart';
+import '../../viewmodels/friend_viewmodel.dart';
 import '../../themes/app_theme.dart';
 import '../../widgets/common/loading_overlay.dart';
+import '../../../utils/friend_request_error_handler.dart';
 
 /// 附近的人页面
 /// 
@@ -340,6 +342,8 @@ class _NearbyPeoplePageState extends State<NearbyPeoplePage> {
   
   // 添加好友
   void _addFriend(NearbyUser user) {
+    final TextEditingController messageController = TextEditingController();
+    
     showDialog(
       context: context,
       builder: (context) {
@@ -350,9 +354,10 @@ class _NearbyPeoplePageState extends State<NearbyPeoplePage> {
             children: [
               Text('你确定要添加 ${user.name} 为好友吗？'),
               const SizedBox(height: AppTheme.spacingNormal),
-              const TextField(
-                decoration: InputDecoration(
-                  hintText: '验证消息',
+              TextField(
+                controller: messageController,
+                decoration: const InputDecoration(
+                  hintText: '验证消息（可选）',
                   border: OutlineInputBorder(),
                 ),
                 maxLines: 2,
@@ -365,16 +370,28 @@ class _NearbyPeoplePageState extends State<NearbyPeoplePage> {
               child: const Text('取消'),
             ),
             TextButton(
-              onPressed: () {
+              onPressed: () async {
                 Navigator.pop(context);
-                // 发送好友请求
-                ScaffoldMessenger.of(context).showSnackBar(
-                  const SnackBar(content: Text('好友请求已发送')),
-                );
+                await _sendFriendRequest(user, messageController.text.trim());
               },
               child: const Text('发送'),
             ),
           ],
+        );
+      },
+    );
+  }
+  
+  // 发送好友请求
+  Future<void> _sendFriendRequest(NearbyUser user, String message) async {
+    await FriendRequestErrorHandler.handleFriendRequest(
+      context,
+      user.name,
+      () async {
+        final friendViewModel = Provider.of<FriendViewModel>(context, listen: false);
+        await friendViewModel.sendFriendRequest(
+          user.id,
+          message: message.isNotEmpty ? message : null,
         );
       },
     );

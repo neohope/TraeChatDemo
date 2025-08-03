@@ -65,14 +65,21 @@ class UserViewModel extends ChangeNotifier {
       final response = await _apiService.get('/api/v1/users/search?q=${Uri.encodeComponent(query)}');
       
       if (response['success'] == true) {
-        _searchResults = (response['data'] as List)
-            .map((json) => UserModel.fromJson(json))
-            .toList();
+        final data = response['data'];
+        if (data != null && data is List) {
+          _searchResults = data
+              .map((json) => UserModel.fromJson(json))
+              .toList();
+        } else {
+          _searchResults = [];
+        }
       } else {
+        _searchResults = [];
         _setError(response['message'] ?? '搜索用户失败');
       }
     } catch (e) {
       _logger.error('搜索用户失败: $e');
+      _searchResults = [];
       _setError('搜索用户失败: $e');
     } finally {
       _setLoading(false);
@@ -321,8 +328,13 @@ class UserViewModel extends ChangeNotifier {
     try {
       return _users.firstWhere((user) => user.id == userId);
     } catch (e) {
-      // 如果没找到，返回null
-      return null;
+      // 如果在用户列表中没找到，检查搜索结果
+      try {
+        return _searchResults.firstWhere((user) => user.id == userId);
+      } catch (e) {
+        // 如果都没找到，返回null
+        return null;
+      }
     }
   }
 

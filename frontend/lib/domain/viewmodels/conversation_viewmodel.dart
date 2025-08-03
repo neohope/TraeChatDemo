@@ -12,7 +12,12 @@ class ConversationViewModel extends ChangeNotifier {
   // 日志记录器
   final _logger = AppLogger.instance;
   // 会话仓库实例
-  final _conversationRepository = ConversationRepository.instance;
+  ConversationRepository _conversationRepository = ConversationRepository.instance;
+  
+  /// 设置仓库实例（用于测试时注入Mock）
+  void setRepository(ConversationRepository repository) {
+    _conversationRepository = repository;
+  }
   
   // 会话列表
   List<Conversation> _conversations = [];
@@ -93,9 +98,11 @@ class ConversationViewModel extends ChangeNotifier {
   }
   
   /// 构造函数
-  ConversationViewModel() {
+  ConversationViewModel({bool autoLoad = true}) {
     // 初始化加载会话列表
-    loadConversations();
+    if (autoLoad) {
+      loadConversations();
+    }
   }
   
   /// 搜索会话
@@ -188,6 +195,12 @@ class ConversationViewModel extends ChangeNotifier {
   
   /// 创建或获取单聊会话
   Future<ApiResponse<Conversation>> createOrGetUserConversation(String userId) async {
+    // 参数验证
+    if (userId.isEmpty) {
+      _setError('用户ID不能为空');
+      return ApiResponse<Conversation>.error('用户ID不能为空');
+    }
+    
     _setLoading(true);
     _clearError();
     
@@ -252,13 +265,19 @@ class ConversationViewModel extends ChangeNotifier {
   
   /// 选择会话
   void selectConversation(Conversation conversation) {
-    _selectedConversation = conversation;
-    notifyListeners();
-    
-    // 标记会话为已读
+    // 如果有未读消息，立即更新本地状态
     if (conversation.unreadCount > 0) {
+      final index = _conversations.indexWhere((c) => c.id == conversation.id);
+      if (index != -1) {
+        _conversations[index] = _conversations[index].copyWith(unreadCount: 0);
+        conversation = _conversations[index]; // 使用更新后的会话对象
+      }
+      // 异步调用API清除服务器端的未读计数
       clearUnreadCount(conversation.id);
     }
+    
+    _selectedConversation = conversation;
+    notifyListeners();
   }
   
   /// 选择会话（接受 ConversationModel 类型）

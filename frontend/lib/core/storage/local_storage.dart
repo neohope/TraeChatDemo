@@ -445,7 +445,14 @@ class LocalStorage {
   static Future<void> saveNotifications(List<dynamic> notifications) async {
     try {
       final List<dynamic> notificationsJson = notifications
-          .map((notification) => notification.toJson())
+          .map((notification) {
+            // 如果已经是Map类型，直接返回
+            if (notification is Map<String, dynamic>) {
+              return notification;
+            }
+            // 如果有toJson方法，调用它
+            return notification.toJson();
+          })
           .toList();
       await saveChatData('notifications', notificationsJson);
       _logger.i('通知列表已保存到本地存储');

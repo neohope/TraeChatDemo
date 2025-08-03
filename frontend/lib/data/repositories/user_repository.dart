@@ -157,9 +157,14 @@ class UserRepository {
         queryParameters: {'keyword': keyword},
       );
       
-      if (response.success && response.data != null) {
-        final users = response.data!.map((json) => User.fromJson(json)).toList();
-        return ApiResponse<List<User>>.success(users);
+      if (response.success) {
+        if (response.data != null && response.data is List) {
+          final users = response.data!.map((json) => User.fromJson(json)).toList();
+          return ApiResponse<List<User>>.success(users);
+        } else {
+          // API返回null或非List类型，返回空列表
+          return ApiResponse<List<User>>.success([]);
+        }
       } else {
         return ApiResponse<List<User>>.error(response.message ?? '搜索用户失败');
       }
@@ -194,9 +199,14 @@ class UserRepository {
         queryParameters: {'q': query},
       );
       
-      if (response.success && response.data != null) {
-        final users = response.data!.map((json) => User.fromJson(json)).toList();
-        return ApiResponse<List<User>>.success(users);
+      if (response.success) {
+        if (response.data != null && response.data is List) {
+          final users = response.data!.map((json) => User.fromJson(json)).toList();
+          return ApiResponse<List<User>>.success(users);
+        } else {
+          // API返回null或非List类型，返回空列表
+          return ApiResponse<List<User>>.success([]);
+        }
       } else {
         return ApiResponse<List<User>>.error(response.message ?? '搜索用户失败');
       }

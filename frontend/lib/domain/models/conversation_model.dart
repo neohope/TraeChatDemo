@@ -115,8 +115,8 @@ class ConversationModel {
   /// 从JSON创建会话模型
   factory ConversationModel.fromJson(Map<String, dynamic> json) {
     return ConversationModel(
-      id: json['id'],
-      name: json['name'],
+      id: json['id'] ?? '',
+      name: json['name'] ?? '',
       avatarUrl: json['avatarUrl'],
       isGroup: json['isGroup'] ?? false,
       participantId: json['participantId'],
@@ -125,7 +125,9 @@ class ConversationModel {
           : null,
       lastMessage: json['lastMessage'],
       lastMessageType: _parseMessageType(json['lastMessageType']),
-      lastMessageTime: DateTime.parse(json['lastMessageTime']),
+      lastMessageTime: json['lastMessageTime'] != null
+          ? DateTime.parse(json['lastMessageTime'])
+          : DateTime.now(),
       unreadCount: json['unreadCount'] ?? 0,
       isPinned: json['isPinned'] ?? false,
       isMuted: json['isMuted'] ?? false,

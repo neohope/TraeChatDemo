@@ -482,9 +482,10 @@ class _FriendListWidgetState extends State<FriendListWidget>
       await friendViewModel.unblockUser(user.id);
       
       if (mounted) {
+        final displayName = user.nickname ?? user.name;
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
-            content: Text('已解除对 ${user.nickname} 的屏蔽'),
+            content: Text('已解除对 $displayName 的屏蔽'),
             backgroundColor: Colors.green,
           ),
         );

@@ -20,6 +20,7 @@ import 'domain/viewmodels/settings_viewmodel.dart';
 import 'domain/viewmodels/user_viewmodel.dart';
 import 'presentation/viewmodels/auth_viewmodel.dart' as presentation;
 import 'presentation/viewmodels/user_search_viewmodel.dart' as presentation;
+import 'presentation/viewmodels/user_viewmodel.dart' as presentation;
 import 'presentation/viewmodels/chat_viewmodel.dart';
 import 'presentation/viewmodels/message_viewmodel.dart' as presentation;
 import 'presentation/viewmodels/group_viewmodel.dart' as presentation;
@@ -136,6 +137,9 @@ void main() async {
         context.read<ApiService>(),
       )),
       ChangeNotifierProvider(create: (context) => presentation.UserSearchViewModel(
+        context.read<ApiService>(),
+      )),
+      ChangeNotifierProvider(create: (context) => presentation.UserViewModel(
         context.read<ApiService>(),
       )),
       ChangeNotifierProvider(create: (context) => ChatViewModel(

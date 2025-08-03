@@ -36,12 +36,12 @@ func (h *Handler) RegisterRoutes(router *mux.Router, corsConfig struct {
 	AllowedMethods []string
 	AllowedHeaders []string
 }) {
-	// 首先添加全局OPTIONS处理器 - 必须在所有其他路由和中间件之前
-	router.PathPrefix("/").Methods("OPTIONS").HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+	// API路径的OPTIONS处理器
+	router.PathPrefix("/api/").Methods("OPTIONS").HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		// 手动设置CORS头部
 		origin := r.Header.Get("Origin")
-		if origin == "http://localhost:3000" {
-			w.Header().Set("Access-Control-Allow-Origin", "http://localhost:3000")
+		if origin == "http://localhost:3000" || origin == "http://localhost:3001" {
+			w.Header().Set("Access-Control-Allow-Origin", origin)
 		} else {
 			w.Header().Set("Access-Control-Allow-Origin", "*")
 		}
@@ -92,6 +92,16 @@ func (h *Handler) RegisterRoutes(router *mux.Router, corsConfig struct {
 	userAuthRoutes.HandleFunc("/{userId}", h.proxyToUserService).Methods("GET", "PUT", "DELETE")
 	userAuthRoutes.HandleFunc("/{userId}/profile", h.proxyToUserService).Methods("GET", "PUT")
 	userAuthRoutes.HandleFunc("/{userId}/settings", h.proxyToUserService).Methods("GET", "PUT")
+
+	// 好友请求相关路由（需要认证）- 代理到用户服务
+	friendRoutes := api.PathPrefix("/friends").Subrouter()
+	friendRoutes.Use(h.middleware.JWTAuth())
+	friendRoutes.HandleFunc("/request", h.proxyToUserService).Methods("POST")
+	friendRoutes.HandleFunc("/accept", h.proxyToUserService).Methods("POST")
+	friendRoutes.HandleFunc("/reject", h.proxyToUserService).Methods("POST")
+	friendRoutes.HandleFunc("/pending", h.proxyToUserService).Methods("GET")
+	friendRoutes.HandleFunc("/sent", h.proxyToUserService).Methods("GET")
+	friendRoutes.HandleFunc("", h.proxyToUserService).Methods("GET")
 
 	// 我的群组邀请路由（需要认证）- 代理到群组服务
 	// 注意：必须在 /groups PathPrefix 之前注册，避免路由冲突

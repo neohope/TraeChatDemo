@@ -172,9 +172,11 @@ class UserViewModel extends ChangeNotifier {
         _searchResults = response.data!;
         notifyListeners();
       } else {
+        _searchResults = [];
         _setError(response.message ?? '搜索用户失败');
       }
     } catch (e) {
+      _searchResults = [];
       _setError('搜索用户失败: $e');
     } finally {
       _setLoading(false);

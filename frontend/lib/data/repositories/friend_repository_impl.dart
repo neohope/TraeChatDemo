@@ -29,8 +29,22 @@ class FriendRepositoryImpl implements FriendRepository {
   @override
   Future<List<UserModel>> getFriends() async {
     try {
-      // 暂时返回空列表，避免 API 调用错误
-      return [];
+      final response = await _apiService.get('/api/v1/friends');
+      
+      // 处理 null 响应
+      if (response == null) {
+        _logger.logger.i('好友列表为空');
+        return [];
+      }
+      
+      List<dynamic> dataList = [];
+      if (response is List) {
+        dataList = response as List<dynamic>;
+      } else if (response is Map && response['data'] is List) {
+        dataList = response['data'] as List<dynamic>;
+      }
+      
+      return dataList.map((json) => UserModel.fromJson(json as Map<String, dynamic>)).toList();
     } catch (e) {
       _logger.logger.e('获取好友列表失败: $e');
       return [];
@@ -40,8 +54,22 @@ class FriendRepositoryImpl implements FriendRepository {
   @override
   Future<List<FriendRequest>> getPendingFriendRequests() async {
     try {
-      // 暂时返回空列表
-      return [];
+      final response = await _apiService.get('/api/v1/friends/pending');
+      
+      // 处理 null 响应
+      if (response == null) {
+        _logger.logger.i('待处理好友请求为空');
+        return [];
+      }
+      
+      List<dynamic> dataList = [];
+      if (response is List) {
+        dataList = response as List<dynamic>;
+      } else if (response is Map && response['data'] is List) {
+        dataList = response['data'] as List<dynamic>;
+      }
+      
+      return dataList.map((json) => FriendRequest.fromJson(json as Map<String, dynamic>)).toList();
     } catch (e) {
       _logger.logger.e('获取待处理好友请求失败: $e');
       return [];
@@ -51,8 +79,22 @@ class FriendRepositoryImpl implements FriendRepository {
   @override
   Future<List<FriendRequest>> getSentFriendRequests() async {
     try {
-      // 暂时返回空列表
-      return [];
+      final response = await _apiService.get('/api/v1/friends/sent');
+      
+      // 处理 null 响应
+      if (response == null) {
+        _logger.logger.i('已发送好友请求为空');
+        return [];
+      }
+      
+      List<dynamic> dataList = [];
+      if (response is List) {
+        dataList = response as List<dynamic>;
+      } else if (response is Map && response['data'] is List) {
+        dataList = response['data'] as List<dynamic>;
+      }
+      
+      return dataList.map((json) => FriendRequest.fromJson(json as Map<String, dynamic>)).toList();
     } catch (e) {
       _logger.logger.e('获取已发送好友请求失败: $e');
       return [];
@@ -73,10 +115,25 @@ class FriendRepositoryImpl implements FriendRepository {
   @override
   Future<void> sendFriendRequest(String userId, {String? message}) async {
     try {
-      _logger.logger.i('发送好友请求: $userId');
-      // 暂时只记录日志
+      final response = await _apiService.post('/api/v1/friends/request', data: {
+        'userId': userId,
+        'message': message,
+      });
+      
+      if (response['success'] != true) {
+        // 直接抛出API返回的错误信息，不添加额外前缀
+        final errorMessage = response['message'] ?? response['error'] ?? '发送好友请求失败';
+        throw Exception(errorMessage);
+      }
+      
+      _logger.logger.i('发送好友请求成功: $userId');
     } catch (e) {
       _logger.logger.e('发送好友请求失败: $e');
+      // 如果是我们自己抛出的异常，直接重新抛出
+      if (e is Exception) {
+        rethrow;
+      }
+      // 如果是其他类型的错误，包装后抛出
       throw Exception('发送好友请求失败: $e');
     }
   }
@@ -84,8 +141,15 @@ class FriendRepositoryImpl implements FriendRepository {
   @override
   Future<void> acceptFriendRequest(String requestId) async {
     try {
-      _logger.logger.i('接受好友请求: $requestId');
-      // 暂时只记录日志
+      final response = await _apiService.post('/api/v1/friends/accept', data: {
+        'requestId': requestId,
+      });
+      
+      if (response['success'] != true) {
+        throw Exception(response['message'] ?? '接受好友请求失败');
+      }
+      
+      _logger.logger.i('接受好友请求成功: $requestId');
     } catch (e) {
       _logger.logger.e('接受好友请求失败: $e');
       throw Exception('接受好友请求失败: $e');
@@ -95,8 +159,15 @@ class FriendRepositoryImpl implements FriendRepository {
   @override
   Future<void> rejectFriendRequest(String requestId) async {
     try {
-      _logger.logger.i('拒绝好友请求: $requestId');
-      // 暂时只记录日志
+      final response = await _apiService.post('/api/v1/friends/reject', data: {
+        'requestId': requestId,
+      });
+      
+      if (response['success'] != true) {
+        throw Exception(response['message'] ?? '拒绝好友请求失败');
+      }
+      
+      _logger.logger.i('拒绝好友请求成功: $requestId');
     } catch (e) {
       _logger.logger.e('拒绝好友请求失败: $e');
       throw Exception('拒绝好友请求失败: $e');

@@ -369,9 +369,10 @@ class UserListItemWidget extends StatelessWidget {
     try {
       await friendViewModel.sendFriendRequest(user.id);
       if (context.mounted) {
+        final displayName = user.nickname ?? user.name;
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
-            content: Text('已向 ${user.nickname} 发送好友请求'),
+            content: Text('已向 $displayName 发送好友请求'),
             backgroundColor: Colors.green,
           ),
         );

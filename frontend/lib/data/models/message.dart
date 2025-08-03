@@ -96,12 +96,12 @@ class Message {
   /// 从JSON映射创建实例
   factory Message.fromJson(Map<String, dynamic> json) {
     return Message(
-      id: json['id'],
-      senderId: json['sender_id'] ?? json['senderId'],
+      id: json['id'] ?? '',
+      senderId: json['sender_id'] ?? json['senderId'] ?? '',
       sender: json['sender'] != null ? User.fromJson(json['sender']) : null,
       receiverId: json['receiver_id'] ?? json['receiverId'],
       groupId: json['group_id'] ?? json['groupId'],
-      content: json['content'],
+      content: json['content'] ?? '',
       type: _parseMessageType(json['type']),
       status: _parseMessageStatus(json['status']),
       createdAt: json['created_at'] != null

@@ -55,6 +55,16 @@ TraeChatDemo 是一个现代化的聊天应用，采用微服务架构设计，�
   - 修复SA1029静态分析警告，使用自定义类型替代字符串作为context键
   - 只返回活跃用户，自动过滤敏感信息
 
+#### 🛠️ 数据解析稳定性修复
+- **Null值处理优化**: 彻底解决前端数据解析错误
+  - 修复 `Conversation.fromJson` 方法中 `id` 和 `title` 字段的null值处理
+  - 修复 `Message.fromJson` 方法中 `id`、`senderId` 和 `content` 字段的null值处理
+  - 修复 `User.fromJson` 方法中 `id`、`username`、`displayName` 和 `email` 字段的null值处理
+  - 修复 `ConversationModel.fromJson` 方法中 `id`、`name` 和 `lastMessageTime` 字段的null值处理
+  - 解决 `TypeError: null: type 'Null' is not a subtype of type 'String'` 错误
+  - 为所有必需的字符串字段添加空值保护（`?? ''`）
+  - 为DateTime字段添加null值检查和默认值处理
+
 #### 🔧 代码质量优化
 - **Go语言修复**: 修复了变量重复声明问题
   - 修复 `group-service/internal/handler/group_handler.go` 中多个函数的 `err` 变量重复声明

@@ -83,9 +83,9 @@ class Conversation {
   /// 从JSON映射创建实例
   factory Conversation.fromJson(Map<String, dynamic> json) {
     return Conversation(
-      id: json['id'],
+      id: json['id'] ?? '',
       type: _parseConversationType(json['type']),
-      title: json['title'],
+      title: json['title'] ?? '',
       avatarUrl: json['avatar_url'] ?? json['avatarUrl'],
       lastMessage: json['last_message'] != null
           ? Message.fromJson(json['last_message'])

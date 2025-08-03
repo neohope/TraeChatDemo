@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
 import '../../../domain/models/friend_request_model.dart';
+import '../../../domain/models/user_model.dart';
 import '../../viewmodels/friend_viewmodel.dart';
 import '../../viewmodels/user_search_viewmodel.dart' as presentation;
 import 'friend_list_widget.dart';
@@ -47,16 +48,67 @@ class _RequestsOnlyTabWidgetState extends State<RequestsOnlyTabWidget> {
                 _buildSectionHeader('收到的请求 (${pendingRequests.length})'),
                 const SizedBox(height: 8),
                 ...pendingRequests.map((request) {
-                  final user = userViewModel.getUserById(request.senderId);
-                  if (user == null) return const SizedBox.shrink();
+                  // 如果请求中已经包含用户信息，直接使用
+                  if (request.sender != null) {
+                    return FriendRequestItemWidget(
+                      request: request,
+                      user: request.sender!,
+                      isReceived: true,
+                      onAccept: () => _acceptFriendRequest(request),
+                      onReject: () => _rejectFriendRequest(request),
+                      onCancel: null,
+                    );
+                  }
                   
-                  return FriendRequestItemWidget(
-                    request: request,
-                    user: user,
-                    isReceived: true,
-                    onAccept: () => _acceptFriendRequest(request),
-                    onReject: () => _rejectFriendRequest(request),
-                    onCancel: null,
+                  // 否则尝试从缓存获取
+                  final user = userViewModel.getUserById(request.senderId);
+                  if (user != null) {
+                    return FriendRequestItemWidget(
+                      request: request,
+                      user: user,
+                      isReceived: true,
+                      onAccept: () => _acceptFriendRequest(request),
+                      onReject: () => _rejectFriendRequest(request),
+                      onCancel: null,
+                    );
+                  }
+                  
+                  // 如果没有用户信息，显示加载中的占位符
+                  return FutureBuilder<UserModel?>(
+                    future: userViewModel.getUserByIdAsync(request.senderId),
+                    builder: (context, snapshot) {
+                      if (snapshot.connectionState == ConnectionState.waiting) {
+                        return const ListTile(
+                          leading: CircleAvatar(
+                            child: CircularProgressIndicator(),
+                          ),
+                          title: Text('加载中...'),
+                        );
+                      }
+                      
+                      if (snapshot.hasData && snapshot.data != null) {
+                        return FriendRequestItemWidget(
+                          request: request,
+                          user: snapshot.data!,
+                          isReceived: true,
+                          onAccept: () => _acceptFriendRequest(request),
+                          onReject: () => _rejectFriendRequest(request),
+                          onCancel: null,
+                        );
+                      }
+                      
+                      // 如果加载失败，显示错误信息
+                      return ListTile(
+                        leading: const CircleAvatar(
+                          child: Icon(Icons.error),
+                        ),
+                        title: Text('用户信息加载失败 (ID: ${request.senderId})'),
+                        subtitle: const Text('点击重试'),
+                        onTap: () {
+                          setState(() {}); // 触发重新构建
+                        },
+                      );
+                    },
                   );
                 }).toList(),
                 const SizedBox(height: 24),
@@ -65,16 +117,67 @@ class _RequestsOnlyTabWidgetState extends State<RequestsOnlyTabWidget> {
                 _buildSectionHeader('发出的请求 (${sentRequests.length})'),
                 const SizedBox(height: 8),
                 ...sentRequests.map((request) {
-                  final user = userViewModel.getUserById(request.receiverId);
-                  if (user == null) return const SizedBox.shrink();
+                  // 如果请求中已经包含用户信息，直接使用
+                  if (request.receiver != null) {
+                    return FriendRequestItemWidget(
+                      request: request,
+                      user: request.receiver!,
+                      isReceived: false,
+                      onAccept: null,
+                      onReject: null,
+                      onCancel: () => _cancelFriendRequest(request),
+                    );
+                  }
                   
-                  return FriendRequestItemWidget(
-                    request: request,
-                    user: user,
-                    isReceived: false,
-                    onAccept: null,
-                    onReject: null,
-                    onCancel: () => _cancelFriendRequest(request),
+                  // 否则尝试从缓存获取
+                  final user = userViewModel.getUserById(request.receiverId);
+                  if (user != null) {
+                    return FriendRequestItemWidget(
+                      request: request,
+                      user: user,
+                      isReceived: false,
+                      onAccept: null,
+                      onReject: null,
+                      onCancel: () => _cancelFriendRequest(request),
+                    );
+                  }
+                  
+                  // 如果没有用户信息，显示加载中的占位符
+                  return FutureBuilder<UserModel?>(
+                    future: userViewModel.getUserByIdAsync(request.receiverId),
+                    builder: (context, snapshot) {
+                      if (snapshot.connectionState == ConnectionState.waiting) {
+                        return const ListTile(
+                          leading: CircleAvatar(
+                            child: CircularProgressIndicator(),
+                          ),
+                          title: Text('加载中...'),
+                        );
+                      }
+                      
+                      if (snapshot.hasData && snapshot.data != null) {
+                        return FriendRequestItemWidget(
+                          request: request,
+                          user: snapshot.data!,
+                          isReceived: false,
+                          onAccept: null,
+                          onReject: null,
+                          onCancel: () => _cancelFriendRequest(request),
+                        );
+                      }
+                      
+                      // 如果加载失败，显示错误信息
+                      return ListTile(
+                        leading: const CircleAvatar(
+                          child: Icon(Icons.error),
+                        ),
+                        title: Text('用户信息加载失败 (ID: ${request.receiverId})'),
+                        subtitle: const Text('点击重试'),
+                        onTap: () {
+                          setState(() {}); // 触发重新构建
+                        },
+                      );
+                    },
                   );
                 }).toList(),
               ],

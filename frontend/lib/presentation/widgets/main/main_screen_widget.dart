@@ -18,6 +18,7 @@ import '../group/group_list_widget.dart';
 import '../notification/notification_widget.dart';
 import '../settings/settings_widget.dart';
 import '../../../core/utils/app_logger.dart';
+import '../../../utils/friend_request_error_handler.dart';
 
 /// 主屏幕组件
 class MainScreenWidget extends StatefulWidget {
@@ -678,13 +679,19 @@ class _NearbyUsersWidgetState extends State<NearbyUsersWidget> {
     }
   }
 
-  void _addFriend(dynamic user) {
-    // 添加好友逻辑
-    ScaffoldMessenger.of(context).showSnackBar(
-      SnackBar(
-        content: Text('已向 ${user['nickname']} 发送好友请求'),
-        backgroundColor: Colors.green,
-      ),
+  Future<void> _addFriend(dynamic user) async {
+    final displayName = user['nickname'] ?? user['name'] ?? '该用户';
+    
+    await FriendRequestErrorHandler.handleFriendRequest(
+      context,
+      displayName,
+      () async {
+        final friendViewModel = Provider.of<FriendViewModel>(context, listen: false);
+        await friendViewModel.sendFriendRequest(
+          user['id'] ?? user['userId'],
+          message: null,
+        );
+      },
     );
   }
 

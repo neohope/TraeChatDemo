@@ -44,15 +44,17 @@ func main() {
 
 	// 初始化仓库
 	userRepo := repository.NewUserRepository(db)
+	friendRepo := repository.NewFriendRepository(db)
 
 	// 初始化JWT管理器
 	jwtManager := auth.NewJWTManager(cfg.JWT.SecretKey, cfg.JWT.ExpirationHours)
 
 	// 初始化服务
 	userService := service.NewUserService(userRepo, jwtManager, logger)
+	friendService := service.NewFriendService(friendRepo, userRepo, logger)
 
 	// 初始化HTTP处理器
-	userHandler := httpdelivery.NewUserHandler(userService, jwtManager, logger)
+	userHandler := httpdelivery.NewUserHandler(userService, friendService, jwtManager, logger)
 
 	// 初始化路由
 	router := mux.NewRouter()

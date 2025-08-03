@@ -50,11 +50,16 @@ class FriendRequest {
 
   /// 从JSON创建FriendRequest对象
   factory FriendRequest.fromJson(Map<String, dynamic> json) {
+    // 安全获取字符串字段，处理 null 值
+    final id = json['id']?.toString() ?? '';
+    final senderId = (json['sender_id'] ?? json['from_user_id'])?.toString() ?? '';
+    final receiverId = (json['receiver_id'] ?? json['to_user_id'])?.toString() ?? '';
+    
     return FriendRequest(
-      id: json['id'] as String,
-      senderId: json['sender_id'] as String,
-      receiverId: json['receiver_id'] as String,
-      message: json['message'] as String?,
+      id: id,
+      senderId: senderId,
+      receiverId: receiverId,
+      message: json['message']?.toString(),
       status: FriendRequestStatus.values.firstWhere(
         (e) => e.name == json['status'],
         orElse: () => FriendRequestStatus.pending,
@@ -63,17 +68,21 @@ class FriendRequest {
         (e) => e.name == json['type'],
         orElse: () => FriendRequestType.normal,
       ),
-      createdAt: DateTime.parse(json['created_at']),
-      updatedAt: DateTime.parse(json['updated_at']),
+      createdAt: DateTime.parse(json['created_at'] ?? DateTime.now().toIso8601String()),
+      updatedAt: DateTime.parse(json['updated_at'] ?? DateTime.now().toIso8601String()),
       expiresAt: json['expires_at'] != null
           ? DateTime.parse(json['expires_at'])
           : null,
       metadata: json['metadata'] as Map<String, dynamic>?,
       sender: json['sender'] != null
           ? UserModel.fromJson(json['sender'])
+          : json['from_user'] != null
+          ? UserModel.fromJson(json['from_user'])
           : null,
       receiver: json['receiver'] != null
           ? UserModel.fromJson(json['receiver'])
+          : json['to_user'] != null
+          ? UserModel.fromJson(json['to_user'])
           : null,
     );
   }

@@ -8,6 +8,7 @@ import '../../viewmodels/user_viewmodel.dart';
 import '../../viewmodels/friend_viewmodel.dart';
 import '../../viewmodels/chat_viewmodel.dart';
 import '../../../core/utils/app_logger.dart';
+import '../../../utils/friend_request_error_handler.dart';
 // 需要时导入这些包
 // import '../../../core/utils/date_utils.dart';
 // import '../../../core/utils/image_utils.dart';
@@ -683,27 +684,18 @@ class _UserDetailWidgetState extends State<UserDetailWidget> {
   }
 
   void _addFriend(UserModel user, FriendViewModel friendViewModel) async {
-    try {
-      await friendViewModel.sendFriendRequest(user.id);
-      if (mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(
-            content: Text('已向 ${user.nickname} 发送好友请求'),
-            backgroundColor: Colors.green,
-          ),
-        );
-        widget.onAddFriend?.call(user);
-      }
-    } catch (e) {
-      if (mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(
-            content: Text('发送好友请求失败: $e'),
-            backgroundColor: Colors.red,
-          ),
-        );
-      }
-    }
+    final displayName = user.nickname ?? user.name;
+    
+    await FriendRequestErrorHandler.handleFriendRequest(
+      context,
+      displayName,
+      () async {
+        await friendViewModel.sendFriendRequest(user.id);
+        if (mounted) {
+          widget.onAddFriend?.call(user);
+        }
+      },
+    );
   }
 
   void _removeFriend(UserModel user, FriendViewModel friendViewModel) async {
@@ -729,9 +721,10 @@ class _UserDetailWidgetState extends State<UserDetailWidget> {
       try {
         await friendViewModel.removeFriend(user.id);
         if (mounted) {
+          final displayName = user.nickname ?? user.name;
           ScaffoldMessenger.of(context).showSnackBar(
             SnackBar(
-              content: Text('已删除好友 ${user.nickname}'),
+              content: Text('已删除好友 $displayName'),
               backgroundColor: Colors.green,
             ),
           );

@@ -26,17 +26,19 @@ const (
 
 // UserHandler 处理用户相关的HTTP请求
 type UserHandler struct {
-	userService domain.UserService
-	jwtManager  *auth.JWTManager
-	logger      *zap.Logger
+	userService   domain.UserService
+	friendService domain.FriendService
+	jwtManager    *auth.JWTManager
+	logger        *zap.Logger
 }
 
 // NewUserHandler 创建一个新的用户处理器
-func NewUserHandler(userService domain.UserService, jwtManager *auth.JWTManager, logger *zap.Logger) *UserHandler {
+func NewUserHandler(userService domain.UserService, friendService domain.FriendService, jwtManager *auth.JWTManager, logger *zap.Logger) *UserHandler {
 	return &UserHandler{
-		userService: userService,
-		jwtManager:  jwtManager,
-		logger:      logger,
+		userService:   userService,
+		friendService: friendService,
+		jwtManager:    jwtManager,
+		logger:        logger,
 	}
 }
 
@@ -61,6 +63,13 @@ func (h *UserHandler) RegisterRoutes(router *mux.Router) {
 	authRouter.HandleFunc("/users/contacts", h.AddContact).Methods("POST")
 	authRouter.HandleFunc("/users/contacts/{contactId}", h.RemoveContact).Methods("DELETE")
 	authRouter.HandleFunc("/users/contacts/{contactId}/favorite", h.ToggleFavoriteContact).Methods("POST")
+	// 好友请求相关路由
+	authRouter.HandleFunc("/friends/request", h.SendFriendRequest).Methods("POST")
+	authRouter.HandleFunc("/friends/accept", h.AcceptFriendRequest).Methods("POST")
+	authRouter.HandleFunc("/friends/reject", h.RejectFriendRequest).Methods("POST")
+	authRouter.HandleFunc("/friends/pending", h.GetPendingFriendRequests).Methods("GET")
+	authRouter.HandleFunc("/friends/sent", h.GetSentFriendRequests).Methods("GET")
+	authRouter.HandleFunc("/friends", h.GetFriends).Methods("GET")
 	// 通用路由必须在最后注册
 	authRouter.HandleFunc("/users/{id}", h.GetUser).Methods("GET")
 	authRouter.HandleFunc("/users/{id}", h.UpdateUser).Methods("PUT")
@@ -466,6 +475,152 @@ func (h *UserHandler) GetRecommendedUsers(w http.ResponseWriter, r *http.Request
 		"data":    recommendedUsers,
 		"message": "推荐用户获取成功",
 	})
+}
+
+// SendFriendRequest 发送好友请求
+func (h *UserHandler) SendFriendRequest(w http.ResponseWriter, r *http.Request) {
+	// 从上下文中获取当前用户ID
+	currentUserID := r.Context().Value(userIDKey).(string)
+	
+	// 解析请求
+	var req domain.SendFriendRequestRequest
+	if err := json.NewDecoder(r.Body).Decode(&req); err != nil {
+		h.respondError(w, http.StatusBadRequest, "Invalid request payload")
+		return
+	}
+	
+	if req.UserID == "" {
+		h.respondError(w, http.StatusBadRequest, "User ID is required")
+		return
+	}
+	
+	if req.UserID == currentUserID {
+		h.respondError(w, http.StatusBadRequest, "Cannot send friend request to yourself")
+		return
+	}
+	
+	// 调用服务层发送好友请求
+	err := h.friendService.SendFriendRequest(r.Context(), currentUserID, req.UserID, req.Message)
+	if err != nil {
+		h.logger.Error("Failed to send friend request", zap.String("from", currentUserID), zap.String("to", req.UserID), zap.Error(err))
+		h.respondError(w, http.StatusBadRequest, err.Error())
+		return
+	}
+	
+	h.respondJSON(w, http.StatusOK, map[string]interface{}{
+		"success": true,
+		"message": "好友请求发送成功",
+	})
+}
+
+// AcceptFriendRequest 接受好友请求
+func (h *UserHandler) AcceptFriendRequest(w http.ResponseWriter, r *http.Request) {
+	// 从上下文中获取当前用户ID
+	currentUserID := r.Context().Value(userIDKey).(string)
+	
+	// 解析请求
+	var req domain.AcceptFriendRequestRequest
+	if err := json.NewDecoder(r.Body).Decode(&req); err != nil {
+		h.respondError(w, http.StatusBadRequest, "Invalid request payload")
+		return
+	}
+	
+	if req.RequestID == "" {
+		h.respondError(w, http.StatusBadRequest, "Request ID is required")
+		return
+	}
+	
+	// 调用服务层接受好友请求
+	err := h.friendService.AcceptFriendRequest(r.Context(), req.RequestID, currentUserID)
+	if err != nil {
+		h.logger.Error("Failed to accept friend request", zap.String("user", currentUserID), zap.String("request", req.RequestID), zap.Error(err))
+		h.respondError(w, http.StatusBadRequest, err.Error())
+		return
+	}
+	
+	h.respondJSON(w, http.StatusOK, map[string]interface{}{
+		"success": true,
+		"message": "好友请求已接受",
+	})
+}
+
+// RejectFriendRequest 拒绝好友请求
+func (h *UserHandler) RejectFriendRequest(w http.ResponseWriter, r *http.Request) {
+	// 从上下文中获取当前用户ID
+	currentUserID := r.Context().Value(userIDKey).(string)
+	
+	// 解析请求
+	var req domain.RejectFriendRequestRequest
+	if err := json.NewDecoder(r.Body).Decode(&req); err != nil {
+		h.respondError(w, http.StatusBadRequest, "Invalid request payload")
+		return
+	}
+	
+	if req.RequestID == "" {
+		h.respondError(w, http.StatusBadRequest, "Request ID is required")
+		return
+	}
+	
+	// 调用服务层拒绝好友请求
+	err := h.friendService.RejectFriendRequest(r.Context(), req.RequestID, currentUserID)
+	if err != nil {
+		h.logger.Error("Failed to reject friend request", zap.String("user", currentUserID), zap.String("request", req.RequestID), zap.Error(err))
+		h.respondError(w, http.StatusBadRequest, err.Error())
+		return
+	}
+	
+	h.respondJSON(w, http.StatusOK, map[string]interface{}{
+		"success": true,
+		"message": "好友请求已拒绝",
+	})
+}
+
+// GetPendingFriendRequests 获取待处理的好友请求
+func (h *UserHandler) GetPendingFriendRequests(w http.ResponseWriter, r *http.Request) {
+	// 从上下文中获取当前用户ID
+	currentUserID := r.Context().Value(userIDKey).(string)
+	
+	// 调用服务层获取待处理好友请求
+	requests, err := h.friendService.GetPendingFriendRequests(r.Context(), currentUserID)
+	if err != nil {
+		h.logger.Error("Failed to get pending friend requests", zap.String("user", currentUserID), zap.Error(err))
+		h.respondError(w, http.StatusInternalServerError, "Failed to get pending friend requests")
+		return
+	}
+	
+	h.respondJSON(w, http.StatusOK, requests)
+}
+
+// GetSentFriendRequests 获取已发送的好友请求
+func (h *UserHandler) GetSentFriendRequests(w http.ResponseWriter, r *http.Request) {
+	// 从上下文中获取当前用户ID
+	currentUserID := r.Context().Value(userIDKey).(string)
+	
+	// 调用服务层获取已发送好友请求
+	requests, err := h.friendService.GetSentFriendRequests(r.Context(), currentUserID)
+	if err != nil {
+		h.logger.Error("Failed to get sent friend requests", zap.String("user", currentUserID), zap.Error(err))
+		h.respondError(w, http.StatusInternalServerError, "Failed to get sent friend requests")
+		return
+	}
+	
+	h.respondJSON(w, http.StatusOK, requests)
+}
+
+// GetFriends 获取好友列表
+func (h *UserHandler) GetFriends(w http.ResponseWriter, r *http.Request) {
+	// 从上下文中获取当前用户ID
+	currentUserID := r.Context().Value(userIDKey).(string)
+	
+	// 调用服务层获取好友列表
+	friends, err := h.friendService.GetFriends(r.Context(), currentUserID)
+	if err != nil {
+		h.logger.Error("Failed to get friends list", zap.String("user", currentUserID), zap.Error(err))
+		h.respondError(w, http.StatusInternalServerError, "Failed to get friends list")
+		return
+	}
+	
+	h.respondJSON(w, http.StatusOK, friends)
 }
 
 // validateRegisterRequest 验证注册请求

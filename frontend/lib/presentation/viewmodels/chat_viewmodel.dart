@@ -305,9 +305,8 @@ class ChatViewModel extends ChangeNotifier {
 
     try {
       final response = await _apiService.post('/api/v1/conversations', data: {
-        'participantIds': [participantId],
+        'participants': [participantId],
         'type': type,
-        'title': title,
       });
       
       if (response['success'] == true) {

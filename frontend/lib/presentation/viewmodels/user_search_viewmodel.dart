@@ -65,14 +65,21 @@ class UserSearchViewModel extends ChangeNotifier {
       final response = await _apiService.get('/api/v1/users/search?q=${Uri.encodeComponent(query)}');
       
       if (response['success'] == true) {
-        _searchResults = (response['data'] as List)
-            .map((json) => UserModel.fromJson(json))
-            .toList();
+        final data = response['data'];
+        if (data != null && data is List) {
+          _searchResults = data
+              .map((json) => UserModel.fromJson(json))
+              .toList();
+        } else {
+          _searchResults = [];
+        }
       } else {
+        _searchResults = [];
         _setError(response['message'] ?? '搜索用户失败');
       }
     } catch (e) {
       _logger.error('搜索用户失败: $e');
+      _searchResults = [];
       _setError('搜索用户失败: $e');
     } finally {
       _setLoading(false);
@@ -321,9 +328,40 @@ class UserSearchViewModel extends ChangeNotifier {
     try {
       return _users.firstWhere((user) => user.id == userId);
     } catch (e) {
-      // 如果没找到，返回null
-      return null;
+      // 如果在用户列表中没找到，检查搜索结果
+      try {
+        return _searchResults.firstWhere((user) => user.id == userId);
+      } catch (e) {
+        // 如果都没找到，返回null
+        return null;
+      }
     }
+  }
+
+  /// 异步获取用户信息（如果本地没有缓存）
+  Future<UserModel?> getUserByIdAsync(String userId) async {
+    // 首先尝试从本地缓存获取
+    final cachedUser = getUserById(userId);
+    if (cachedUser != null) {
+      return cachedUser;
+    }
+
+    // 如果本地没有，从服务器获取
+    try {
+      final response = await _apiService.get('/api/v1/users/$userId');
+      
+      if (response['success'] == true) {
+        final user = UserModel.fromJson(response['data']);
+        // 将用户添加到缓存中
+        _users.add(user);
+        notifyListeners();
+        return user;
+      }
+    } catch (e) {
+      _logger.error('异步获取用户信息失败: $e');
+    }
+    
+    return null;
   }
 
   /// 设置当前用户

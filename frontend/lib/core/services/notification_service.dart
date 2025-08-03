@@ -107,11 +107,13 @@ class NotificationService {
 
     try {
       final notification = {
+        'id': DateTime.now().millisecondsSinceEpoch,
         'title': title,
         'body': body,
-        'icon': icon,
-        'data': data,
-        'timestamp': DateTime.now().millisecondsSinceEpoch,
+        'type': 'system',
+        'data': data ?? {},
+        'timestamp': DateTime.now().toIso8601String(),
+        'isRead': false,
       };
 
       // 发送到通知流

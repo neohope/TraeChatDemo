@@ -94,10 +94,10 @@ class NotificationViewModel extends ChangeNotifier {
   /// 加载通知历史
   Future<void> _loadNotifications() async {
     try {
-      final notificationsJson = await _localStorage.getStringList('notifications');
-      if (notificationsJson != null) {
+      final notificationsJson = await LocalStorage.getNotifications();
+      if (notificationsJson.isNotEmpty) {
         _notifications = notificationsJson
-            .map((json) => NotificationModel.fromJson(jsonDecode(json) as Map<String, dynamic>))
+            .map((json) => NotificationModel.fromJson(json as Map<String, dynamic>))
             .toList();
         _updateUnreadCount();
       }
@@ -109,8 +109,7 @@ class NotificationViewModel extends ChangeNotifier {
   /// 保存通知历史
   Future<void> _saveNotifications() async {
     try {
-      final notificationsJson = _notifications.map((n) => jsonEncode(n.toJson())).toList();
-      await _localStorage.setStringList('notifications', notificationsJson);
+      await LocalStorage.saveNotifications(_notifications);
     } catch (e) {
       _logger.error('保存通知历史失败: $e');
     }

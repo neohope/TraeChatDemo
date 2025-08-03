@@ -34,6 +34,7 @@ type GroupService interface {
 	AcceptInvitation(ctx context.Context, userID uuid.UUID, invitationID uuid.UUID) error
 	RejectInvitation(ctx context.Context, userID uuid.UUID, invitationID uuid.UUID) error
 	GetPendingInvitations(ctx context.Context, userID uuid.UUID) ([]*models.GroupInvitation, error)
+	GetGroupInvitations(ctx context.Context, groupID uuid.UUID) ([]*models.GroupInvitation, error)
 }
 
 // groupService 群组服务实现
@@ -538,6 +539,15 @@ func (s *groupService) GetPendingInvitations(ctx context.Context, userID uuid.UU
 	invitations, err := s.repo.GetPendingInvitations(ctx, userID)
 	if err != nil {
 		return nil, fmt.Errorf("failed to get pending invitations: %w", err)
+	}
+	return invitations, nil
+}
+
+// GetGroupInvitations 获取群组邀请列表
+func (s *groupService) GetGroupInvitations(ctx context.Context, groupID uuid.UUID) ([]*models.GroupInvitation, error) {
+	invitations, err := s.repo.GetGroupInvitations(ctx, groupID)
+	if err != nil {
+		return nil, fmt.Errorf("failed to get group invitations: %w", err)
 	}
 	return invitations, nil
 }
