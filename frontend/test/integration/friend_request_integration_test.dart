@@ -167,7 +167,7 @@ class MockFriendRepository implements FriendRepository {
         dataList = response['data'] as List<dynamic>;
       }
       
-      return dataList.map((json) => FriendRequest.fromJson(json as Map<String, dynamic>)).toList();
+      return dataList.map((json) => FriendRequest.fromJson(Map<String, dynamic>.from(json))).toList();
     } catch (e) {
       return [];
     }

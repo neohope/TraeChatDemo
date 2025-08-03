@@ -82,7 +82,7 @@ class ChatViewModel extends ChangeNotifier {
       final localConversationsData = await LocalStorage.getConversations();
       if (localConversationsData.isNotEmpty) {
         _conversations = localConversationsData
-            .map((json) => ConversationModel.fromJson(json as Map<String, dynamic>))
+            .map((json) => ConversationModel.fromJson(Map<String, dynamic>.from(json)))
             .toList();
         notifyListeners();
       }
@@ -95,7 +95,7 @@ class ChatViewModel extends ChangeNotifier {
         if (data != null && data is List) {
           final List<dynamic> conversationList = data;
           _conversations = conversationList
-              .map((json) => ConversationModel.fromJson(json as Map<String, dynamic>))
+              .map((json) => ConversationModel.fromJson(Map<String, dynamic>.from(json)))
               .toList();
           
           // 保存到本地存储
@@ -164,7 +164,7 @@ class ChatViewModel extends ChangeNotifier {
         if (data != null && data is List) {
           final List<dynamic> messageList = data;
           _currentMessages = messageList
-              .map((json) => MessageModel.fromJson(json as Map<String, dynamic>))
+              .map((json) => MessageModel.fromJson(Map<String, dynamic>.from(json)))
               .toList();
           
           // 保存到本地存储
@@ -354,7 +354,7 @@ class ChatViewModel extends ChangeNotifier {
 
   /// 处理新收到的消息
   void _handleNewMessage(Map<String, dynamic> messageData) {
-    final message = MessageModel.fromJson(messageData);
+    final message = MessageModel.fromJson(Map<String, dynamic>.from(messageData));
     // 如果是当前对话的消息，添加到消息列表
     if (_currentConversation?.id == message.conversationId) {
       _currentMessages.add(message);

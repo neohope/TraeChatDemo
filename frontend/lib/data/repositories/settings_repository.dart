@@ -127,7 +127,7 @@ class AppSettings {
       enablePrivacyMode: json['enable_privacy_mode'] as bool? ?? false,
       enableAppLock: json['enable_app_lock'] as bool? ?? false,
       appLockType: json['app_lock_type'] as String? ?? 'none',
-      customSettings: json['custom_settings'] as Map<String, dynamic>?,
+      customSettings: json['custom_settings'] != null ? Map<String, dynamic>.from(json['custom_settings']) : null,
     );
   }
   

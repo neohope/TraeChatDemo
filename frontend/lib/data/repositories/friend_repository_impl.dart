@@ -44,7 +44,7 @@ class FriendRepositoryImpl implements FriendRepository {
         dataList = response['data'] as List<dynamic>;
       }
       
-      return dataList.map((json) => UserModel.fromJson(json as Map<String, dynamic>)).toList();
+      return dataList.map((json) => UserModel.fromJson(Map<String, dynamic>.from(json))).toList();
     } catch (e) {
       _logger.logger.e('获取好友列表失败: $e');
       return [];
@@ -69,7 +69,7 @@ class FriendRepositoryImpl implements FriendRepository {
         dataList = response['data'] as List<dynamic>;
       }
       
-      return dataList.map((json) => FriendRequest.fromJson(json as Map<String, dynamic>)).toList();
+      return dataList.map((json) => FriendRequest.fromJson(Map<String, dynamic>.from(json))).toList();
     } catch (e) {
       _logger.logger.e('获取待处理好友请求失败: $e');
       return [];
@@ -94,7 +94,7 @@ class FriendRepositoryImpl implements FriendRepository {
         dataList = response['data'] as List<dynamic>;
       }
       
-      return dataList.map((json) => FriendRequest.fromJson(json as Map<String, dynamic>)).toList();
+      return dataList.map((json) => FriendRequest.fromJson(Map<String, dynamic>.from(json))).toList();
     } catch (e) {
       _logger.logger.e('获取已发送好友请求失败: $e');
       return [];

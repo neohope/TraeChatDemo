@@ -334,9 +334,16 @@ class ApiService {
   Map<String, dynamic> _processResponse(Response response) {
     if (response.data is Map<String, dynamic>) {
       return response.data;
+    } else if (response.data is Map) {
+      // 处理LinkedMap等其他Map类型，安全转换为Map<String, dynamic>
+      return Map<String, dynamic>.from(response.data);
     } else if (response.data is String) {
       try {
-        return json.decode(response.data);
+        final decoded = json.decode(response.data);
+        if (decoded is Map) {
+          return Map<String, dynamic>.from(decoded);
+        }
+        return {'data': decoded, 'success': true};
       } catch (e) {
         return {'data': response.data, 'success': true};
       }

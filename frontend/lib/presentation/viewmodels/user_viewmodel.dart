@@ -68,7 +68,7 @@ class UserViewModel extends ChangeNotifier {
         final data = response['data'];
         if (data != null && data is List) {
           _searchResults = data
-              .map((json) => UserModel.fromJson(json))
+              .map((json) => UserModel.fromJson(Map<String, dynamic>.from(json)))
               .toList();
         } else {
           _searchResults = [];
