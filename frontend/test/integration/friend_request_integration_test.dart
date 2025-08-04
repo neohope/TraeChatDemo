@@ -1,10 +1,7 @@
 import 'package:flutter_test/flutter_test.dart';
-import 'package:chat_app/data/repositories/friend_repository_impl.dart';
 import 'package:chat_app/domain/models/friend_request_model.dart';
 import 'package:chat_app/domain/models/user_model.dart';
 import 'package:chat_app/domain/repositories/friend_repository.dart';
-import 'package:chat_app/core/services/api_service.dart';
-import 'package:chat_app/core/config/app_config.dart';
 import 'package:chat_app/presentation/viewmodels/friend_viewmodel.dart';
 import 'package:chat_app/core/services/notification_service.dart';
 

@@ -599,6 +599,11 @@ class _ChatScreenWidgetState extends State<ChatScreenWidget>
     if (isFromCurrentUser) return false;
     if (index == 0) return true;
     
+    // 检查索引边界，避免越界访问
+    if (index >= messages.length || messages.length - index >= messages.length) {
+      return true;
+    }
+    
     final currentMessage = messages[messages.length - 1 - index];
     final nextMessage = messages[messages.length - index];
     
@@ -607,6 +612,11 @@ class _ChatScreenWidgetState extends State<ChatScreenWidget>
 
   bool _shouldShowTimestamp(List<MessageModel> messages, int index) {
     if (index == 0) return true;
+    
+    // 检查索引边界，避免越界访问
+    if (index >= messages.length || messages.length - index >= messages.length) {
+      return true;
+    }
     
     final currentMessage = messages[messages.length - 1 - index];
     final nextMessage = messages[messages.length - index];
@@ -617,6 +627,11 @@ class _ChatScreenWidgetState extends State<ChatScreenWidget>
 
   bool _shouldShowDateSeparator(List<MessageModel> messages, int index) {
     if (index == messages.length - 1) return true;
+    
+    // 检查索引边界，避免越界访问
+    if (index >= messages.length || messages.length - index >= messages.length) {
+      return true;
+    }
     
     final currentMessage = messages[messages.length - 1 - index];
     final previousMessage = messages[messages.length - index];

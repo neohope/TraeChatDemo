@@ -1,11 +1,10 @@
+// ignore_for_file: override_on_non_overriding_member
+
 import 'package:flutter_test/flutter_test.dart';
 import 'package:chat_app/domain/viewmodels/conversation_viewmodel.dart';
 import 'package:chat_app/data/repositories/conversation_repository.dart';
 import 'package:chat_app/data/models/conversation.dart';
 import 'package:chat_app/data/models/api_response.dart';
-import 'package:chat_app/data/models/user.dart';
-import 'package:chat_app/data/models/group.dart';
-import 'package:chat_app/data/models/message.dart';
 import 'package:chat_app/core/config/app_config.dart';
 
 // Mock实现

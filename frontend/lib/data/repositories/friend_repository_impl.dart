@@ -31,16 +31,10 @@ class FriendRepositoryImpl implements FriendRepository {
     try {
       final response = await _apiService.get('/api/v1/friends');
       
-      // 处理 null 响应
-      if (response == null) {
-        _logger.logger.i('好友列表为空');
-        return [];
-      }
-      
       List<dynamic> dataList = [];
       if (response is List) {
         dataList = response as List<dynamic>;
-      } else if (response is Map && response['data'] is List) {
+      } else if (response['data'] is List) {
         dataList = response['data'] as List<dynamic>;
       }
       
@@ -56,16 +50,10 @@ class FriendRepositoryImpl implements FriendRepository {
     try {
       final response = await _apiService.get('/api/v1/friends/pending');
       
-      // 处理 null 响应
-      if (response == null) {
-        _logger.logger.i('待处理好友请求为空');
-        return [];
-      }
-      
       List<dynamic> dataList = [];
       if (response is List) {
         dataList = response as List<dynamic>;
-      } else if (response is Map && response['data'] is List) {
+      } else if (response['data'] is List) {
         dataList = response['data'] as List<dynamic>;
       }
       
@@ -81,16 +69,10 @@ class FriendRepositoryImpl implements FriendRepository {
     try {
       final response = await _apiService.get('/api/v1/friends/sent');
       
-      // 处理 null 响应
-      if (response == null) {
-        _logger.logger.i('已发送好友请求为空');
-        return [];
-      }
-      
       List<dynamic> dataList = [];
       if (response is List) {
         dataList = response as List<dynamic>;
-      } else if (response is Map && response['data'] is List) {
+      } else if (response['data'] is List) {
         dataList = response['data'] as List<dynamic>;
       }
       
