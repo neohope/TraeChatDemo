@@ -440,7 +440,7 @@ class ChatListItemWidget extends StatelessWidget {
   }
 
   String _getAvatarText() {
-    return chat.name.substring(0, 1).toUpperCase();
+    return chat.name.isNotEmpty ? chat.name.substring(0, 1).toUpperCase() : '?';
   }
 
   UserModel? _getOtherUser(UserSearchViewModel userViewModel) {

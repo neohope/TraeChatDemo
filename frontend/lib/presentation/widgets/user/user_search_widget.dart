@@ -291,6 +291,7 @@ class _UserSearchWidgetState extends State<UserSearchWidget>
         itemBuilder: (context, index) {
           final user = users[index];
           final isSelected = _selectedUsers.contains(user);
+          final displayName = user.nickname ?? user.name ?? '';
           
           return GestureDetector(
             onTap: () => _onUserTap(user),
@@ -308,7 +309,7 @@ class _UserSearchWidgetState extends State<UserSearchWidget>
                             : null,
                         child: user.avatarUrl == null
                             ? Text(
-                                (user.nickname ?? user.name).substring(0, 1).toUpperCase(),
+                                displayName.isNotEmpty ? displayName[0].toUpperCase() : '?',
                                 style: const TextStyle(
                                   fontSize: 16,
                                   fontWeight: FontWeight.bold,
@@ -359,7 +360,7 @@ class _UserSearchWidgetState extends State<UserSearchWidget>
                   ),
                   const SizedBox(height: 8),
                   Text(
-                    user.nickname ?? user.name,
+                    displayName,
                     style: const TextStyle(
                       fontSize: 12,
                       fontWeight: FontWeight.w500,

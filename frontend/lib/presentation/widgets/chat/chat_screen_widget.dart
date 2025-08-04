@@ -605,12 +605,12 @@ class _ChatScreenWidgetState extends State<ChatScreenWidget>
     if (index == 0) return true;
     
     // 检查索引边界，避免越界访问
-    if (index >= messages.length || messages.length - index >= messages.length) {
+    if (index >= messages.length || index <= 0) {
       return true;
     }
     
     final currentMessage = messages[messages.length - 1 - index];
-    final nextMessage = messages[messages.length - index];
+    final nextMessage = messages[messages.length - 1 - (index - 1)];
     
     return currentMessage.senderId != nextMessage.senderId;
   }
@@ -619,12 +619,12 @@ class _ChatScreenWidgetState extends State<ChatScreenWidget>
     if (index == 0) return true;
     
     // 检查索引边界，避免越界访问
-    if (index >= messages.length || messages.length - index >= messages.length) {
+    if (index >= messages.length || index <= 0) {
       return true;
     }
     
     final currentMessage = messages[messages.length - 1 - index];
-    final nextMessage = messages[messages.length - index];
+    final nextMessage = messages[messages.length - 1 - (index - 1)];
     
     final timeDiff = nextMessage.createdAt.difference(currentMessage.createdAt);
     return timeDiff.inMinutes > 5;
@@ -634,12 +634,12 @@ class _ChatScreenWidgetState extends State<ChatScreenWidget>
     if (index == messages.length - 1) return true;
     
     // 检查索引边界，避免越界访问
-    if (index >= messages.length || messages.length - index >= messages.length) {
+    if (index + 1 >= messages.length) {
       return true;
     }
     
     final currentMessage = messages[messages.length - 1 - index];
-    final previousMessage = messages[messages.length - index];
+    final previousMessage = messages[messages.length - 1 - (index + 1)];
     
     return !AppDateUtils.isSameDay(currentMessage.createdAt, previousMessage.createdAt);
   }

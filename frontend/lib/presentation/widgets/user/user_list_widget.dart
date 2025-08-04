@@ -247,6 +247,7 @@ class UserListItemWidget extends StatelessWidget {
   }
 
   Widget _buildAvatar() {
+    final displayName = user.nickname ?? user.name;
     return Stack(
       children: [
         CircleAvatar(
@@ -256,7 +257,7 @@ class UserListItemWidget extends StatelessWidget {
               : null,
           child: user.avatarUrl == null
               ? Text(
-                  (user.nickname ?? user.name).substring(0, 1).toUpperCase(),
+                  displayName.isNotEmpty ? displayName.substring(0, 1).toUpperCase() : '?',
                   style: const TextStyle(
                     fontSize: 16,
                     fontWeight: FontWeight.bold,
@@ -555,6 +556,7 @@ class UserActionMenuWidget extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final displayName = user.nickname ?? user.name;
     return Container(
       padding: const EdgeInsets.all(16),
       child: Column(
@@ -569,7 +571,7 @@ class UserActionMenuWidget extends StatelessWidget {
                     : null,
                 child: user.avatarUrl == null
                     ? Text(
-                        (user.nickname ?? user.name).substring(0, 1).toUpperCase(),
+                        displayName.isNotEmpty ? displayName.substring(0, 1).toUpperCase() : '?',
                         style: const TextStyle(
                           fontSize: 16,
                           fontWeight: FontWeight.bold,
@@ -583,7 +585,7 @@ class UserActionMenuWidget extends StatelessWidget {
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     Text(
-                      user.nickname ?? user.name,
+                      displayName,
                       style: const TextStyle(
                         fontSize: 18,
                         fontWeight: FontWeight.bold,

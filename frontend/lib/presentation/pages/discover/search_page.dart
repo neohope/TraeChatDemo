@@ -437,7 +437,7 @@ class UserResultItem extends StatelessWidget {
             ? NetworkImage(user.avatarUrl!)
             : null,
         child: user.avatarUrl == null
-            ? Text(user.name[0])
+            ? Text(user.name.isNotEmpty ? user.name[0].toUpperCase() : '?')
             : null,
       ),
       title: Text(user.name),
