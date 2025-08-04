@@ -355,6 +355,11 @@ class _ChatScreenWidgetState extends State<ChatScreenWidget>
             );
           }
           
+          // 添加索引边界检查，避免越界访问
+          if (index >= messages.length || messages.length - 1 - index < 0) {
+            return const SizedBox.shrink();
+          }
+          
           final message = messages[messages.length - 1 - index];
           final isFromCurrentUser = _isFromCurrentUser(message);
           // ignore: unused_local_variable
